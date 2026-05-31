@@ -1,0 +1,108 @@
+<!-- screen: request_transportation | generated from Google Stitch export -->
+<style>
+        body {
+            background-color: #f7f9fc;
+            font-family: 'Inter', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .scroll-hide::-webkit-scrollbar {
+            display: none;
+        }
+        .focus-ring:focus-within {
+            border-color: #0070ea;
+            box-shadow: 0 0 0 1px #0070ea;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+<div class="screen-root text-on-surface">
+<!-- Top App Bar (Task-Focused: No global nav as per requirements) -->
+<header class="sticky top-0 z-50 bg-surface h-16 flex items-center px-margin-mobile border-b border-outline-variant">
+<button aria-label="Volver" class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined text-on-surface">arrow_back</span>
+</button>
+<h1 class="font-headline-sm text-headline-sm ml-4 text-on-background">Nuevo traslado</h1>
+</header>
+<main class="max-w-xl mx-auto px-margin-mobile pt-8 pb-32">
+<!-- Form Container -->
+<div class="space-y-lg">
+<!-- Origen -->
+<div class="space-y-base">
+<label class="font-label-lg text-label-lg text-on-surface-variant block">Origen</label>
+<div class="relative flex items-center bg-surface-container-lowest border border-outline-variant rounded-lg p-3 focus-ring transition-all group">
+<span class="material-symbols-outlined text-outline group-focus-within:text-secondary pr-2">location_on</span>
+<input class="w-full bg-transparent border-none p-0 focus:ring-0 font-body-md text-on-surface placeholder:text-outline-variant" placeholder="Selecciona origen" type="text"/>
+</div>
+</div>
+<!-- Destino -->
+<div class="space-y-base">
+<label class="font-label-lg text-label-lg text-on-surface-variant block">Destino</label>
+<div class="relative flex items-center bg-surface-container-lowest border border-outline-variant rounded-lg p-3 focus-ring transition-all group">
+<span class="material-symbols-outlined text-outline group-focus-within:text-secondary pr-2">my_location</span>
+<input class="w-full bg-transparent border-none p-0 focus:ring-0 font-body-md text-on-surface placeholder:text-outline-variant" placeholder="Selecciona destino" type="text"/>
+</div>
+</div>
+<!-- Grid for Date and Time -->
+<div class="grid grid-cols-2 gap-gutter">
+<!-- Fecha -->
+<div class="space-y-base">
+<label class="font-label-lg text-label-lg text-on-surface-variant block">Fecha</label>
+<div class="relative flex items-center bg-surface-container-lowest border border-outline-variant rounded-lg p-3 focus-ring transition-all group">
+<span class="material-symbols-outlined text-outline group-focus-within:text-secondary pr-2">calendar_today</span>
+<input class="w-full bg-transparent border-none p-0 focus:ring-0 font-body-md text-on-surface placeholder:text-outline-variant" placeholder="DD / MM / AA" type="text"/>
+</div>
+</div>
+<!-- Hora -->
+<div class="space-y-base">
+<label class="font-label-lg text-label-lg text-on-surface-variant block">Hora</label>
+<div class="relative flex items-center bg-surface-container-lowest border border-outline-variant rounded-lg p-3 focus-ring transition-all group">
+<span class="material-symbols-outlined text-outline group-focus-within:text-secondary pr-2">schedule</span>
+<input class="w-full bg-transparent border-none p-0 focus:ring-0 font-body-md text-on-surface placeholder:text-outline-variant" placeholder="00:00 AM" type="text"/>
+</div>
+</div>
+</div>
+<!-- Pasajeros Counter -->
+<div class="space-y-base">
+<label class="font-label-lg text-label-lg text-on-surface-variant block">Pasajeros</label>
+<div class="flex items-center justify-between bg-surface-container-lowest border border-outline-variant rounded-lg p-2 max-w-[160px]">
+<button class="w-10 h-10 flex items-center justify-center rounded-lg hover:bg-surface-variant transition-colors text-primary font-bold">
+<span class="material-symbols-outlined">remove</span>
+</button>
+<span class="font-headline-sm text-headline-sm px-4" id="passenger-count">1</span>
+<button class="w-10 h-10 flex items-center justify-center rounded-lg hover:bg-surface-variant transition-colors text-primary font-bold">
+<span class="material-symbols-outlined">add</span>
+</button>
+</div>
+</div>
+<!-- Comentarios (opcional) -->
+<div class="space-y-base">
+<label class="font-label-lg text-label-lg text-on-surface-variant block">Comentarios (opcional)</label>
+<div class="bg-surface-container-lowest border border-outline-variant rounded-lg p-3 focus-ring transition-all">
+<textarea class="w-full bg-transparent border-none p-0 focus:ring-0 font-body-md text-on-surface placeholder:text-outline-variant resize-none" placeholder="Escribe algún comentario adicional" rows="3"></textarea>
+</div>
+</div>
+</div>
+<!-- Corporate Hero Visualization (Subtle Accent) -->
+<div class="mt-xl rounded-xl overflow-hidden border border-outline-variant bg-surface-container-low relative group">
+<img class="w-full h-32 object-cover opacity-60 group-hover:scale-105 transition-transform duration-700" data-alt="A premium executive car interior viewed from the back seat, showcasing high-end leather textures and sophisticated dashboard controls. Soft ambient blue lighting emphasizes the corporate and modern feel of a professional transit service. The overall atmosphere is one of absolute reliability and luxury transportation in a light-mode aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDHu7ctcPKh18frM-lIIH6K_jCQtmLSyn_cBf1oE-WEmtLQdSAHf0cVopzdBjV-7aK8GfLd_euPd9ZgqYhBqWpwolRvx5tCSdIEADEXygGjyZ6sUcoMLf6CKQ6dPgbNd-vAQpboVIw7X7gRsRlUlURI_Q2UYlMYGgNtcFT3XrCqIZCD4oyN6pYIXSDioa3cxccHaDv7DxRaDMV08M4bELYC13m94jSAjsTyCiKp4MhaoVoZ5oG3GgSK7hR342Y7Z4nqn6y0gA7KCis"/>
+<div class="absolute inset-0 bg-gradient-to-r from-surface via-transparent to-transparent flex items-center px-lg">
+<p class="font-label-md text-label-md text-primary max-w-[200px]">Nuestro compromiso es su seguridad y puntualidad en cada trayecto.</p>
+</div>
+</div>
+</main>
+<!-- Fixed Bottom Action Area -->
+<div class="fixed bottom-0 left-0 right-0 bg-surface p-margin-mobile border-t border-outline-variant z-50">
+<div class="max-w-xl mx-auto">
+<button class="w-full h-14 bg-secondary-container hover:bg-secondary transition-all active:scale-95 text-on-secondary font-label-lg text-label-lg rounded-lg shadow-sm flex items-center justify-center gap-2">
+<span>Programar traslado</span>
+<span class="material-symbols-outlined text-[20px]">send</span>
+</button>
+</div>
+</div>
+</div>

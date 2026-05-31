@@ -1,0 +1,238 @@
+<!-- screen: assignment_center | generated from Google Stitch export -->
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #E2E8F0;
+            border-radius: 10px;
+        }
+        .drag-hint-glow {
+            animation: pulse-glow 2s infinite;
+        }
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(0, 61, 143, 0.2); }
+            50% { box-shadow: 0 0 15px 5px rgba(0, 61, 143, 0.1); }
+        }
+        .driver-card:active {
+            cursor: grabbing;
+            opacity: 0.8;
+            transform: scale(0.98);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+<div class="screen-root bg-surface text-on-surface font-body-md text-body-md overflow-hidden h-screen flex flex-col">
+<!-- TopAppBar -->
+<header class="bg-surface dark:bg-on-background border-b border-outline-variant dark:border-outline flex justify-between items-center w-full px-margin-mobile md:px-margin-desktop h-16 z-10">
+<div class="flex items-center gap-4">
+<button class="material-symbols-outlined text-primary dark:text-primary-fixed p-2 hover:bg-surface-container dark:hover:bg-surface-variant transition-colors rounded-full">arrow_back</button>
+<h1 class="text-headline-md font-headline-md font-bold text-primary dark:text-primary-fixed">Asignaciones</h1>
+</div>
+<div class="flex items-center gap-4">
+<span class="font-label-lg text-label-lg text-on-surface-variant">24 Mayo, 2024</span>
+<button class="material-symbols-outlined text-primary dark:text-primary-fixed p-2 hover:bg-surface-container dark:hover:bg-surface-variant transition-colors rounded-full">calendar_today</button>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="flex-1 overflow-hidden flex flex-col md:flex-row gap-gutter p-margin-mobile md:p-margin-desktop bg-background">
+<!-- Left Column: Drivers (Choferes Disponibles) -->
+<section class="flex-1 flex flex-col bg-surface-container-lowest rounded-xl border border-outline-variant overflow-hidden">
+<div class="p-lg border-b border-outline-variant bg-surface-container-low flex justify-between items-center">
+<h2 class="font-headline-sm text-headline-sm text-primary">Choferes disponibles</h2>
+<span class="bg-primary text-on-primary px-3 py-1 rounded-full text-label-md font-label-md">12 Activos</span>
+</div>
+<div class="flex-1 overflow-y-auto p-md space-y-sm">
+<!-- Driver Card 1 -->
+<div class="driver-card flex items-center p-md bg-white border border-outline-variant rounded-lg hover:border-primary hover:shadow-md transition-all group cursor-grab">
+<img alt="Carlos Hernández" class="w-12 h-12 rounded-full object-cover border-2 border-primary-fixed" data-alt="Close-up portrait of a professional male driver in a smart corporate uniform, smiling confidently. High-end lighting in a professional studio setting, reflecting a clean and trust-oriented corporate aesthetic with soft blue tones." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBmdJ8D35zxU3_kkcsGSOJP5obbQt7mxZ9Gv3isMJfhWvpyk-F9TMUCkhXznVnkvnRlhQ6xZQdq583ZfRhUoXBBQ3OSDz7z75MRNJoSGYhvGdjhrSWupaaOJgDpV1tYpdmZx5GT8FnDpZeESAIQReAM4Ba1NmDocEmyU8Yh040hbh-rhrBMRXJDG9_T8vd2cki-sxnDNrnrzM3o-KwfZ3aLVZ8V_ZGd045TNU5fam4rRQOLZHNHaCYziSeSrnvdNQKomFIxVTITmqY"/>
+<div class="ml-4 flex-1">
+<p class="font-label-lg text-label-lg text-on-surface">Carlos Hernández</p>
+<div class="flex items-center gap-1">
+<span class="w-2 h-2 bg-green-500 rounded-full"></span>
+<span class="text-label-md font-label-md text-on-surface-variant">Disponible</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-outline-variant group-hover:text-primary">drag_indicator</span>
+</div>
+<!-- Driver Card 2 -->
+<div class="driver-card flex items-center p-md bg-white border border-outline-variant rounded-lg hover:border-primary hover:shadow-md transition-all group cursor-grab">
+<img alt="Luis Ramírez" class="w-12 h-12 rounded-full object-cover border-2 border-primary-fixed" data-alt="Portrait of a friendly and experienced driver for a logistics company. The image is captured in a high-key lighting environment to emphasize reliability and safety. The color palette includes professional whites and deep navy blues." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBjpWZUgkjoYBcNVhEzeJI3ahIM-rgg-YFu0FpTjg48Ud4-szAUZG0bK8C6TDJHJHiEmONUc4dXsNGq26cpIQSzrqKOVu645gMylNsjAYOziZJV_ITBu_9pb3ZEdmkABkLU52K1MdgfOQMMVp4KhRAaMiDC72JOEcYOu5sTcK_g3zKc_twHZn-stZV4d3hSJbKeVwyoEveuXbDKCGl3N_MCHI5isq0sSkOxmg1S4yomduW8lqgXD7f0opjoM91Yarlp34dZISZrUcE"/>
+<div class="ml-4 flex-1">
+<p class="font-label-lg text-label-lg text-on-surface">Luis Ramírez</p>
+<div class="flex items-center gap-1">
+<span class="w-2 h-2 bg-green-500 rounded-full"></span>
+<span class="text-label-md font-label-md text-on-surface-variant">Disponible</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-outline-variant group-hover:text-primary">drag_indicator</span>
+</div>
+<!-- Driver Card 3 -->
+<div class="driver-card flex items-center p-md bg-white border border-outline-variant rounded-lg hover:border-primary hover:shadow-md transition-all group cursor-grab opacity-70">
+<img alt="Miguel Torres" class="w-12 h-12 rounded-full object-cover border-2 border-surface-variant" data-alt="Headshot of a mid-career male professional with a calm expression, wearing a neutral-toned uniform. Corporate setting with clean minimalist background, using soft diffusion for a high-end logistics branding feel." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAJCqW5GcevU8LUqxN__hgGoxfIlpsQ91lgqCveM9I2hjVCZqKd6QUHc6OLl54NaeZg8pCNqrd0e-atP-PwGEmR9GuE6TwhbDTHLUf3SOUB_0wufg775BkX9Rr7U5871QiJCPhoINFcbbVvvI1rUnNOdsnVifvanwi3V-Vf9QJ6GsnjvPPgEqYXiFrY_GihGENtZ8XQ27zeaepeXC5smLzjMlpUdg8KyeNbDu0IdkgWO3G-R7uGprOaK5cK3uMLEvvay5EPijfhpkY"/>
+<div class="ml-4 flex-1">
+<p class="font-label-lg text-label-lg text-on-surface">Miguel Torres</p>
+<div class="flex items-center gap-1">
+<span class="w-2 h-2 bg-tertiary-fixed-dim rounded-full"></span>
+<span class="text-label-md font-label-md text-on-surface-variant">En servicio</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-outline-variant">lock</span>
+</div>
+<!-- Driver Card 4 -->
+<div class="driver-card flex items-center p-md bg-white border border-outline-variant rounded-lg hover:border-primary hover:shadow-md transition-all group cursor-grab">
+<img alt="Jorge Vázquez" class="w-12 h-12 rounded-full object-cover border-2 border-primary-fixed" data-alt="Studio portrait of a professional fleet driver looking approachable and dedicated. The lighting is balanced and modern, creating a trustworthy vibe suited for executive transport services. Primary blue accents in the background subtlely reinforce the brand identity." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDQW60JAs6cxvLF0qlJgooalfolGantNestOtogTGs2vgs_VU0j7hBMSEeZmv4-uD7wqkU_nY8iBNIeUvLQ7IgKq_0qrquZ3bsl5zr9xm359VrHZQqb_rxSbdCCWmCuX_LsfwtvY5HI2osH_IOQemJjTskFHLnVsomDyrsiLwHkKGI36YGfAFN9_pb5AoS3bXYeDtzGy3oUYXY88wICZ7y3cLJao5XC_FZxAEt3bHtJXOWVUvIqo76CU2mJGXIIGwVcfc6bUkJMuWA"/>
+<div class="ml-4 flex-1">
+<p class="font-label-lg text-label-lg text-on-surface">Jorge Vázquez</p>
+<div class="flex items-center gap-1">
+<span class="w-2 h-2 bg-green-500 rounded-full"></span>
+<span class="text-label-md font-label-md text-on-surface-variant">Disponible</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-outline-variant group-hover:text-primary">drag_indicator</span>
+</div>
+</div>
+</section>
+<!-- Right Column: Services (Servicios sin asignar) -->
+<section class="flex-1 flex flex-col bg-surface-container-lowest rounded-xl border border-outline-variant overflow-hidden">
+<div class="p-lg border-b border-outline-variant bg-surface-container-low flex justify-between items-center">
+<h2 class="font-headline-sm text-headline-sm text-primary">Servicios sin asignar</h2>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-error text-[20px]">warning</span>
+<span class="text-error font-label-md text-label-md">6 Pendientes</span>
+</div>
+</div>
+<div class="flex-1 overflow-y-auto p-md space-y-md">
+<!-- Drop Zone / Service Card 1 -->
+<div class="relative group p-lg border-2 border-dashed border-outline-variant rounded-xl bg-surface hover:border-primary hover:bg-primary-fixed/20 transition-all cursor-default">
+<div class="flex justify-between items-start mb-4">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">schedule</span>
+<span class="font-headline-sm text-headline-sm text-primary">09:30 AM</span>
+</div>
+<span class="bg-error-container text-on-error-container px-3 py-1 rounded-full text-label-md font-label-md">Urgente</span>
+</div>
+<div class="space-y-sm">
+<div class="flex items-start gap-3">
+<span class="material-symbols-outlined text-outline text-[18px] mt-1">location_on</span>
+<div>
+<p class="text-label-md font-label-md text-on-surface-variant uppercase">Origen</p>
+<p class="font-body-lg text-body-lg text-on-surface">Hotel Hilton</p>
+</div>
+</div>
+<div class="h-6 ml-2 border-l-2 border-dotted border-outline-variant"></div>
+<div class="flex items-start gap-3">
+<span class="material-symbols-outlined text-primary text-[18px] mt-1">navigation</span>
+<div>
+<p class="text-label-md font-label-md text-on-surface-variant uppercase">Destino</p>
+<p class="font-body-lg text-body-lg text-on-surface">Centro Expo GDL</p>
+</div>
+</div>
+</div>
+<div class="mt-4 pt-4 border-t border-outline-variant flex justify-between items-center">
+<div class="flex items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined text-[18px]">person</span>
+<span class="text-label-lg font-label-lg">1 pasajero</span>
+</div>
+<div class="text-primary font-label-lg text-label-lg flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                            Suelte aquí <span class="material-symbols-outlined text-[18px]">add_circle</span>
+</div>
+</div>
+</div>
+<!-- Service Card 2 -->
+<div class="relative group p-lg border-2 border-dashed border-outline-variant rounded-xl bg-surface hover:border-primary hover:bg-primary-fixed/20 transition-all cursor-default">
+<div class="flex justify-between items-start mb-4">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">schedule</span>
+<span class="font-headline-sm text-headline-sm text-primary">12:00 PM</span>
+</div>
+<span class="bg-secondary-fixed text-on-secondary-fixed-variant px-3 py-1 rounded-full text-label-md font-label-md">Programado</span>
+</div>
+<div class="space-y-sm">
+<div class="flex items-start gap-3">
+<span class="material-symbols-outlined text-outline text-[18px] mt-1">home</span>
+<div>
+<p class="text-label-md font-label-md text-on-surface-variant uppercase">Origen</p>
+<p class="font-body-lg text-body-lg text-on-surface">Domicilio Particular</p>
+</div>
+</div>
+<div class="h-6 ml-2 border-l-2 border-dotted border-outline-variant"></div>
+<div class="flex items-start gap-3">
+<span class="material-symbols-outlined text-primary text-[18px] mt-1">navigation</span>
+<div>
+<p class="text-label-md font-label-md text-on-surface-variant uppercase">Destino</p>
+<p class="font-body-lg text-body-lg text-on-surface">Plaza Andares</p>
+</div>
+</div>
+</div>
+<div class="mt-4 pt-4 border-t border-outline-variant flex justify-between items-center">
+<div class="flex items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined text-[18px]">group</span>
+<span class="text-label-lg font-label-lg">2 pasajeros</span>
+</div>
+<div class="text-primary font-label-lg text-label-lg flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                            Suelte aquí <span class="material-symbols-outlined text-[18px]">add_circle</span>
+</div>
+</div>
+</div>
+<!-- Service Card 3 -->
+<div class="relative group p-lg border-2 border-dashed border-outline-variant rounded-xl bg-surface hover:border-primary hover:bg-primary-fixed/20 transition-all cursor-default">
+<div class="flex justify-between items-start mb-4">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">schedule</span>
+<span class="font-headline-sm text-headline-sm text-primary">03:00 PM</span>
+</div>
+<span class="bg-secondary-fixed text-on-secondary-fixed-variant px-3 py-1 rounded-full text-label-md font-label-md">Empresarial</span>
+</div>
+<div class="space-y-sm">
+<div class="flex items-start gap-3">
+<span class="material-symbols-outlined text-outline text-[18px] mt-1">business</span>
+<div>
+<p class="text-label-md font-label-md text-on-surface-variant uppercase">Origen</p>
+<p class="font-body-lg text-body-lg text-on-surface">Empresa ABC</p>
+</div>
+</div>
+<div class="h-6 ml-2 border-l-2 border-dotted border-outline-variant"></div>
+<div class="flex items-start gap-3">
+<span class="material-symbols-outlined text-primary text-[18px] mt-1">flight_takeoff</span>
+<div>
+<p class="text-label-md font-label-md text-on-surface-variant uppercase">Destino</p>
+<p class="font-body-lg text-body-lg text-on-surface">Aeropuerto GDL</p>
+</div>
+</div>
+</div>
+<div class="mt-4 pt-4 border-t border-outline-variant flex justify-between items-center">
+<div class="flex items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined text-[18px]">person</span>
+<span class="text-label-lg font-label-lg">1 pasajero</span>
+</div>
+<div class="text-primary font-label-lg text-label-lg flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                            Suelte aquí <span class="material-symbols-outlined text-[18px]">add_circle</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Drag Hint Footer -->
+<div class="p-lg bg-primary-fixed/30 border-t border-outline-variant flex items-center justify-center gap-2 drag-hint-glow">
+<span class="material-symbols-outlined text-primary">touch_app</span>
+<span class="font-label-lg text-label-lg text-primary">Arrastra un chofer a un servicio</span>
+</div>
+</section>
+</main>
+<!-- BottomNavBar (Mobile Only) -->
+
+<!-- Desktop Floating Action Button (Contextual) -->
+<button class="hidden md:flex fixed bottom-8 right-8 bg-primary text-on-primary rounded-full px-6 py-4 shadow-lg hover:shadow-xl hover:scale-105 transition-all items-center gap-2 z-50">
+<span class="material-symbols-outlined">add</span>
+<span class="font-label-lg text-label-lg">Nuevo Servicio</span>
+</button>
+</div>
