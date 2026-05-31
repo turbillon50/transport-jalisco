@@ -1,6 +1,6 @@
 // MT Empresarial PWA service worker.
 // Precaches the app shell + screen fragments; serves them offline.
-const VERSION = "mt-v1";
+const VERSION = "mt-v2";
 const CORE = `core-${VERSION}`;
 const RUNTIME = `runtime-${VERSION}`;
 
@@ -14,7 +14,7 @@ const SCREENS = [
 const CORE_ASSETS = [
   "./", "index.html", "app.js", "manifest.webmanifest",
   "icons/icon-192.png", "icons/icon-512.png",
-  "icons/icon-maskable-512.png", "icons/apple-touch-icon.png",
+  "icons/icon-maskable-512.png", "icons/apple-touch-icon.png", "icons/logo.png",
   ...SCREENS,
 ];
 
