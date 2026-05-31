@@ -19,6 +19,23 @@ const screens = [
   "dispatcher_dashboard", "fleet_management", "operations_map",
 ];
 
+// Per-screen tweaks: swap the placeholder Stitch logo/branding for the real
+// MT Empresarial logo so the change survives regeneration.
+const LOGO = "icons/logo.png";
+const tweaks = {
+  splash_screen: (s) => s
+    .replace(
+      /<img alt="MT Empresarial Logo"[\s\S]*?\/>/i,
+      `<img alt="MT Empresarial" class="w-72 md:w-80 rounded-2xl bg-white p-5 shadow-2xl" src="${LOGO}"/>`
+    )
+    // The real logo already carries the name + tagline, so drop the duplicate text.
+    .replace(/<div class="mt-xs">[\s\S]*?TU DESTINO, NUESTRA RUTA[\s\S]*?<\/div>/i, ""),
+  role_selection: (s) => s.replace(
+    /<div class="mb-12 flex flex-col items-center">[\s\S]*?Tu destino, nuestra ruta<\/p>\s*<\/div>/i,
+    `<div class="mb-12 flex flex-col items-center"><img alt="MT Empresarial — Tu destino, nuestra ruta" class="w-64 md:w-72" src="${LOGO}"/></div>`
+  ),
+};
+
 for (const id of screens) {
   const file = join(SRC, id, "code.html");
   const html = readFileSync(file, "utf8");
@@ -38,6 +55,8 @@ for (const id of screens) {
   // scripts, so taps are handled solely by the shell's delegated router.
   inner = inner.replace(/\son[a-z]+="[^"]*"/gi, "");
   inner = inner.replace(/\son[a-z]+='[^']*'/gi, "");
+
+  if (tweaks[id]) inner = tweaks[id](inner);
   // Drop any style blocks that lived inside the body (we re-add them once, on top).
   inner = inner.replace(/<style[^>]*>[\s\S]*?<\/style>/gi, "");
 
