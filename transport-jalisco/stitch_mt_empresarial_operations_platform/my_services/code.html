@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+
+<html class="light" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>MT Empresarial - Mis Traslados</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-error-container": "#93000a",
+                        "surface-container-lowest": "#ffffff",
+                        "primary-fixed": "#d9e2ff",
+                        "on-error": "#ffffff",
+                        "on-tertiary": "#ffffff",
+                        "surface": "#f7f9fc",
+                        "surface-variant": "#e0e3e6",
+                        "primary-container": "#003d8f",
+                        "secondary-container": "#0070ea",
+                        "secondary-fixed": "#d8e2ff",
+                        "on-primary-fixed": "#001944",
+                        "secondary-fixed-dim": "#adc7ff",
+                        "surface-bright": "#f7f9fc",
+                        "on-tertiary-fixed-variant": "#5c4200",
+                        "tertiary-fixed": "#ffdea3",
+                        "on-tertiary-fixed": "#261900",
+                        "on-secondary-fixed-variant": "#004493",
+                        "on-primary-fixed-variant": "#0d4395",
+                        "inverse-on-surface": "#eff1f4",
+                        "on-secondary-fixed": "#001a41",
+                        "on-primary": "#ffffff",
+                        "on-secondary": "#ffffff",
+                        "surface-dim": "#d8dadd",
+                        "surface-container-low": "#f2f4f7",
+                        "surface-tint": "#305bae",
+                        "tertiary": "#3a2800",
+                        "surface-container": "#eceef1",
+                        "inverse-surface": "#2d3133",
+                        "outline": "#737783",
+                        "on-primary-container": "#88acff",
+                        "tertiary-fixed-dim": "#f7bd3d",
+                        "error-container": "#ffdad6",
+                        "surface-container-high": "#e6e8eb",
+                        "inverse-primary": "#afc6ff",
+                        "on-background": "#191c1e",
+                        "on-tertiary-container": "#dba523",
+                        "on-surface": "#191c1e",
+                        "on-surface-variant": "#434651",
+                        "background": "#f7f9fc",
+                        "secondary": "#0059bb",
+                        "surface-container-highest": "#e0e3e6",
+                        "primary": "#002863",
+                        "error": "#ba1a1a",
+                        "on-secondary-container": "#fefcff",
+                        "primary-fixed-dim": "#afc6ff",
+                        "outline-variant": "#c3c6d3",
+                        "tertiary-container": "#563d00"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "margin-mobile": "16px",
+                        "gutter": "16px",
+                        "md": "16px",
+                        "margin-desktop": "48px",
+                        "xs": "4px",
+                        "xl": "32px",
+                        "sm": "8px",
+                        "lg": "24px",
+                        "base": "4px"
+                    },
+                    "fontFamily": {
+                        "display-lg": ["Inter"],
+                        "label-md": ["Inter"],
+                        "headline-sm": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "label-lg": ["Inter"],
+                        "headline-lg-mobile": ["Inter"],
+                        "body-md": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "headline-md": ["Inter"]
+                    },
+                    "fontSize": {
+                        "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.04em", "fontWeight": "600"}],
+                        "headline-sm": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                        "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "label-lg": ["14px", {"lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "600"}],
+                        "headline-lg-mobile": ["28px", {"lineHeight": "36px", "fontWeight": "600"}],
+                        "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .timeline-line::before {
+            content: '';
+            position: absolute;
+            left: 50px;
+            top: 24px;
+            bottom: -24px;
+            width: 1px;
+            background-color: #E2E8F0;
+            z-index: 0;
+        }
+        .timeline-item:last-child .timeline-line::before {
+            display: none;
+        }
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
+        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface text-on-surface min-h-screen pb-24">
+<!-- Top App Bar -->
+<header class="bg-surface dark:bg-on-background border-b border-outline-variant dark:border-outline fixed top-0 w-full z-50 flex justify-between items-center px-margin-mobile md:px-margin-desktop h-16">
+<div class="flex items-center gap-4">
+<button class="p-2 rounded-full hover:bg-surface-container dark:hover:bg-surface-variant transition-colors">
+<span class="material-symbols-outlined text-primary dark:text-primary-fixed">arrow_back</span>
+</button>
+<h1 class="font-headline-md text-headline-md font-bold text-primary dark:text-primary-fixed">Mis traslados</h1>
+</div>
+<button class="p-2 rounded-full hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined text-primary dark:text-primary-fixed">account_circle</span>
+</button>
+</header>
+<main class="pt-20 px-margin-mobile max-w-2xl mx-auto">
+<!-- Tab Navigation -->
+<nav class="flex border-b border-outline-variant mb-6 overflow-x-auto scrollbar-hide">
+<button class="px-6 py-3 border-b-2 border-primary text-primary font-label-lg text-label-lg whitespace-nowrap">
+                Programados
+            </button>
+<button class="px-6 py-3 border-b-2 border-transparent text-on-surface-variant font-label-lg text-label-lg whitespace-nowrap">
+                En curso
+            </button>
+<button class="px-6 py-3 border-b-2 border-transparent text-on-surface-variant font-label-lg text-label-lg whitespace-nowrap">
+                Finalizados
+            </button>
+</nav>
+<!-- Service List Timeline -->
+<section class="space-y-6 relative">
+<!-- Item 1 -->
+<div class="timeline-item flex gap-4 relative group">
+<div class="flex flex-col items-center w-12 pt-1 timeline-line">
+<span class="font-headline-sm text-headline-sm text-on-surface leading-none">24</span>
+<span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">MAY</span>
+<div class="w-3 h-3 rounded-full bg-primary mt-4 z-10 ring-4 ring-surface"></div>
+</div>
+<div class="flex-1 bg-surface-container-lowest border border-outline-variant rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow cursor-pointer">
+<div class="flex justify-between items-start mb-3">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-lg">schedule</span>
+<span class="font-headline-sm text-headline-sm text-primary">08:00 AM</span>
+</div>
+<span class="bg-on-tertiary-container/10 text-on-tertiary-fixed-variant px-3 py-1 rounded-full text-[10px] font-bold uppercase flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-on-tertiary-fixed-variant"></span>
+                            Confirmado
+                        </span>
+</div>
+<div class="space-y-3">
+<div class="flex items-start gap-3">
+<span class="material-symbols-outlined text-on-surface-variant text-sm mt-1">flight_takeoff</span>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-on-surface-variant">Origen</span>
+<span class="font-body-md text-body-md font-semibold text-on-surface">Aeropuerto GDL</span>
+</div>
+</div>
+<div class="flex items-start gap-3">
+<span class="material-symbols-outlined text-on-surface-variant text-sm mt-1">location_on</span>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-on-surface-variant">Destino</span>
+<span class="font-body-md text-body-md font-semibold text-on-surface">Hotel Riu Plaza</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Item 2 -->
+<div class="timeline-item flex gap-4 relative group">
+<div class="flex flex-col items-center w-12 pt-1 timeline-line">
+<span class="font-headline-sm text-headline-sm text-on-surface leading-none">25</span>
+<span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">MAY</span>
+<div class="w-3 h-3 rounded-full bg-outline-variant mt-4 z-10 ring-4 ring-surface"></div>
+</div>
+<div class="flex-1 bg-surface-container-lowest border border-outline-variant rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow cursor-pointer">
+<div class="flex justify-between items-start mb-3">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-lg">schedule</span>
+<span class="font-headline-sm text-headline-sm text-primary">09:30 AM</span>
+</div>
+<span class="bg-secondary-container/10 text-secondary px-3 py-1 rounded-full text-[10px] font-bold uppercase flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+                            Programado
+                        </span>
+</div>
+<div class="space-y-3">
+<div class="flex items-start gap-3">
+<span class="material-symbols-outlined text-on-surface-variant text-sm mt-1">hotel</span>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-on-surface-variant">Origen</span>
+<span class="font-body-md text-body-md font-semibold text-on-surface">Hotel Hilton</span>
+</div>
+</div>
+<div class="flex items-start gap-3">
+<span class="material-symbols-outlined text-on-surface-variant text-sm mt-1">apartment</span>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-on-surface-variant">Destino</span>
+<span class="font-body-md text-body-md font-semibold text-on-surface">Centro Expo GDL</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Item 3 -->
+<div class="timeline-item flex gap-4 relative group">
+<div class="flex flex-col items-center w-12 pt-1 timeline-line">
+<span class="font-headline-sm text-headline-sm text-on-surface leading-none">27</span>
+<span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">MAY</span>
+<div class="w-3 h-3 rounded-full bg-outline-variant mt-4 z-10 ring-4 ring-surface"></div>
+</div>
+<div class="flex-1 bg-surface-container-lowest border border-outline-variant rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow cursor-pointer">
+<div class="flex justify-between items-start mb-3">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-lg">schedule</span>
+<span class="font-headline-sm text-headline-sm text-primary">07:00 AM</span>
+</div>
+<span class="bg-secondary-container/10 text-secondary px-3 py-1 rounded-full text-[10px] font-bold uppercase flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+                            Programado
+                        </span>
+</div>
+<div class="space-y-3">
+<div class="flex items-start gap-3">
+<span class="material-symbols-outlined text-on-surface-variant text-sm mt-1">home</span>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-on-surface-variant">Origen</span>
+<span class="font-body-md text-body-md font-semibold text-on-surface">Domicilio</span>
+</div>
+</div>
+<div class="flex items-start gap-3">
+<span class="material-symbols-outlined text-on-surface-variant text-sm mt-1">flight_takeoff</span>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-on-surface-variant">Destino</span>
+<span class="font-body-md text-body-md font-semibold text-on-surface">Aeropuerto GDL</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Item 4 -->
+<div class="timeline-item flex gap-4 relative group">
+<div class="flex flex-col items-center w-12 pt-1 timeline-line">
+<span class="font-headline-sm text-headline-sm text-on-surface leading-none">30</span>
+<span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">MAY</span>
+<div class="w-3 h-3 rounded-full bg-outline-variant mt-4 z-10 ring-4 ring-surface"></div>
+</div>
+<div class="flex-1 bg-surface-container-lowest border border-outline-variant rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow cursor-pointer">
+<div class="flex justify-between items-start mb-3">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-lg">schedule</span>
+<span class="font-headline-sm text-headline-sm text-primary">06:00 PM</span>
+</div>
+<span class="bg-secondary-container/10 text-secondary px-3 py-1 rounded-full text-[10px] font-bold uppercase flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+                            Programado
+                        </span>
+</div>
+<div class="space-y-3">
+<div class="flex items-start gap-3">
+<span class="material-symbols-outlined text-on-surface-variant text-sm mt-1">restaurant</span>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-on-surface-variant">Origen</span>
+<span class="font-body-md text-body-md font-semibold text-on-surface">Restaurante La Tequila</span>
+</div>
+</div>
+<div class="flex items-start gap-3">
+<span class="material-symbols-outlined text-on-surface-variant text-sm mt-1">location_on</span>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-on-surface-variant">Destino</span>
+<span class="font-body-md text-body-md font-semibold text-on-surface">Hotel Camino Real</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Empty State Illustration Placeholder (for visual balance) -->
+<div class="mt-12 text-center py-8 opacity-20 hidden">
+<span class="material-symbols-outlined text-6xl text-outline">calendar_month</span>
+<p class="font-body-lg text-body-lg mt-4">No hay más traslados pendientes</p>
+</div>
+</main>
+<!-- Bottom Navigation Bar -->
+<nav class="fixed bottom-0 w-full z-50 flex justify-around items-center h-20 px-2 pb-2 bg-surface dark:bg-on-background border-t border-outline-variant dark:border-outline">
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline-variant hover:bg-surface-container-high transition-all" href="#">
+<span class="material-symbols-outlined">home</span>
+<span class="font-label-md text-label-md">Home</span>
+</a>
+<!-- ACTIVE TAB: Services (Mis Traslados) -->
+<a class="flex flex-col items-center justify-center bg-primary-fixed text-on-primary-fixed rounded-full px-4 py-1 scale-95 duration-100" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">settings_suggest</span>
+<span class="font-label-md text-label-md">Services</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline-variant hover:bg-surface-container-high transition-all" href="#">
+<span class="material-symbols-outlined">notifications</span>
+<span class="font-label-md text-label-md">Alerts</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline-variant hover:bg-surface-container-high transition-all" href="#">
+<span class="material-symbols-outlined">directions_car</span>
+<span class="font-label-md text-label-md">Fleet</span>
+</a>
+</nav>
+<!-- Contextual FAB for adding new service (hidden based on prompt requirements but good for UX) -->
+<button class="fixed right-6 bottom-24 w-14 h-14 bg-primary text-on-primary rounded-full flex items-center justify-center shadow-lg active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-3xl">add</span>
+</button>
+<script>
+        // Simple Interaction Logic
+        document.querySelectorAll('.timeline-item > div:last-child').forEach(card => {
+            card.addEventListener('mousedown', () => {
+                card.style.transform = 'scale(0.98)';
+            });
+            card.addEventListener('mouseup', () => {
+                card.style.transform = 'scale(1)';
+            });
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = 'scale(1)';
+            });
+        });
+
+        // Tab switching simulation
+        const tabs = document.querySelectorAll('nav[role="tablist"] button, nav.flex.border-b button');
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                tabs.forEach(t => {
+                    t.classList.remove('border-primary', 'text-primary');
+                    t.classList.add('border-transparent', 'text-on-surface-variant');
+                });
+                tab.classList.remove('border-transparent', 'text-on-surface-variant');
+                tab.classList.add('border-primary', 'text-primary');
+            });
+        });
+    </script>
+</body></html>

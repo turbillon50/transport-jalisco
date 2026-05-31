@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+
+<html lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>MT Empresarial - Gestión de Flota</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-error-container": "#93000a",
+                        "surface-container-lowest": "#ffffff",
+                        "primary-fixed": "#d9e2ff",
+                        "on-error": "#ffffff",
+                        "on-tertiary": "#ffffff",
+                        "surface": "#f7f9fc",
+                        "surface-variant": "#e0e3e6",
+                        "primary-container": "#003d8f",
+                        "secondary-container": "#0070ea",
+                        "secondary-fixed": "#d8e2ff",
+                        "on-primary-fixed": "#001944",
+                        "secondary-fixed-dim": "#adc7ff",
+                        "surface-bright": "#f7f9fc",
+                        "on-tertiary-fixed-variant": "#5c4200",
+                        "tertiary-fixed": "#ffdea3",
+                        "on-tertiary-fixed": "#261900",
+                        "on-secondary-fixed-variant": "#004493",
+                        "on-primary-fixed-variant": "#0d4395",
+                        "inverse-on-surface": "#eff1f4",
+                        "on-secondary-fixed": "#001a41",
+                        "on-primary": "#ffffff",
+                        "on-secondary": "#ffffff",
+                        "surface-dim": "#d8dadd",
+                        "surface-container-low": "#f2f4f7",
+                        "surface-tint": "#305bae",
+                        "tertiary": "#3a2800",
+                        "surface-container": "#eceef1",
+                        "inverse-surface": "#2d3133",
+                        "outline": "#737783",
+                        "on-primary-container": "#88acff",
+                        "tertiary-fixed-dim": "#f7bd3d",
+                        "error-container": "#ffdad6",
+                        "surface-container-high": "#e6e8eb",
+                        "inverse-primary": "#afc6ff",
+                        "on-background": "#191c1e",
+                        "on-tertiary-container": "#dba523",
+                        "on-surface": "#191c1e",
+                        "on-surface-variant": "#434651",
+                        "background": "#f7f9fc",
+                        "secondary": "#0059bb",
+                        "surface-container-highest": "#e0e3e6",
+                        "primary": "#002863",
+                        "error": "#ba1a1a",
+                        "on-secondary-container": "#fefcff",
+                        "primary-fixed-dim": "#afc6ff",
+                        "outline-variant": "#c3c6d3",
+                        "tertiary-container": "#563d00"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "margin-mobile": "16px",
+                        "gutter": "16px",
+                        "md": "16px",
+                        "margin-desktop": "48px",
+                        "xs": "4px",
+                        "xl": "32px",
+                        "sm": "8px",
+                        "lg": "24px",
+                        "base": "4px"
+                    },
+                    "fontFamily": {
+                        "display-lg": ["Inter"],
+                        "label-md": ["Inter"],
+                        "headline-sm": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "label-lg": ["Inter"],
+                        "headline-lg-mobile": ["Inter"],
+                        "body-md": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "headline-md": ["Inter"]
+                    },
+                    "fontSize": {
+                        "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.04em", "fontWeight": "600"}],
+                        "headline-sm": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                        "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "label-lg": ["14px", {"lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "600"}],
+                        "headline-lg-mobile": ["28px", {"lineHeight": "36px", "fontWeight": "600"}],
+                        "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #002863;
+            border-radius: 4px;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-surface min-h-screen flex flex-col font-body-md">
+<!-- TopAppBar -->
+<header class="bg-surface dark:bg-on-background border-b border-outline-variant dark:border-outline flex justify-between items-center w-full px-margin-mobile md:px-margin-desktop h-16 sticky top-0 z-50">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-primary cursor-pointer hover:bg-surface-container transition-colors p-2 rounded-full">menu</span>
+<h1 class="text-headline-md font-headline-md font-bold text-primary dark:text-primary-fixed">MT Empresarial</h1>
+</div>
+<div class="flex items-center gap-4">
+<div class="hidden md:flex gap-6 mr-8">
+<a class="text-on-surface-variant hover:bg-surface-container transition-colors px-3 py-1 rounded font-label-lg text-label-lg" href="#">Home</a>
+<a class="text-on-surface-variant hover:bg-surface-container transition-colors px-3 py-1 rounded font-label-lg text-label-lg" href="#">Servicios</a>
+<a class="text-primary dark:text-primary-fixed font-bold font-label-lg text-label-lg" href="#">Flota</a>
+</div>
+<span class="material-symbols-outlined text-primary cursor-pointer p-2 rounded-full hover:bg-surface-container">account_circle</span>
+</div>
+</header>
+<main class="flex-grow w-full max-w-[1440px] mx-auto px-margin-mobile md:px-margin-desktop py-8">
+<!-- Header & Search -->
+<div class="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
+<div>
+<h2 class="text-headline-lg font-headline-lg text-primary mb-1">Gestión de Flota</h2>
+<p class="text-on-surface-variant font-body-md text-body-md">Monitoreo y administración de unidades operativas.</p>
+</div>
+<div class="flex flex-col sm:flex-row gap-3">
+<div class="relative min-w-[300px]">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline">search</span>
+<input class="w-full pl-10 pr-4 py-2 bg-surface-container-low border border-outline-variant rounded focus:border-secondary focus:ring-1 focus:ring-secondary outline-none font-body-md text-body-md" placeholder="Buscar vehículo o placas..." type="text"/>
+</div>
+<button class="bg-primary text-on-primary px-6 py-2 rounded flex items-center justify-center gap-2 font-label-lg text-label-lg hover:opacity-90 active:scale-95 transition-all shadow-sm">
+<span class="material-symbols-outlined text-[20px]">add</span>
+                    Añadir Vehículo
+                </button>
+</div>
+</div>
+<!-- Fleet Stats (Bento Style) -->
+<div class="grid grid-cols-1 md:grid-cols-4 gap-gutter mb-8">
+<div class="bg-surface-container-lowest border border-outline-variant p-lg rounded-xl flex flex-col justify-center items-center text-center">
+<span class="text-label-md font-label-md text-outline uppercase tracking-wider mb-2">Total Unidades</span>
+<span class="text-display-lg font-display-lg text-primary">42</span>
+</div>
+<div class="bg-surface-container-lowest border border-outline-variant p-lg rounded-xl flex flex-col justify-center items-center text-center">
+<span class="text-label-md font-label-md text-outline uppercase tracking-wider mb-2">En Servicio</span>
+<span class="text-display-lg font-display-lg text-secondary">38</span>
+</div>
+<div class="bg-surface-container-lowest border border-outline-variant p-lg rounded-xl flex flex-col justify-center items-center text-center border-l-4 border-l-tertiary-container">
+<span class="text-label-md font-label-md text-outline uppercase tracking-wider mb-2">Mantenimiento</span>
+<span class="text-display-lg font-display-lg text-tertiary-container">3</span>
+</div>
+<div class="bg-surface-container-lowest border border-outline-variant p-lg rounded-xl flex flex-col justify-center items-center text-center border-l-4 border-l-error">
+<span class="text-label-md font-label-md text-outline uppercase tracking-wider mb-2">Inactivos</span>
+<span class="text-display-lg font-display-lg text-error">1</span>
+</div>
+</div>
+<!-- Vehicle List Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-gutter">
+<!-- Vehicle 1 -->
+<div class="bg-white border border-outline-variant rounded-xl overflow-hidden hover:shadow-lg transition-all group">
+<div class="relative h-48 w-full overflow-hidden">
+<img alt="Toyota Hiace 2023" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="A clean, professional white Toyota Hiace executive van parked in a bright, modern corporate logistics center with high-key lighting. The setting is sterile and premium, reflecting high reliability and institutional trust. The vehicle is presented in a crisp, sharp architectural photography style with cool blue and white tones." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDfIRul7TYomlXW9EW1eNm68Yagpjkd12Bz-GXod4MzIaA2UjaaGyDTTsBoW0SbrJXFMkxPiYeBxXRrPK7euUy9IvQQ70QqK6g4ub3Hy4gtt4i9BVur_Dn-sUhcc-VLeTODeVysN509-bYHWMdCY2eFvRnYI_90EhIMt5sahms2g040COoxGEtO6o292zi8PqBkzuf6URgu5UralbMR_W9CS1BeEQVobHBCx69uf5v3618s14VvdwYoO9jSEbXTXWe2qosaNxT_vxA"/>
+<div class="absolute top-4 right-4 bg-green-100 text-green-800 px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1 border border-green-200">
+<span class="w-2 h-2 rounded-full bg-green-500"></span>
+                        Operativo
+                    </div>
+</div>
+<div class="p-lg">
+<div class="flex justify-between items-start mb-4">
+<div>
+<h3 class="text-headline-sm font-headline-sm text-primary">Toyota Hiace 2023</h3>
+<span class="text-label-md font-label-md text-outline">Placas: JAL-12-AB</span>
+</div>
+<span class="material-symbols-outlined text-outline cursor-pointer hover:text-primary">more_vert</span>
+</div>
+<div class="space-y-3 mb-6">
+<div class="flex items-center gap-3 text-on-surface-variant">
+<span class="material-symbols-outlined text-[18px]">group</span>
+<span class="text-body-md font-body-md">Capacidad: 14 pasajeros</span>
+</div>
+<div class="flex items-center gap-3 text-on-surface-variant">
+<span class="material-symbols-outlined text-[18px]">history</span>
+<span class="text-body-md font-body-md">Último Manto: 12 Mayo, 2024</span>
+</div>
+<div class="flex items-center gap-3 text-on-surface-variant">
+<span class="material-symbols-outlined text-[18px]">distance</span>
+<span class="text-body-md font-body-md">Odómetro: 12,450 km</span>
+</div>
+</div>
+<div class="flex gap-2">
+<button class="flex-grow border border-primary text-primary py-2 rounded font-label-lg text-label-lg hover:bg-primary-fixed transition-colors">Detalles</button>
+<button class="flex-grow bg-primary text-on-primary py-2 rounded font-label-lg text-label-lg hover:opacity-90 transition-opacity">Asignar</button>
+</div>
+</div>
+</div>
+<!-- Vehicle 2 -->
+<div class="bg-white border border-outline-variant rounded-xl overflow-hidden hover:shadow-lg transition-all group">
+<div class="relative h-48 w-full overflow-hidden">
+<img alt="Mercedes Sprinter" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="A professional silver Mercedes Sprinter executive shuttle parked in a modern, well-lit urban environment. The photography style is corporate and polished, using a crisp focus and a high-end commercial aesthetic. The lighting is bright and even, highlighting the clean lines of the vehicle in a light-mode color palette." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBZOSDSazzzFmeK38sU1hfzJcPJEoyqFsdLuRIJSsaLfrRk9fUPrZMRu5YjTH8WDYX_4EPEBi31IuMftG2BE_YsHeF0BRd4S-9F75bqMc-IFezqmNY-W7Q8dQRGEivUtC7yn650sAsyO3NsyxcPmRYo4-tjuC8mnN6rARYYhTttJi0o7qsE1_mc7bayHVZrQX5jDLRCqCHzlJ__hil0yZn1WZjl7f5W9XxPWEuBCW0aWZMAu8cWRiQEL1FmBDc4ewxAwFz6W_cRlQI"/>
+<div class="absolute top-4 right-4 bg-orange-100 text-orange-800 px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1 border border-orange-200">
+<span class="w-2 h-2 rounded-full bg-orange-500"></span>
+                        Mantenimiento
+                    </div>
+</div>
+<div class="p-lg">
+<div class="flex justify-between items-start mb-4">
+<div>
+<h3 class="text-headline-sm font-headline-sm text-primary">Mercedes Sprinter</h3>
+<span class="text-label-md font-label-md text-outline">Placas: GTO-45-XY</span>
+</div>
+<span class="material-symbols-outlined text-outline cursor-pointer hover:text-primary">more_vert</span>
+</div>
+<div class="space-y-3 mb-6">
+<div class="flex items-center gap-3 text-on-surface-variant">
+<span class="material-symbols-outlined text-[18px]">group</span>
+<span class="text-body-md font-body-md">Capacidad: 18 pasajeros</span>
+</div>
+<div class="flex items-center gap-3 text-on-surface-variant">
+<span class="material-symbols-outlined text-[18px]">engineering</span>
+<span class="text-body-md font-body-md">En Taller: Preventivo</span>
+</div>
+<div class="flex items-center gap-3 text-on-surface-variant">
+<span class="material-symbols-outlined text-[18px]">calendar_today</span>
+<span class="text-body-md font-body-md">Entrega est.: 28 Mayo</span>
+</div>
+</div>
+<div class="flex gap-2">
+<button class="flex-grow border border-primary text-primary py-2 rounded font-label-lg text-label-lg hover:bg-primary-fixed transition-colors">Detalles</button>
+<button class="flex-grow bg-surface-variant text-on-surface-variant py-2 rounded font-label-lg text-label-lg cursor-not-allowed">Asignar</button>
+</div>
+</div>
+</div>
+<!-- Vehicle 3 -->
+<div class="bg-white border border-outline-variant rounded-xl overflow-hidden hover:shadow-lg transition-all group">
+<div class="relative h-48 w-full overflow-hidden">
+<img alt="Nissan Urvan" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="A sturdy and reliable Nissan Urvan transport van presented in a bright outdoor parking area with clean morning light. The background is a minimalist corporate park, emphasizing the fleet's professional operations. The image is captured with a modern digital look, featuring high contrast and a palette of blues and whites." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBNoz_jt_sP1NpSO3P1HqStIfOBuxtm1T03_sU7bfRLIPo2VEV4UjatsMTjxl3QQ4eGjb5f76bk6xr9PA_gGhj7wQGj0aieaJ8TyjTmIoM5O6_KqZWSvLoTudPulJ3-0OX7mQS4EUvsjwCN2XIoqqKSlHaFLx-xrkWFaKDy_LJqTQIfZK8Vf865RjzzezlfG5mWGtiywRvGfaZMxTJ3aXsVRblvnFAPmcnBwEVmaijwWIjtjbmuT4uwbC48YoEq8DsafQqBa6BxqsA"/>
+<div class="absolute top-4 right-4 bg-green-100 text-green-800 px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1 border border-green-200">
+<span class="w-2 h-2 rounded-full bg-green-500"></span>
+                        Operativo
+                    </div>
+</div>
+<div class="p-lg">
+<div class="flex justify-between items-start mb-4">
+<div>
+<h3 class="text-headline-sm font-headline-sm text-primary">Nissan Urvan</h3>
+<span class="text-label-md font-label-md text-outline">Placas: JAL-88-ZZ</span>
+</div>
+<span class="material-symbols-outlined text-outline cursor-pointer hover:text-primary">more_vert</span>
+</div>
+<div class="space-y-3 mb-6">
+<div class="flex items-center gap-3 text-on-surface-variant">
+<span class="material-symbols-outlined text-[18px]">group</span>
+<span class="text-body-md font-body-md">Capacidad: 14 pasajeros</span>
+</div>
+<div class="flex items-center gap-3 text-on-surface-variant">
+<span class="material-symbols-outlined text-[18px]">history</span>
+<span class="text-body-md font-body-md">Último Manto: 05 Mayo, 2024</span>
+</div>
+<div class="flex items-center gap-3 text-on-surface-variant">
+<span class="material-symbols-outlined text-[18px]">map</span>
+<span class="text-body-md font-body-md">Ubicación: Guadalajara</span>
+</div>
+</div>
+<div class="flex gap-2">
+<button class="flex-grow border border-primary text-primary py-2 rounded font-label-lg text-label-lg hover:bg-primary-fixed transition-colors">Detalles</button>
+<button class="flex-grow bg-primary text-on-primary py-2 rounded font-label-lg text-label-lg hover:opacity-90 transition-opacity">Asignar</button>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- BottomNavBar (Mobile only) -->
+<nav class="md:hidden fixed bottom-0 w-full z-50 flex justify-around items-center h-20 px-2 pb-2 bg-surface dark:bg-on-background border-t border-outline-variant dark:border-outline">
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline-variant hover:bg-surface-container-high transition-all px-4 py-1" href="#">
+<span class="material-symbols-outlined">home</span>
+<span class="font-label-md text-label-md">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline-variant hover:bg-surface-container-high transition-all px-4 py-1" href="#">
+<span class="material-symbols-outlined">settings_suggest</span>
+<span class="font-label-md text-label-md">Services</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline-variant hover:bg-surface-container-high transition-all px-4 py-1" href="#">
+<span class="material-symbols-outlined">notifications</span>
+<span class="font-label-md text-label-md">Alerts</span>
+</a>
+<a class="flex flex-col items-center justify-center bg-primary-fixed text-on-primary-fixed rounded-full px-4 py-1 scale-95 duration-100" href="#">
+<span class="material-symbols-outlined">directions_car</span>
+<span class="font-label-md text-label-md">Fleet</span>
+</a>
+</nav>
+<!-- FAB for adding fleet on mobile -->
+<button class="md:hidden fixed bottom-24 right-6 w-14 h-14 bg-secondary text-on-secondary rounded-full flex items-center justify-center shadow-xl z-40 active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-[32px]">add</span>
+</button>
+</body></html>

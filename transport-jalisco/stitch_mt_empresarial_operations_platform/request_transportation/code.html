@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+
+<html class="light" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>MT Empresarial - Nuevo Traslado</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-error-container": "#93000a",
+                        "surface-container-lowest": "#ffffff",
+                        "primary-fixed": "#d9e2ff",
+                        "on-error": "#ffffff",
+                        "on-tertiary": "#ffffff",
+                        "surface": "#f7f9fc",
+                        "surface-variant": "#e0e3e6",
+                        "primary-container": "#003d8f",
+                        "secondary-container": "#0070ea",
+                        "secondary-fixed": "#d8e2ff",
+                        "on-primary-fixed": "#001944",
+                        "secondary-fixed-dim": "#adc7ff",
+                        "surface-bright": "#f7f9fc",
+                        "on-tertiary-fixed-variant": "#5c4200",
+                        "tertiary-fixed": "#ffdea3",
+                        "on-tertiary-fixed": "#261900",
+                        "on-secondary-fixed-variant": "#004493",
+                        "on-primary-fixed-variant": "#0d4395",
+                        "inverse-on-surface": "#eff1f4",
+                        "on-secondary-fixed": "#001a41",
+                        "on-primary": "#ffffff",
+                        "on-secondary": "#ffffff",
+                        "surface-dim": "#d8dadd",
+                        "surface-container-low": "#f2f4f7",
+                        "surface-tint": "#305bae",
+                        "tertiary": "#3a2800",
+                        "surface-container": "#eceef1",
+                        "inverse-surface": "#2d3133",
+                        "outline": "#737783",
+                        "on-primary-container": "#88acff",
+                        "tertiary-fixed-dim": "#f7bd3d",
+                        "error-container": "#ffdad6",
+                        "surface-container-high": "#e6e8eb",
+                        "inverse-primary": "#afc6ff",
+                        "on-background": "#191c1e",
+                        "on-tertiary-container": "#dba523",
+                        "on-surface": "#191c1e",
+                        "on-surface-variant": "#434651",
+                        "background": "#f7f9fc",
+                        "secondary": "#0059bb",
+                        "surface-container-highest": "#e0e3e6",
+                        "primary": "#002863",
+                        "error": "#ba1a1a",
+                        "on-secondary-container": "#fefcff",
+                        "primary-fixed-dim": "#afc6ff",
+                        "outline-variant": "#c3c6d3",
+                        "tertiary-container": "#563d00"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "margin-mobile": "16px",
+                        "gutter": "16px",
+                        "md": "16px",
+                        "margin-desktop": "48px",
+                        "xs": "4px",
+                        "xl": "32px",
+                        "sm": "8px",
+                        "lg": "24px",
+                        "base": "4px"
+                    },
+                    "fontFamily": {
+                        "display-lg": ["Inter"],
+                        "label-md": ["Inter"],
+                        "headline-sm": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "label-lg": ["Inter"],
+                        "headline-lg-mobile": ["Inter"],
+                        "body-md": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "headline-md": ["Inter"]
+                    },
+                    "fontSize": {
+                        "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.04em", "fontWeight": "600"}],
+                        "headline-sm": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                        "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "label-lg": ["14px", {"lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "600"}],
+                        "headline-lg-mobile": ["28px", {"lineHeight": "36px", "fontWeight": "600"}],
+                        "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            background-color: #f7f9fc;
+            font-family: 'Inter', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .scroll-hide::-webkit-scrollbar {
+            display: none;
+        }
+        .focus-ring:focus-within {
+            border-color: #0070ea;
+            box-shadow: 0 0 0 1px #0070ea;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="text-on-surface">
+<!-- Top App Bar (Task-Focused: No global nav as per requirements) -->
+<header class="sticky top-0 z-50 bg-surface h-16 flex items-center px-margin-mobile border-b border-outline-variant">
+<button aria-label="Volver" class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined text-on-surface">arrow_back</span>
+</button>
+<h1 class="font-headline-sm text-headline-sm ml-4 text-on-background">Nuevo traslado</h1>
+</header>
+<main class="max-w-xl mx-auto px-margin-mobile pt-8 pb-32">
+<!-- Form Container -->
+<div class="space-y-lg">
+<!-- Origen -->
+<div class="space-y-base">
+<label class="font-label-lg text-label-lg text-on-surface-variant block">Origen</label>
+<div class="relative flex items-center bg-surface-container-lowest border border-outline-variant rounded-lg p-3 focus-ring transition-all group">
+<span class="material-symbols-outlined text-outline group-focus-within:text-secondary pr-2">location_on</span>
+<input class="w-full bg-transparent border-none p-0 focus:ring-0 font-body-md text-on-surface placeholder:text-outline-variant" placeholder="Selecciona origen" type="text"/>
+</div>
+</div>
+<!-- Destino -->
+<div class="space-y-base">
+<label class="font-label-lg text-label-lg text-on-surface-variant block">Destino</label>
+<div class="relative flex items-center bg-surface-container-lowest border border-outline-variant rounded-lg p-3 focus-ring transition-all group">
+<span class="material-symbols-outlined text-outline group-focus-within:text-secondary pr-2">my_location</span>
+<input class="w-full bg-transparent border-none p-0 focus:ring-0 font-body-md text-on-surface placeholder:text-outline-variant" placeholder="Selecciona destino" type="text"/>
+</div>
+</div>
+<!-- Grid for Date and Time -->
+<div class="grid grid-cols-2 gap-gutter">
+<!-- Fecha -->
+<div class="space-y-base">
+<label class="font-label-lg text-label-lg text-on-surface-variant block">Fecha</label>
+<div class="relative flex items-center bg-surface-container-lowest border border-outline-variant rounded-lg p-3 focus-ring transition-all group">
+<span class="material-symbols-outlined text-outline group-focus-within:text-secondary pr-2">calendar_today</span>
+<input class="w-full bg-transparent border-none p-0 focus:ring-0 font-body-md text-on-surface placeholder:text-outline-variant" placeholder="DD / MM / AA" type="text"/>
+</div>
+</div>
+<!-- Hora -->
+<div class="space-y-base">
+<label class="font-label-lg text-label-lg text-on-surface-variant block">Hora</label>
+<div class="relative flex items-center bg-surface-container-lowest border border-outline-variant rounded-lg p-3 focus-ring transition-all group">
+<span class="material-symbols-outlined text-outline group-focus-within:text-secondary pr-2">schedule</span>
+<input class="w-full bg-transparent border-none p-0 focus:ring-0 font-body-md text-on-surface placeholder:text-outline-variant" placeholder="00:00 AM" type="text"/>
+</div>
+</div>
+</div>
+<!-- Pasajeros Counter -->
+<div class="space-y-base">
+<label class="font-label-lg text-label-lg text-on-surface-variant block">Pasajeros</label>
+<div class="flex items-center justify-between bg-surface-container-lowest border border-outline-variant rounded-lg p-2 max-w-[160px]">
+<button class="w-10 h-10 flex items-center justify-center rounded-lg hover:bg-surface-variant transition-colors text-primary font-bold" onclick="updateCounter(-1)">
+<span class="material-symbols-outlined">remove</span>
+</button>
+<span class="font-headline-sm text-headline-sm px-4" id="passenger-count">1</span>
+<button class="w-10 h-10 flex items-center justify-center rounded-lg hover:bg-surface-variant transition-colors text-primary font-bold" onclick="updateCounter(1)">
+<span class="material-symbols-outlined">add</span>
+</button>
+</div>
+</div>
+<!-- Comentarios (opcional) -->
+<div class="space-y-base">
+<label class="font-label-lg text-label-lg text-on-surface-variant block">Comentarios (opcional)</label>
+<div class="bg-surface-container-lowest border border-outline-variant rounded-lg p-3 focus-ring transition-all">
+<textarea class="w-full bg-transparent border-none p-0 focus:ring-0 font-body-md text-on-surface placeholder:text-outline-variant resize-none" placeholder="Escribe algún comentario adicional" rows="3"></textarea>
+</div>
+</div>
+</div>
+<!-- Corporate Hero Visualization (Subtle Accent) -->
+<div class="mt-xl rounded-xl overflow-hidden border border-outline-variant bg-surface-container-low relative group">
+<img class="w-full h-32 object-cover opacity-60 group-hover:scale-105 transition-transform duration-700" data-alt="A premium executive car interior viewed from the back seat, showcasing high-end leather textures and sophisticated dashboard controls. Soft ambient blue lighting emphasizes the corporate and modern feel of a professional transit service. The overall atmosphere is one of absolute reliability and luxury transportation in a light-mode aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDHu7ctcPKh18frM-lIIH6K_jCQtmLSyn_cBf1oE-WEmtLQdSAHf0cVopzdBjV-7aK8GfLd_euPd9ZgqYhBqWpwolRvx5tCSdIEADEXygGjyZ6sUcoMLf6CKQ6dPgbNd-vAQpboVIw7X7gRsRlUlURI_Q2UYlMYGgNtcFT3XrCqIZCD4oyN6pYIXSDioa3cxccHaDv7DxRaDMV08M4bELYC13m94jSAjsTyCiKp4MhaoVoZ5oG3GgSK7hR342Y7Z4nqn6y0gA7KCis"/>
+<div class="absolute inset-0 bg-gradient-to-r from-surface via-transparent to-transparent flex items-center px-lg">
+<p class="font-label-md text-label-md text-primary max-w-[200px]">Nuestro compromiso es su seguridad y puntualidad en cada trayecto.</p>
+</div>
+</div>
+</main>
+<!-- Fixed Bottom Action Area -->
+<div class="fixed bottom-0 left-0 right-0 bg-surface p-margin-mobile border-t border-outline-variant z-50">
+<div class="max-w-xl mx-auto">
+<button class="w-full h-14 bg-secondary-container hover:bg-secondary transition-all active:scale-95 text-on-secondary font-label-lg text-label-lg rounded-lg shadow-sm flex items-center justify-center gap-2">
+<span>Programar traslado</span>
+<span class="material-symbols-outlined text-[20px]">send</span>
+</button>
+</div>
+</div>
+<script>
+        function updateCounter(delta) {
+            const counter = document.getElementById('passenger-count');
+            let val = parseInt(counter.innerText);
+            val = Math.max(1, Math.min(20, val + delta));
+            counter.innerText = val;
+            
+            // Subtle feedback
+            counter.classList.add('scale-110');
+            setTimeout(() => counter.classList.remove('scale-110'), 100);
+        }
+
+        // Simple form interaction simulation
+        document.querySelectorAll('input, textarea').forEach(el => {
+            el.addEventListener('focus', () => {
+                const parent = el.closest('.relative, .bg-surface-container-lowest');
+                if(parent) parent.classList.add('border-primary');
+            });
+            el.addEventListener('blur', () => {
+                const parent = el.closest('.relative, .bg-surface-container-lowest');
+                if(parent) parent.classList.remove('border-primary');
+            });
+        });
+    </script>
+</body></html>

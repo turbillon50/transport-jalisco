@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+
+<html class="light" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Gestión de Choferes - MT Empresarial</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-error-container": "#93000a",
+                        "surface-container-lowest": "#ffffff",
+                        "primary-fixed": "#d9e2ff",
+                        "on-error": "#ffffff",
+                        "on-tertiary": "#ffffff",
+                        "surface": "#f7f9fc",
+                        "surface-variant": "#e0e3e6",
+                        "primary-container": "#003d8f",
+                        "secondary-container": "#0070ea",
+                        "secondary-fixed": "#d8e2ff",
+                        "on-primary-fixed": "#001944",
+                        "secondary-fixed-dim": "#adc7ff",
+                        "surface-bright": "#f7f9fc",
+                        "on-tertiary-fixed-variant": "#5c4200",
+                        "tertiary-fixed": "#ffdea3",
+                        "on-tertiary-fixed": "#261900",
+                        "on-secondary-fixed-variant": "#004493",
+                        "on-primary-fixed-variant": "#0d4395",
+                        "inverse-on-surface": "#eff1f4",
+                        "on-secondary-fixed": "#001a41",
+                        "on-primary": "#ffffff",
+                        "on-secondary": "#ffffff",
+                        "surface-dim": "#d8dadd",
+                        "surface-container-low": "#f2f4f7",
+                        "surface-tint": "#305bae",
+                        "tertiary": "#3a2800",
+                        "surface-container": "#eceef1",
+                        "inverse-surface": "#2d3133",
+                        "outline": "#737783",
+                        "on-primary-container": "#88acff",
+                        "tertiary-fixed-dim": "#f7bd3d",
+                        "error-container": "#ffdad6",
+                        "surface-container-high": "#e6e8eb",
+                        "inverse-primary": "#afc6ff",
+                        "on-background": "#191c1e",
+                        "on-tertiary-container": "#dba523",
+                        "on-surface": "#191c1e",
+                        "on-surface-variant": "#434651",
+                        "background": "#f7f9fc",
+                        "secondary": "#0059bb",
+                        "surface-container-highest": "#e0e3e6",
+                        "primary": "#002863",
+                        "error": "#ba1a1a",
+                        "on-secondary-container": "#fefcff",
+                        "primary-fixed-dim": "#afc6ff",
+                        "outline-variant": "#c3c6d3",
+                        "tertiary-container": "#563d00"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "margin-mobile": "16px",
+                        "gutter": "16px",
+                        "md": "16px",
+                        "margin-desktop": "48px",
+                        "xs": "4px",
+                        "xl": "32px",
+                        "sm": "8px",
+                        "lg": "24px",
+                        "base": "4px"
+                    },
+                    "fontFamily": {
+                        "display-lg": ["Inter"],
+                        "label-md": ["Inter"],
+                        "headline-sm": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "label-lg": ["Inter"],
+                        "headline-lg-mobile": ["Inter"],
+                        "body-md": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "headline-md": ["Inter"]
+                    },
+                    "fontSize": {
+                        "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.04em", "fontWeight": "600"}],
+                        "headline-sm": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                        "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "label-lg": ["14px", {"lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "600"}],
+                        "headline-lg-mobile": ["28px", {"lineHeight": "36px", "fontWeight": "600"}],
+                        "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .driver-card:hover {
+            border-color: #003d8f;
+            background-color: #f8fafc;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-surface">
+<!-- Top App Bar -->
+<header class="bg-surface sticky top-0 z-40 border-b border-outline-variant flex justify-between items-center w-full px-margin-mobile md:px-margin-desktop h-16">
+<div class="flex items-center gap-4">
+<button class="material-symbols-outlined text-primary p-2 hover:bg-surface-container rounded-full transition-colors">menu</button>
+<h1 class="text-headline-md font-headline-md font-bold text-primary">MT Empresarial</h1>
+</div>
+<div class="flex items-center gap-4">
+<span class="hidden md:block text-label-lg font-label-lg text-on-surface-variant">Admin Console</span>
+<span class="material-symbols-outlined text-primary text-3xl">account_circle</span>
+</div>
+</header>
+<main class="max-w-[1440px] mx-auto p-margin-mobile md:p-margin-desktop pb-24">
+<!-- Search and Action Header -->
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-lg mb-xl">
+<div>
+<h2 class="font-headline-lg text-headline-lg-mobile md:text-headline-lg text-primary mb-2">Gestión de Choferes</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">Monitorea y administra el personal operativo de tu flota.</p>
+</div>
+<div class="flex flex-col sm:flex-row gap-md">
+<div class="relative group">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline">search</span>
+<input class="pl-10 pr-4 py-2 w-full md:w-72 border border-outline-variant rounded focus:border-secondary-container focus:ring-1 focus:ring-secondary-container bg-surface-container-lowest outline-none transition-all" placeholder="Buscar por nombre..." type="text"/>
+</div>
+<button class="bg-primary text-on-primary px-lg py-sm rounded-lg font-label-lg text-label-lg flex items-center justify-center gap-2 hover:bg-primary-container transition-colors shadow-sm active:scale-95">
+<span class="material-symbols-outlined">person_add</span>
+                    Registrar Chofer
+                </button>
+</div>
+</div>
+<!-- Dashboard Stats (Contextual for Admin) -->
+<div class="grid grid-cols-2 md:grid-cols-4 gap-md mb-xl">
+<div class="bg-surface-container-lowest border border-outline-variant p-lg rounded-xl">
+<p class="font-label-md text-label-md text-outline uppercase tracking-wider mb-2">Total</p>
+<p class="font-headline-md text-headline-md text-primary">48</p>
+</div>
+<div class="bg-surface-container-lowest border border-outline-variant p-lg rounded-xl">
+<p class="font-label-md text-label-md text-outline uppercase tracking-wider mb-2">En Ruta</p>
+<p class="font-headline-md text-headline-md text-secondary">18</p>
+</div>
+<div class="bg-surface-container-lowest border border-outline-variant p-lg rounded-xl">
+<p class="font-label-md text-label-md text-outline uppercase tracking-wider mb-2">Disponibles</p>
+<p class="font-headline-md text-headline-md text-tertiary-container text-[#3a2800]">23</p>
+</div>
+<div class="bg-surface-container-lowest border border-outline-variant p-lg rounded-xl">
+<p class="font-label-md text-label-md text-outline uppercase tracking-wider mb-2">Docs Vencidos</p>
+<p class="font-headline-md text-headline-md text-error">2</p>
+</div>
+</div>
+<!-- Main List / Grid Layout -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-lg">
+<!-- Driver Card 1 -->
+<div class="driver-card bg-surface-container-lowest border border-outline-variant p-lg rounded-xl transition-all cursor-pointer flex flex-col gap-lg shadow-sm">
+<div class="flex justify-between items-start">
+<div class="flex gap-md items-center">
+<img alt="Carlos Hernández" class="w-14 h-14 rounded-full object-cover border-2 border-surface-variant" data-alt="A professional portrait of a male driver in a corporate uniform, posing confidently with a slight smile. The background is a brightly lit, modern corporate lobby with clean white lines and a high-reliability institutional atmosphere. The lighting is soft and flattering, emphasizing a trustworthy and professional persona suitable for an executive transit service." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCfyGPxjvSElKyjVvHQ0buhq_UwjlkXG8irVxp79OFwNr7KAZz9q1AnF_jl0SImMS53e36JO9Whmgw47e5zTFFxJfGedOQPUZhujIZGGUqCqw4VHV8X9yBr3ooAbg2vBh3QYUsYMCpHdIxHIhQl8cZhPQRX-fKr73leVj1ci5CZhhDG1VCTQRbBNrcgNw9hqSzPLGV1rpo_XsnYtPJaSklD0l-bLvA5OTOlzFPeYIRWmPjnM9CSWtb5dEgafNrd9EXGlSq5PxqVMTk"/>
+<div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Carlos Hernández</h3>
+<div class="flex items-center gap-1 text-tertiary-fixed-dim">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="font-label-lg text-label-lg text-on-surface-variant">4.9</span>
+</div>
+</div>
+</div>
+<div class="bg-secondary-fixed text-on-secondary-fixed-variant px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest flex items-center gap-1">
+<span class="w-1.5 h-1.5 bg-secondary rounded-full animate-pulse"></span>
+                        En ruta
+                    </div>
+</div>
+<div class="space-y-sm">
+<div class="flex justify-between items-center py-2 border-b border-surface-variant">
+<span class="font-body-md text-body-md text-on-surface-variant">Documentación</span>
+<span class="font-label-lg text-label-lg text-[#006e1c]">Al día</span>
+</div>
+<div class="flex justify-between items-center py-2 border-b border-surface-variant">
+<span class="font-body-md text-body-md text-on-surface-variant">Licencia</span>
+<span class="font-label-lg text-label-lg text-on-surface">Federal Tipo A</span>
+</div>
+<div class="flex justify-between items-center py-2">
+<span class="font-body-md text-body-md text-on-surface-variant">Vehículo Asignado</span>
+<span class="font-label-lg text-label-lg text-on-surface">Toyota Hiace 2023</span>
+</div>
+</div>
+<button class="mt-base w-full border border-primary text-primary py-2 rounded font-label-lg hover:bg-primary hover:text-white transition-colors">Ver Detalles</button>
+</div>
+<!-- Driver Card 2 -->
+<div class="driver-card bg-surface-container-lowest border border-outline-variant p-lg rounded-xl transition-all cursor-pointer flex flex-col gap-lg shadow-sm">
+<div class="flex justify-between items-start">
+<div class="flex gap-md items-center">
+<img alt="Luis Ramírez" class="w-14 h-14 rounded-full object-cover border-2 border-surface-variant" data-alt="A portrait of a male driver in a crisp white shirt, looking professional and ready for service. He is standing outdoors during a bright day, near a fleet of high-end executive transport vans. The environment is orderly and clean, reflecting a professional logistics company's depot. The style is modern and high-contrast, highlighting reliability and efficiency." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBoFysejAoa0Dc02z7rnDMzFNUbFmMz6bqUrpnJGqPIXjk5Jpl-bBWcxdhRi6JXib0yfNGEuw6w0C3adjPnXNiRev03ImKTjI9oqXLzZ2NO3yu0WulBL4UI8vHw4H0MVbdYTx9j9vkpik6riYN8ZQxDoR6kOE3fKZ56tqQxGhtxz6Ljo5n2N4Kjg_UYQGhLksTl1derxYtO5R7jj9tJWTZgQ8ysf2mjpUTXOUXxAEqCMJQ_bMgXrXIigSDdomQ0XaVmojNlitR6FeI"/>
+<div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Luis Ramírez</h3>
+<div class="flex items-center gap-1 text-tertiary-fixed-dim">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="font-label-lg text-label-lg text-on-surface-variant">4.7</span>
+</div>
+</div>
+</div>
+<div class="bg-surface-container text-on-surface-variant px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest flex items-center gap-1">
+<span class="w-1.5 h-1.5 bg-outline rounded-full"></span>
+                        Disponible
+                    </div>
+</div>
+<div class="space-y-sm">
+<div class="flex justify-between items-center py-2 border-b border-surface-variant">
+<span class="font-body-md text-body-md text-on-surface-variant">Documentación</span>
+<span class="font-label-lg text-label-lg text-tertiary">Próx. Vencimiento</span>
+</div>
+<div class="flex justify-between items-center py-2 border-b border-surface-variant">
+<span class="font-body-md text-body-md text-on-surface-variant">Vence en</span>
+<span class="font-label-lg text-label-lg text-tertiary font-bold">5 días</span>
+</div>
+<div class="flex justify-between items-center py-2">
+<span class="font-body-md text-body-md text-on-surface-variant">Vehículo Asignado</span>
+<span class="font-label-lg text-label-lg text-on-surface">N/A</span>
+</div>
+</div>
+<button class="mt-base w-full border border-primary text-primary py-2 rounded font-label-lg hover:bg-primary hover:text-white transition-colors">Actualizar Docs</button>
+</div>
+<!-- Driver Card 3 -->
+<div class="driver-card bg-surface-container-lowest border border-outline-variant p-lg rounded-xl transition-all cursor-pointer flex flex-col gap-lg shadow-sm">
+<div class="flex justify-between items-start">
+<div class="flex gap-md items-center">
+<img alt="Miguel Torres" class="w-14 h-14 rounded-full object-cover border-2 border-surface-variant" data-alt="A portrait of a male professional driver in his 40s, exuding experience and calm. He is wearing a dark navy corporate polo shirt. The background is slightly blurred, showing a modern office environment with glass partitions and soft natural light. The overall mood is serious, institutional, and high-trust, using a palette of deep blues and clean whites." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDDr1fSCNEu_THUeJjHnSTj3H6hjqJJUp4-qYdbrIcX8GV09bgbFM4z599ry-IcxfsM1geHRKKchke_8_0wPbluIkR4Smn6yNgbxDQT4QAjoiVcKm39WATfP5DShiOCxrqClrE7_bCMR7ty8sTEOu9TiKcTfxcJKl_TwycbPTbXOqTsu_Fg-bSn5ZpwKPxjSBhUypSQEy2wRUK_W6uP3n4yTvgMmoG5TC1pbcoc0k1PriLkdS-NSrv-4P3MtnBMESmbkBCkEitSrCw"/>
+<div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Miguel Torres</h3>
+<div class="flex items-center gap-1 text-tertiary-fixed-dim">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="font-label-lg text-label-lg text-on-surface-variant">4.8</span>
+</div>
+</div>
+</div>
+<div class="bg-surface-container-highest text-on-surface-variant px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest flex items-center gap-1">
+<span class="w-1.5 h-1.5 bg-outline-variant rounded-full"></span>
+                        Descanso
+                    </div>
+</div>
+<div class="space-y-sm">
+<div class="flex justify-between items-center py-2 border-b border-surface-variant">
+<span class="font-body-md text-body-md text-on-surface-variant">Documentación</span>
+<span class="font-label-lg text-label-lg text-[#006e1c]">Al día</span>
+</div>
+<div class="flex justify-between items-center py-2 border-b border-surface-variant">
+<span class="font-body-md text-body-md text-on-surface-variant">Último Servicio</span>
+<span class="font-label-lg text-label-lg text-on-surface">Ayer, 20:00</span>
+</div>
+<div class="flex justify-between items-center py-2">
+<span class="font-body-md text-body-md text-on-surface-variant">Vehículo Asignado</span>
+<span class="font-label-lg text-label-lg text-on-surface">Suburban 2022</span>
+</div>
+</div>
+<button class="mt-base w-full border border-primary text-primary py-2 rounded font-label-lg hover:bg-primary hover:text-white transition-colors">Ver Historial</button>
+</div>
+</div>
+<!-- Detail Sidebar Overlay (Simulated UI State) -->
+<div class="fixed right-0 top-0 h-full w-full md:w-[400px] bg-surface-container-lowest shadow-2xl z-50 transform translate-x-full transition-transform duration-300 border-l border-outline-variant hidden lg:flex flex-col" id="detailSidebar">
+<div class="p-lg border-b border-outline-variant flex justify-between items-center bg-surface">
+<h3 class="font-headline-md text-headline-md text-primary">Detalle del Chofer</h3>
+<button class="material-symbols-outlined p-2 hover:bg-surface-variant rounded-full" onclick="toggleSidebar()">close</button>
+</div>
+<div class="p-lg overflow-y-auto flex-1">
+<div class="flex flex-col items-center mb-xl">
+<img class="w-24 h-24 rounded-full border-4 border-primary-fixed mb-md" data-alt="Close up portrait of a professional driver." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD_evTdB9f2CHGsCorjAPFt3hc1ivRCK1Bv93ufp5NJiRq3R3SDuF31DL7uMU52QB_BJpTSirvBx6sftBK-RfkymRNTp0RKUHYkcvFrGxWj4HukuyRmaDCZT5VUovTsXCVqDdLkRTgDHTCe8st2b5o2KiyWIY2O6Coaw5BNCng32Rk1l-F5QgIkbgkSwHy97LbUhdRiyP4XheD1xyTYDCyW_tcDw4bMdnGxsAXih0_8bEzaI0__bGmYUInZJYLzj6-ndNW2hPLWuUM"/>
+<h4 class="font-headline-sm text-headline-sm">Carlos Hernández</h4>
+<p class="text-secondary font-bold">En ruta - Toyota Hiace</p>
+</div>
+<div class="space-y-lg">
+<div class="bg-surface-container-low p-md rounded-lg">
+<p class="font-label-md text-label-md text-outline uppercase mb-2">Información de Contacto</p>
+<p class="font-body-md text-body-md flex items-center gap-2 mb-1"><span class="material-symbols-outlined text-sm">phone</span> +52 33 1234 5678</p>
+<p class="font-body-md text-body-md flex items-center gap-2"><span class="material-symbols-outlined text-sm">mail</span> carlos.h@mtempresarial.com</p>
+</div>
+<div class="grid grid-cols-2 gap-md">
+<div class="bg-surface-container-low p-md rounded-lg">
+<p class="font-label-md text-label-md text-outline uppercase mb-1">Licencia</p>
+<p class="font-label-lg text-label-lg">Vigente</p>
+</div>
+<div class="bg-surface-container-low p-md rounded-lg">
+<p class="font-label-md text-label-md text-outline uppercase mb-1">Seguro Social</p>
+<p class="font-label-lg text-label-lg">Al día</p>
+</div>
+</div>
+<div>
+<p class="font-label-md text-label-md text-outline uppercase mb-md">Historial Reciente</p>
+<div class="border-l-2 border-primary-fixed ml-2 pl-4 space-y-lg">
+<div class="relative">
+<span class="absolute -left-[22px] top-1 w-3 h-3 bg-primary rounded-full"></span>
+<p class="font-label-lg text-label-lg">Servicio #9021 - Completado</p>
+<p class="text-[12px] text-on-surface-variant">Aeropuerto GDL -&gt; Hotel Riu</p>
+</div>
+<div class="relative">
+<span class="absolute -left-[22px] top-1 w-3 h-3 bg-secondary rounded-full"></span>
+<p class="font-label-lg text-label-lg">Servicio #9034 - En progreso</p>
+<p class="text-[12px] text-on-surface-variant">Hotel Hilton -&gt; Expo GDL</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="p-lg border-t border-outline-variant bg-surface-container-low flex gap-md">
+<button class="flex-1 bg-primary text-on-primary py-3 rounded-lg font-label-lg">Editar Perfil</button>
+<button class="flex-1 border border-error text-error py-3 rounded-lg font-label-lg">Suspender</button>
+</div>
+</div>
+</main>
+<!-- Bottom Nav Bar (Mobile Only) -->
+<nav class="md:hidden fixed bottom-0 w-full z-50 flex justify-around items-center h-20 px-2 pb-2 bg-surface border-t border-outline-variant">
+<div class="flex flex-col items-center justify-center text-on-surface-variant transition-all hover:bg-surface-container-high p-2 rounded-lg">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-label-md text-label-md">Panel</span>
+</div>
+<div class="flex flex-col items-center justify-center text-on-surface-variant transition-all hover:bg-surface-container-high p-2 rounded-lg">
+<span class="material-symbols-outlined">calendar_today</span>
+<span class="font-label-md text-label-md">Agenda</span>
+</div>
+<div class="flex flex-col items-center justify-center bg-primary-fixed text-on-primary-fixed rounded-full px-4 py-1 scale-110 shadow-md">
+<span class="material-symbols-outlined">group</span>
+<span class="font-label-md text-label-md">Choferes</span>
+</div>
+<div class="flex flex-col items-center justify-center text-on-surface-variant transition-all hover:bg-surface-container-high p-2 rounded-lg">
+<span class="material-symbols-outlined">directions_car</span>
+<span class="font-label-md text-label-md">Flota</span>
+</div>
+<div class="flex flex-col items-center justify-center text-on-surface-variant transition-all hover:bg-surface-container-high p-2 rounded-lg">
+<span class="material-symbols-outlined">more_horiz</span>
+<span class="font-label-md text-label-md">Más</span>
+</div>
+</nav>
+<script>
+        function toggleSidebar() {
+            const sidebar = document.getElementById('detailSidebar');
+            if (sidebar.classList.contains('hidden')) {
+                sidebar.classList.remove('hidden');
+                setTimeout(() => sidebar.classList.remove('translate-x-full'), 10);
+            } else {
+                sidebar.classList.add('translate-x-full');
+                setTimeout(() => sidebar.classList.add('hidden'), 300);
+            }
+        }
+
+        // Add event listeners to cards for the simulation
+        document.querySelectorAll('.driver-card').forEach(card => {
+            card.addEventListener('click', toggleSidebar);
+        });
+    </script>
+</body></html>

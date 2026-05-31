@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+
+<html class="light" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>MT Empresarial - Home Chofer</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-error-container": "#93000a",
+                        "surface-container-lowest": "#ffffff",
+                        "primary-fixed": "#d9e2ff",
+                        "on-error": "#ffffff",
+                        "on-tertiary": "#ffffff",
+                        "surface": "#f7f9fc",
+                        "surface-variant": "#e0e3e6",
+                        "primary-container": "#003d8f",
+                        "secondary-container": "#0070ea",
+                        "secondary-fixed": "#d8e2ff",
+                        "on-primary-fixed": "#001944",
+                        "secondary-fixed-dim": "#adc7ff",
+                        "surface-bright": "#f7f9fc",
+                        "on-tertiary-fixed-variant": "#5c4200",
+                        "tertiary-fixed": "#ffdea3",
+                        "on-tertiary-fixed": "#261900",
+                        "on-secondary-fixed-variant": "#004493",
+                        "on-primary-fixed-variant": "#0d4395",
+                        "inverse-on-surface": "#eff1f4",
+                        "on-secondary-fixed": "#001a41",
+                        "on-primary": "#ffffff",
+                        "on-secondary": "#ffffff",
+                        "surface-dim": "#d8dadd",
+                        "surface-container-low": "#f2f4f7",
+                        "surface-tint": "#305bae",
+                        "tertiary": "#3a2800",
+                        "surface-container": "#eceef1",
+                        "inverse-surface": "#2d3133",
+                        "outline": "#737783",
+                        "on-primary-container": "#88acff",
+                        "tertiary-fixed-dim": "#f7bd3d",
+                        "error-container": "#ffdad6",
+                        "surface-container-high": "#e6e8eb",
+                        "inverse-primary": "#afc6ff",
+                        "on-background": "#191c1e",
+                        "on-tertiary-container": "#dba523",
+                        "on-surface": "#191c1e",
+                        "on-surface-variant": "#434651",
+                        "background": "#f7f9fc",
+                        "secondary": "#0059bb",
+                        "surface-container-highest": "#e0e3e6",
+                        "primary": "#002863",
+                        "error": "#ba1a1a",
+                        "on-secondary-container": "#fefcff",
+                        "primary-fixed-dim": "#afc6ff",
+                        "outline-variant": "#c3c6d3",
+                        "tertiary-container": "#563d00"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "margin-mobile": "16px",
+                        "gutter": "16px",
+                        "md": "16px",
+                        "margin-desktop": "48px",
+                        "xs": "4px",
+                        "xl": "32px",
+                        "sm": "8px",
+                        "lg": "24px",
+                        "base": "4px"
+                    },
+                    "fontFamily": {
+                        "display-lg": ["Inter"],
+                        "label-md": ["Inter"],
+                        "headline-sm": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "label-lg": ["Inter"],
+                        "headline-lg-mobile": ["Inter"],
+                        "body-md": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "headline-md": ["Inter"]
+                    },
+                    "fontSize": {
+                        "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.04em", "fontWeight": "600"}],
+                        "headline-sm": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                        "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "label-lg": ["14px", {"lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "600"}],
+                        "headline-lg-mobile": ["28px", {"lineHeight": "36px", "fontWeight": "600"}],
+                        "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .status-badge {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .card-interaction:active {
+            transform: scale(0.98);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface text-on-surface min-h-screen font-body-md flex flex-col">
+<!-- TopAppBar -->
+<header class="bg-surface dark:bg-on-background border-b border-outline-variant dark:border-outline flex justify-between items-center w-full px-margin-mobile md:px-margin-desktop h-16 sticky top-0 z-50">
+<div class="flex items-center gap-4">
+<button class="text-primary dark:text-primary-fixed hover:bg-surface-container dark:hover:bg-surface-variant transition-colors p-2 rounded-full">
+<span class="material-symbols-outlined" data-icon="menu">menu</span>
+</button>
+<h1 class="text-headline-md font-headline-md font-bold text-primary dark:text-primary-fixed">¡Hola, Carlos!</h1>
+</div>
+<div class="flex items-center gap-4">
+<!-- Availability Toggle -->
+<div class="hidden sm:flex items-center bg-surface-container-low px-3 py-1.5 rounded-full border border-outline-variant">
+<div class="w-2.5 h-2.5 bg-green-500 rounded-full mr-2"></div>
+<span class="font-label-lg text-label-lg text-on-surface">Disponible</span>
+<span class="material-symbols-outlined ml-2 text-primary text-sm" data-icon="expand_more">expand_more</span>
+</div>
+<button class="text-primary dark:text-primary-fixed hover:bg-surface-container dark:hover:bg-surface-variant transition-colors p-2 rounded-full relative">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+<span class="absolute top-1 right-1 w-4 h-4 bg-error text-[10px] text-white flex items-center justify-center rounded-full font-bold">1</span>
+</button>
+<div class="w-10 h-10 rounded-full overflow-hidden border-2 border-primary-fixed">
+<img alt="Carlos Profile" data-alt="A professional headshot of a corporate driver in a clean white shirt, looking friendly and reliable. The background is a soft, blurred urban setting with cool blue tones and morning sunlight. The portrait follows high-end corporate photography standards with soft lighting and professional composition." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBMDiDOKhi4yOBf9J1KoUOriXgrP3h2Yod1ZnIPNn5-ZZy2CWWGWjH_U9ysTe4dI_ekg6hTFFTqMqqQWl6PX6RwBiUllkoRqBj_gRrdY2goRqngK9flIUMTiPiG-iDvO8F3K52zZMsizRMzK4qTLLaEnOggVnx-9Rwk2g35ir2WRs6n2xskJGTWVCTauMRQqWUDEOlOr8vdDRH7lRQvHh50WDopqTKRki5yZdpCXYMTxnXvmJ06LwiYIMXoUUuq3M4QBT4MXdMLDCQ"/>
+</div>
+</div>
+</header>
+<main class="flex-grow px-margin-mobile md:px-margin-desktop py-lg max-w-[1440px] mx-auto w-full">
+<!-- Welcome Section & Status Mobile -->
+<div class="flex flex-col gap-base mb-xl sm:hidden">
+<div class="flex items-center justify-between">
+<span class="font-headline-sm text-headline-sm text-on-surface-variant">Resumen de hoy</span>
+<div class="flex items-center bg-green-100 text-green-800 px-3 py-1 rounded-full text-xs font-bold border border-green-200">
+<span class="w-2 h-2 bg-green-500 rounded-full mr-1.5"></span>
+                    DISPONIBLE
+                </div>
+</div>
+<p class="text-on-surface-variant font-body-md">Tienes 3 servicios programados para hoy.</p>
+</div>
+<!-- Section Title -->
+<div class="flex items-center justify-between mb-lg">
+<div>
+<h2 class="font-headline-md text-headline-md text-primary">Servicios de hoy</h2>
+<span class="font-label-lg text-label-lg text-outline">24 de Mayo, 2024</span>
+</div>
+<button class="flex items-center gap-1 text-secondary font-label-lg">
+<span class="material-symbols-outlined text-md" data-icon="filter_list">filter_list</span>
+                Filtros
+            </button>
+</div>
+<!-- Services Grid (Asymmetric layout) -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-lg">
+<!-- Service Card 1 - Active/Asignado -->
+<div class="md:col-span-8 group">
+<div class="bg-surface-container-lowest border border-primary/20 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow card-interaction cursor-pointer">
+<div class="bg-primary p-4 flex justify-between items-center text-on-primary">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-3xl" data-icon="event_available">event_available</span>
+<div>
+<p class="font-label-md text-label-md opacity-80">Próximo servicio</p>
+<h3 class="font-headline-sm text-headline-sm">08:00 AM</h3>
+</div>
+</div>
+<span class="bg-white/20 px-4 py-1.5 rounded-full font-label-lg text-label-lg backdrop-blur-sm border border-white/30">Asignado</span>
+</div>
+<div class="p-lg grid grid-cols-1 sm:grid-cols-2 gap-lg">
+<div class="space-y-4">
+<div class="flex gap-4">
+<div class="flex flex-col items-center py-1">
+<div class="w-2.5 h-2.5 rounded-full bg-secondary"></div>
+<div class="w-0.5 flex-grow border-l-2 border-dotted border-outline-variant my-1"></div>
+<div class="w-2.5 h-2.5 rounded-full bg-error"></div>
+</div>
+<div class="space-y-4">
+<div>
+<p class="text-label-md font-label-md text-outline">ORIGEN</p>
+<p class="font-body-lg text-body-lg text-on-surface">Aeropuerto GDL</p>
+</div>
+<div>
+<p class="text-label-md font-label-md text-outline">DESTINO</p>
+<p class="font-body-lg text-body-lg text-on-surface">Hotel Riu Plaza</p>
+</div>
+</div>
+</div>
+</div>
+<div class="flex flex-col justify-between border-t sm:border-t-0 sm:border-l border-outline-variant pt-lg sm:pt-0 sm:pl-lg">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-full bg-surface-container overflow-hidden">
+<img alt="Pasajero" data-alt="A professional corporate passenger portrait, a middle-aged woman with a confident smile, wearing a business suit. The lighting is soft and flattering, with a modern office interior blur in the background, maintaining the premium corporate transit theme." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA0rEkArYDEShoxiIVHOPQc6TNpo1vfHJMnctOwO3BI1o37PUsJRxHZ-wVz8CiYlcAuteoO43Iifrz2VSxmD8meC3NUMtIdqqEfR1Log8qQitAyCzH4Yjks18ph14IkVE7YWDMwNZyzduZmYzYGrYP7lWq6N_koiud-kC_eBowAhNtSIah5GvXxYwIiB0mj6iosdmF6yiO6Jri4gqcQaGvzIneYqXNHK7HaaiJ7eMFrR1pnmRgfvRpArxMc38vQO5ZWHFt9cyJbr_0"/>
+</div>
+<div>
+<p class="text-label-md font-label-md text-outline">PASAJERO</p>
+<p class="font-label-lg text-label-lg text-on-surface">María González</p>
+</div>
+</div>
+<div class="mt-4 sm:mt-0 flex gap-base">
+<div class="flex-grow bg-surface-container-low p-3 rounded-lg flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary" data-icon="airport_shuttle">airport_shuttle</span>
+<div>
+<p class="text-[10px] font-bold text-outline">VEHÍCULO</p>
+<p class="text-xs text-on-surface">Toyota Hiace 2023</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Dashboard Stats Sidebar -->
+<div class="md:col-span-4 space-y-lg">
+<div class="bg-surface-container-high p-lg rounded-xl border border-outline-variant">
+<h3 class="font-label-lg text-label-lg text-on-surface-variant mb-4 uppercase tracking-wider">Tu rendimiento</h3>
+<div class="space-y-4">
+<div class="flex justify-between items-center">
+<span class="text-body-md">Calificación</span>
+<span class="flex items-center font-bold text-primary">
+<span class="material-symbols-outlined text-tertiary-fixed-dim mr-1" data-icon="star" data-weight="fill" style="font-variation-settings: 'FILL' 1;">star</span>
+                                4.9
+                            </span>
+</div>
+<div class="flex justify-between items-center">
+<span class="text-body-md">Viajes hoy</span>
+<span class="font-bold text-primary">1 / 3</span>
+</div>
+<div class="w-full bg-surface-container rounded-full h-1.5 mt-2">
+<div class="bg-secondary h-1.5 rounded-full" style="width: 33%"></div>
+</div>
+</div>
+</div>
+<div class="bg-primary-container p-lg rounded-xl text-white relative overflow-hidden group">
+<div class="absolute -right-4 -bottom-4 opacity-10 group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-[100px]" data-icon="map">map</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm mb-2 relative z-10">Mapa de Ruta</h3>
+<p class="text-body-md opacity-80 mb-4 relative z-10">Visualiza el tráfico y tu ruta asignada en tiempo real.</p>
+<button class="bg-white text-primary font-label-lg px-4 py-2 rounded-lg relative z-10 hover:bg-opacity-90 transition-colors">Ver Mapa</button>
+</div>
+</div>
+<!-- List of other services -->
+<div class="md:col-span-12 space-y-4">
+<h3 class="font-label-lg text-label-lg text-outline px-1">PRÓXIMOS</h3>
+<!-- Service Card 2 -->
+<div class="bg-white border border-outline-variant rounded-xl p-md flex flex-wrap sm:flex-nowrap items-center justify-between gap-4 card-interaction cursor-pointer hover:border-secondary transition-colors">
+<div class="flex items-center gap-4 min-w-[120px]">
+<div class="bg-surface-container-high w-14 h-14 rounded-lg flex flex-col items-center justify-center">
+<span class="font-bold text-primary">11:30</span>
+<span class="text-[10px] text-outline font-bold">AM</span>
+</div>
+<div>
+<p class="font-label-lg text-label-lg text-on-surface">Hotel Hilton</p>
+<div class="flex items-center gap-1 text-outline">
+<span class="material-symbols-outlined text-sm" data-icon="arrow_forward">arrow_forward</span>
+<span class="text-xs">Centro Expo GDL</span>
+</div>
+</div>
+</div>
+<div class="hidden md:flex items-center gap-4 px-lg border-x border-outline-variant">
+<span class="material-symbols-outlined text-outline" data-icon="person">person</span>
+<div>
+<p class="text-[10px] text-outline font-bold">PASAJERO</p>
+<p class="text-xs font-bold">José Martínez</p>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<div class="flex flex-col items-end">
+<span class="bg-tertiary-fixed text-on-tertiary-fixed px-3 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-wide">Pendiente</span>
+</div>
+<span class="material-symbols-outlined text-outline" data-icon="chevron_right">chevron_right</span>
+</div>
+</div>
+<!-- Service Card 3 -->
+<div class="bg-white border border-outline-variant rounded-xl p-md flex flex-wrap sm:flex-nowrap items-center justify-between gap-4 card-interaction cursor-pointer hover:border-secondary transition-colors">
+<div class="flex items-center gap-4 min-w-[120px]">
+<div class="bg-surface-container-high w-14 h-14 rounded-lg flex flex-col items-center justify-center">
+<span class="font-bold text-primary">04:00</span>
+<span class="text-[10px] text-outline font-bold">PM</span>
+</div>
+<div>
+<p class="font-label-lg text-label-lg text-on-surface">Restaurante La Tequila</p>
+<div class="flex items-center gap-1 text-outline">
+<span class="material-symbols-outlined text-sm" data-icon="arrow_forward">arrow_forward</span>
+<span class="text-xs">Hotel Camino Real</span>
+</div>
+</div>
+</div>
+<div class="hidden md:flex items-center gap-4 px-lg border-x border-outline-variant">
+<span class="material-symbols-outlined text-outline" data-icon="person">person</span>
+<div>
+<p class="text-[10px] text-outline font-bold">PASAJERO</p>
+<p class="text-xs font-bold">Ana López</p>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<div class="flex flex-col items-end">
+<span class="bg-tertiary-fixed text-on-tertiary-fixed px-3 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-wide">Pendiente</span>
+</div>
+<span class="material-symbols-outlined text-outline" data-icon="chevron_right">chevron_right</span>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 w-full z-50 flex justify-around items-center h-20 px-2 pb-2 bg-surface dark:bg-on-background border-t border-outline-variant dark:border-outline">
+<a class="flex flex-col items-center justify-center bg-primary-fixed text-on-primary-fixed rounded-full px-4 py-1 hover:bg-surface-container-high transition-all scale-95 duration-100" href="#">
+<span class="material-symbols-outlined" data-icon="home" data-weight="fill" style="font-variation-settings: 'FILL' 1;">home</span>
+<span class="font-label-md text-label-md">Inicio</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline-variant hover:bg-surface-container-high transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="settings_suggest">settings_suggest</span>
+<span class="font-label-md text-label-md">Servicios</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline-variant hover:bg-surface-container-high transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="report_problem">report_problem</span>
+<span class="font-label-md text-label-md">Incidencias</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline-variant hover:bg-surface-container-high transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="account_circle">account_circle</span>
+<span class="font-label-md text-label-md">Perfil</span>
+</a>
+</nav>
+<!-- Overlay FAB for Emergency - Driver Focus -->
+<div class="fixed bottom-24 right-4 z-40 sm:bottom-6 sm:right-margin-desktop">
+<button class="w-14 h-14 bg-error text-white rounded-full shadow-lg flex items-center justify-center active:scale-90 transition-transform hover:shadow-xl group">
+<span class="material-symbols-outlined text-3xl" data-icon="warning">warning</span>
+<span class="absolute right-full mr-3 bg-error text-white px-3 py-1 rounded-lg text-xs font-bold opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">SOS / EMERGENCIA</span>
+</button>
+</div>
+<script>
+        // Micro-interactions
+        document.querySelectorAll('.card-interaction').forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                card.style.transform = 'translateY(-2px)';
+            });
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = 'translateY(0)';
+            });
+        });
+
+        // Pulsing active service effect
+        const activeService = document.querySelector('.bg-primary');
+        if (activeService) {
+            setInterval(() => {
+                activeService.classList.toggle('brightness-110');
+            }, 2000);
+        }
+    </script>
+</body></html>
