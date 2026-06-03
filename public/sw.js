@@ -1,6 +1,6 @@
 // MT Empresarial — PWA service worker (Next.js app).
 // Network-first for navigations (always fresh app), cache-first for static assets.
-const VERSION = "mt-v3";
+const VERSION = "mt-v4";
 const STATIC = `static-${VERSION}`;
 const RUNTIME = `runtime-${VERSION}`;
 
