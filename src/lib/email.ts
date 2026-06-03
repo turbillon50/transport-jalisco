@@ -1,7 +1,7 @@
 import { Resend } from "resend";
 
 const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
-const FROM = process.env.RESEND_FROM_EMAIL ?? "MT Empresarial <onboarding@resend.dev>";
+const FROM = process.env.RESEND_FROM_EMAIL ?? "MT Empresarial <hola@mtempresarial.life>";
 const OPS_EMAIL = process.env.OPS_EMAIL ?? "operaciones@mtempresarial.life";
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://mtempresarial.life";
 
