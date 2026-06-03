@@ -45,6 +45,7 @@ export const users = pgTable("users", {
   avatarUrl: text("avatar_url"),
   rating: numeric("rating", { precision: 2, scale: 1 }),
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+  deletedAt: timestamp("deleted_at", { withTimezone: true }),
 });
 
 export const vehicles = pgTable("vehicles", {
@@ -117,6 +118,15 @@ export const auditLog = pgTable("audit_log", {
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
 });
 
+export const pushSubscriptions = pgTable("push_subscriptions", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  userId: uuid("user_id").references(() => users.id, { onDelete: "cascade" }),
+  endpoint: text("endpoint").notNull().unique(),
+  p256dh: text("p256dh").notNull(),
+  auth: text("auth").notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+});
+
 export type User = typeof users.$inferSelect;
 export type Vehicle = typeof vehicles.$inferSelect;
 export type Service = typeof services.$inferSelect;
@@ -124,3 +134,4 @@ export type ServiceEvent = typeof serviceEvents.$inferSelect;
 export type Notification = typeof notifications.$inferSelect;
 export type FeatureFlag = typeof featureFlags.$inferSelect;
 export type AuditEntry = typeof auditLog.$inferSelect;
+export type PushSubscriptionRow = typeof pushSubscriptions.$inferSelect;

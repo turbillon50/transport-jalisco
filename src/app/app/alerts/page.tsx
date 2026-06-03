@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { getNotifications } from "@/lib/queries";
 import { NotificationsList } from "@/components/notifications-list";
+import { PushToggle } from "@/components/push-toggle";
 import { Icon } from "@/components/icon";
 import { Button } from "@/components/ui";
 import { PageHeader } from "@/components/shell/page-header";
@@ -14,7 +15,7 @@ export default async function AlertsPage() {
 
   return (
     <PageTransition>
-      <PageHeader title="Notificaciones" />
+      <PageHeader title="Notificaciones" right={<PushToggle />} />
       <main className="max-w-[1440px] mx-auto px-margin-mobile md:px-margin-desktop py-lg grid grid-cols-1 lg:grid-cols-12 gap-lg">
         <div className="lg:col-span-8">
           <NotificationsList initial={notifications} />
