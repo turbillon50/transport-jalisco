@@ -4,7 +4,7 @@ import Image from "next/image";
 import { useState } from "react";
 import { drivers, driverStats, type MockDriver } from "@/lib/mock";
 import { Icon } from "@/components/icon";
-import { Button, Input, Drawer } from "@/components/ui";
+import { Button, Input, Modal } from "@/components/ui";
 import { PageTransition, FadeInOnScroll, StaggerContainer, StaggerItem, HoverCard, NumberCounter } from "@/components/motion";
 import { cn } from "@/lib/utils";
 
@@ -76,9 +76,9 @@ export default function DriversPage() {
         ))}
       </StaggerContainer>
 
-      <Drawer open={!!selected} onClose={() => setSelected(null)} title="Detalle del Chofer">
+      <Modal open={!!selected} onClose={() => setSelected(null)} title="Detalle del Chofer" size="lg">
         {selected && (
-          <div className="flex flex-col h-full">
+          <div className="flex flex-col">
             <div className="flex flex-col items-center mb-xl">
               <Image src={selected.avatar} alt={selected.name} width={96} height={96} className="w-24 h-24 rounded-full border-4 border-primary-fixed mb-md object-cover" />
               <h4 className="text-headline-sm font-semibold">{selected.name}</h4>
@@ -101,7 +101,7 @@ export default function DriversPage() {
             </div>
           </div>
         )}
-      </Drawer>
+      </Modal>
     </PageTransition>
   );
 }

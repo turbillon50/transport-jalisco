@@ -12,7 +12,7 @@ export default function Error({ error, reset }: { error: Error & { digest?: stri
   return (
     <div className="min-h-[100dvh] flex items-center justify-center p-6 bg-background">
       <div className="max-w-md w-full space-y-4 text-center">
-        <Alert tone="error" title="Algo salió mal">
+        <Alert type="error" title="Algo salió mal">
           Ocurrió un error inesperado. Puedes reintentar o volver al inicio.
         </Alert>
         <div className="flex gap-3 justify-center">

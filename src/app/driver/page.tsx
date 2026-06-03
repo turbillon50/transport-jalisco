@@ -109,7 +109,7 @@ export default async function DriverDashboard() {
                     </div>
                   </div>
                   <div className="hidden md:flex items-center gap-4 px-lg border-x border-outline-variant"><Icon name="person" className="text-outline" /><div><p className="text-[10px] text-outline font-bold">PASAJERO</p><p className="text-xs font-bold">{s.passenger}</p></div></div>
-                  <div className="flex items-center gap-6"><Badge tone="warning">Pendiente</Badge><Icon name="chevron_right" className="text-outline" /></div>
+                  <div className="flex items-center gap-6"><Badge variant="warning">Pendiente</Badge><Icon name="chevron_right" className="text-outline" /></div>
                 </HoverCard>
               </StaggerItem>
             ))}

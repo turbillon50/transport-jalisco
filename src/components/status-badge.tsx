@@ -1,19 +1,15 @@
-import { Badge } from "@/components/ui";
+import { Badge, type BadgeVariant } from "@/components/ui";
 import { STATUS_LABEL, type ServiceStatus } from "@/lib/mock";
 
-const tone: Record<ServiceStatus, "primary" | "secondary" | "success" | "warning" | "error" | "neutral"> = {
+const variant: Record<ServiceStatus, BadgeVariant> = {
   pendiente: "warning",
-  asignado: "secondary",
-  confirmado: "secondary",
-  en_curso: "primary",
+  asignado: "info",
+  confirmado: "info",
+  en_curso: "info",
   completado: "success",
-  cancelado: "error",
+  cancelado: "danger",
 };
 
 export function StatusBadge({ status }: { status: ServiceStatus }) {
-  return (
-    <Badge tone={tone[status]} dot>
-      {STATUS_LABEL[status]}
-    </Badge>
-  );
+  return <Badge variant={variant[status]}>{STATUS_LABEL[status]}</Badge>;
 }

@@ -1,12 +1,16 @@
 import { cn } from "@/lib/utils";
 
-export function Spinner({ className, size = 24 }: { className?: string; size?: number }) {
+export function Spinner({ size = "md", className = "" }: { size?: "sm" | "md" | "lg"; className?: string }) {
+  const s = { sm: "w-4 h-4", md: "w-6 h-6", lg: "w-8 h-8" };
   return (
-    <span
+    <div
       role="status"
       aria-label="Cargando"
-      className={cn("inline-block animate-spin rounded-full border-2 border-primary border-t-transparent", className)}
-      style={{ width: size, height: size }}
+      className={cn(
+        "animate-spin rounded-full border-2 border-[var(--color-border)] border-t-[var(--color-primary)]",
+        s[size],
+        className,
+      )}
     />
   );
 }
@@ -14,8 +18,8 @@ export function Spinner({ className, size = 24 }: { className?: string; size?: n
 export function FullPageSpinner({ label = "Cargando…" }: { label?: string }) {
   return (
     <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
-      <Spinner size={40} />
-      <p className="font-body-md text-on-surface-variant">{label}</p>
+      <Spinner size="lg" />
+      <p className="text-sm text-[var(--color-text-muted)]">{label}</p>
     </div>
   );
 }

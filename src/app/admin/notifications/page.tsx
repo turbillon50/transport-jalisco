@@ -35,7 +35,7 @@ export default function NotificationsAdmin() {
         <FadeInOnScroll>
           <Card className="p-lg">
             <form onSubmit={onSubmit} className="space-y-lg">
-              {result && <Alert tone={result.ok ? "success" : "error"}>{result.message}</Alert>}
+              {result && <Alert type={result.ok ? "success" : "error"} message={result.message} />}
 
               <div>
                 <span className="font-label-lg text-label-lg text-on-surface-variant block mb-2">Segmento</span>

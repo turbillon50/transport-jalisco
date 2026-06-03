@@ -4,72 +4,77 @@ import { forwardRef, useId } from "react";
 import { cn } from "@/lib/utils";
 import { Icon } from "@/components/icon";
 
-export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
+type InputProps = {
   label?: string;
-  icon?: string;
   error?: string;
-}
+  hint?: string;
+  /** Material Symbol name shown inside the field. */
+  icon?: string;
+} & React.InputHTMLAttributes<HTMLInputElement>;
 
 export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
-  { label, icon, error, className, id, ...props },
+  { label, error, hint, icon, className = "", id, ...props },
   ref,
 ) {
   const autoId = useId();
   const inputId = id ?? autoId;
   return (
-    <div className="space-y-base">
+    <div className="flex flex-col gap-1.5">
       {label && (
-        <label htmlFor={inputId} className="font-label-lg text-label-lg text-on-surface-variant block">
+        <label htmlFor={inputId} className="text-sm font-medium text-[var(--color-text)]">
           {label}
         </label>
       )}
-      <div
-        className={cn(
-          "relative flex items-center bg-surface-container-lowest border rounded-lg p-3 transition-all group focus-within:border-secondary focus-within:ring-1 focus-within:ring-secondary",
-          error ? "border-error" : "border-outline-variant",
-        )}
-      >
+      <div className="relative">
         {icon && (
-          <Icon name={icon} className="text-outline group-focus-within:text-secondary pr-2" />
+          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--color-text-muted)]">
+            <Icon name={icon} className="text-[20px]" />
+          </span>
         )}
         <input
           ref={ref}
           id={inputId}
           className={cn(
-            "w-full bg-transparent border-none p-0 outline-none font-body-md text-on-surface placeholder:text-outline-variant",
+            "w-full h-10 rounded-lg border bg-[var(--color-surface)] text-[var(--color-text)] px-3 text-sm transition-colors placeholder:text-[var(--color-text-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] focus:border-transparent",
+            error ? "border-[var(--color-danger)]" : "border-[var(--color-border)]",
+            icon && "pl-10",
             className,
           )}
           {...props}
         />
       </div>
-      {error && <p className="text-label-md text-error">{error}</p>}
+      {error && <p className="text-xs text-[var(--color-danger)]">{error}</p>}
+      {hint && !error && <p className="text-xs text-[var(--color-text-muted)]">{hint}</p>}
     </div>
   );
 });
 
-export const Textarea = forwardRef<HTMLTextAreaElement, React.TextareaHTMLAttributes<HTMLTextAreaElement> & { label?: string }>(
-  function Textarea({ label, className, id, ...props }, ref) {
-    const autoId = useId();
-    const ta = id ?? autoId;
-    return (
-      <div className="space-y-base">
-        {label && (
-          <label htmlFor={ta} className="font-label-lg text-label-lg text-on-surface-variant block">
-            {label}
-          </label>
+type TextareaProps = {
+  label?: string;
+} & React.TextareaHTMLAttributes<HTMLTextAreaElement>;
+
+export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(function Textarea(
+  { label, className = "", id, ...props },
+  ref,
+) {
+  const autoId = useId();
+  const taId = id ?? autoId;
+  return (
+    <div className="flex flex-col gap-1.5">
+      {label && (
+        <label htmlFor={taId} className="text-sm font-medium text-[var(--color-text)]">
+          {label}
+        </label>
+      )}
+      <textarea
+        ref={ref}
+        id={taId}
+        className={cn(
+          "w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] text-[var(--color-text)] px-3 py-2.5 text-sm transition-colors placeholder:text-[var(--color-text-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] focus:border-transparent resize-none",
+          className,
         )}
-        <div className="bg-surface-container-lowest border border-outline-variant rounded-lg p-3 focus-within:border-secondary focus-within:ring-1 focus-within:ring-secondary transition-all">
-          <textarea
-            ref={ref}
-            id={ta}
-            className={cn(
-              "w-full bg-transparent border-none p-0 outline-none font-body-md text-on-surface placeholder:text-outline-variant resize-none",
-              className,
-            )}
-            {...props}
-          />
-        </div>
-      </div>
-    );
-  },
-);
+        {...props}
+      />
+    </div>
+  );
+});

@@ -50,7 +50,7 @@ export default function AssignmentsPage() {
       <PageHeader title="Asignaciones" right={<span className="text-label-lg text-on-surface-variant">24 Mayo, 2024</span>} />
       {toast && (
         <div className="px-margin-mobile md:px-margin-desktop pt-3">
-          <Alert tone="success">{toast}</Alert>
+          <Alert type="success" message={toast} />
         </div>
       )}
       <main className="flex-1 overflow-hidden flex flex-col md:flex-row gap-gutter p-margin-mobile md:p-margin-desktop">
@@ -58,7 +58,7 @@ export default function AssignmentsPage() {
         <section className="flex-1 flex flex-col bg-surface-container-lowest rounded-xl border border-outline-variant overflow-hidden">
           <div className="p-lg border-b border-outline-variant bg-surface-container-low flex justify-between items-center">
             <h2 className="text-headline-sm font-semibold text-primary">Choferes disponibles</h2>
-            <Badge tone="primary">{available.length} Activos</Badge>
+            <Badge variant="info">{available.length} Activos</Badge>
           </div>
           <StaggerContainer className="flex-1 overflow-y-auto p-md space-y-sm">
             {drivers.map((d) => {
@@ -109,7 +109,7 @@ export default function AssignmentsPage() {
               >
                 <div className="flex justify-between items-start mb-4">
                   <div className="flex items-center gap-2"><Icon name="schedule" className="text-primary" /><span className="text-headline-sm font-semibold text-primary">{s.time}</span></div>
-                  <Badge tone={s.tag.tone === "error" ? "error" : "secondary"}>{s.tag.label}</Badge>
+                  <Badge variant={s.tag.tone === "error" ? "danger" : "info"}>{s.tag.label}</Badge>
                 </div>
                 <div className="space-y-sm">
                   <div className="flex items-start gap-3"><Icon name={s.icon} className="text-outline text-[18px] mt-1" /><div><p className="text-label-md text-on-surface-variant uppercase">Origen</p><p className="text-body-lg text-on-surface">{s.origin}</p></div></div>

@@ -4,14 +4,14 @@ import { useState, useTransition } from "react";
 import { adminUsers } from "@/lib/mock";
 import { updateUserRole } from "@/app/actions";
 import { Icon } from "@/components/icon";
-import { Input, Badge, Alert } from "@/components/ui";
+import { Input, Badge, Alert, type BadgeVariant } from "@/components/ui";
 import { PageHeader } from "@/components/shell/page-header";
 import { PageTransition, StaggerContainer, StaggerItem } from "@/components/motion";
 import type { Role } from "@/lib/roles";
 
 const ROLES: Role[] = ["user", "driver", "ops", "admin"];
-const roleTone: Record<string, "neutral" | "secondary" | "primary" | "warning"> = {
-  user: "neutral", driver: "secondary", ops: "primary", admin: "warning",
+const roleTone: Record<string, BadgeVariant> = {
+  user: "default", driver: "info", ops: "success", admin: "warning",
 };
 
 export default function UsersPage() {
@@ -34,7 +34,7 @@ export default function UsersPage() {
     <PageTransition>
       <PageHeader title="Usuarios" />
       <main className="px-margin-mobile md:px-margin-desktop py-lg max-w-[1440px] mx-auto space-y-lg">
-        {toast && <Alert tone="success">{toast}</Alert>}
+        {toast && <Alert type="success" message={toast} />}
         <div className="max-w-sm"><Input icon="search" placeholder="Buscar usuario…" value={query} onChange={(e) => setQuery(e.target.value)} /></div>
 
         <div className="bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden">
@@ -51,7 +51,7 @@ export default function UsersPage() {
                   </div>
                   <span className="text-body-md text-on-surface-variant truncate">{u.email}</span>
                   <div className="flex items-center gap-2">
-                    <Badge tone={roleTone[u.role]}>{u.role}</Badge>
+                    <Badge variant={roleTone[u.role]}>{u.role}</Badge>
                     <div className="relative">
                       <select
                         aria-label={`Rol de ${u.name}`}

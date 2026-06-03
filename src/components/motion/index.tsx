@@ -2,6 +2,7 @@
 
 import {
   motion,
+  AnimatePresence,
   useInView,
   useMotionValue,
   useSpring,
@@ -9,34 +10,20 @@ import {
   type HTMLMotionProps,
   type Variants,
 } from "framer-motion";
+import { usePathname } from "next/navigation";
 import { useEffect, useRef, type ReactNode } from "react";
 
-/* ----------------------------- PageTransition ----------------------------- */
-export function PageTransition({ children, className }: { children: ReactNode; className?: string }) {
-  return (
-    <motion.div
-      className={className}
-      initial={{ opacity: 0, y: 12 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -8 }}
-      transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
-    >
-      {children}
-    </motion.div>
-  );
-}
+const EASE = [0.25, 0.1, 0.25, 1] as const;
 
-/* ---------------------------- FadeInOnScroll ------------------------------ */
+/* ------------------------------ FadeInOnScroll ---------------------------- */
 export function FadeInOnScroll({
   children,
-  className,
   delay = 0,
-  y = 24,
+  className = "",
 }: {
   children: ReactNode;
-  className?: string;
   delay?: number;
-  y?: number;
+  className?: string;
 }) {
   const ref = useRef(null);
   const inView = useInView(ref, { once: true, margin: "-80px" });
@@ -44,74 +31,74 @@ export function FadeInOnScroll({
     <motion.div
       ref={ref}
       className={className}
-      initial={{ opacity: 0, y }}
+      initial={{ opacity: 0, y: 24 }}
       animate={inView ? { opacity: 1, y: 0 } : {}}
-      transition={{ duration: 0.55, delay, ease: [0.22, 1, 0.36, 1] }}
+      transition={{ duration: 0.5, delay, ease: EASE }}
     >
       {children}
     </motion.div>
   );
 }
 
-/* --------------------------- StaggerContainer ----------------------------- */
-const containerVariants: Variants = {
+/* ----------------------------- StaggerContainer --------------------------- */
+const container: Variants = {
   hidden: {},
-  show: { transition: { staggerChildren: 0.07, delayChildren: 0.05 } },
+  show: { transition: { staggerChildren: 0.1, delayChildren: 0.1 } },
 };
-const itemVariants: Variants = {
-  hidden: { opacity: 0, y: 18 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.45, ease: [0.22, 1, 0.36, 1] } },
+const item: Variants = {
+  hidden: { opacity: 0, y: 20 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.4, ease: "easeOut" } },
 };
 
-export function StaggerContainer({
-  children,
-  className,
-  once = true,
-}: {
-  children: ReactNode;
-  className?: string;
-  once?: boolean;
-}) {
+export function StaggerContainer({ children, className = "" }: { children: ReactNode; className?: string }) {
   const ref = useRef(null);
-  const inView = useInView(ref, { once, margin: "-60px" });
+  const inView = useInView(ref, { once: true, margin: "-60px" });
   return (
-    <motion.div
-      ref={ref}
-      className={className}
-      variants={containerVariants}
-      initial="hidden"
-      animate={inView ? "show" : "hidden"}
-    >
+    <motion.div ref={ref} variants={container} initial="hidden" animate={inView ? "show" : "hidden"} className={className}>
       {children}
     </motion.div>
   );
 }
 
-export function StaggerItem({
-  children,
-  className,
-  ...props
-}: { children: ReactNode } & HTMLMotionProps<"div">) {
+export function StaggerItem({ children, className = "", ...props }: { children: ReactNode } & HTMLMotionProps<"div">) {
   return (
-    <motion.div className={className} variants={itemVariants} {...props}>
+    <motion.div variants={item} className={className} {...props}>
       {children}
     </motion.div>
   );
 }
 
-/* ------------------------------- HoverCard -------------------------------- */
+/* ------------------------------ PageTransition ---------------------------- */
+export function PageTransition({ children, className = "" }: { children: ReactNode; className?: string }) {
+  const pathname = usePathname();
+  return (
+    <AnimatePresence mode="wait">
+      <motion.div
+        key={pathname}
+        className={className}
+        initial={{ opacity: 0, x: 8 }}
+        animate={{ opacity: 1, x: 0 }}
+        exit={{ opacity: 0, x: -8 }}
+        transition={{ duration: 0.25, ease: "easeInOut" }}
+      >
+        {children}
+      </motion.div>
+    </AnimatePresence>
+  );
+}
+
+/* -------------------------------- HoverCard ------------------------------- */
 export function HoverCard({
   children,
-  className,
+  className = "",
   lift = -4,
   ...props
 }: { children: ReactNode; lift?: number } & HTMLMotionProps<"div">) {
   return (
     <motion.div
       className={className}
-      whileHover={{ y: lift, boxShadow: "0 18px 40px -12px rgba(0,40,99,0.22)" }}
+      whileHover={{ y: lift, scale: 1.01, transition: { duration: 0.2 } }}
       whileTap={{ scale: 0.98 }}
-      transition={{ type: "spring", stiffness: 320, damping: 26 }}
       {...props}
     >
       {children}
@@ -122,23 +109,20 @@ export function HoverCard({
 /* --------------------------------- SlideIn -------------------------------- */
 export function SlideIn({
   children,
-  className,
-  from = "right",
-  open = true,
+  from = "bottom",
+  className = "",
 }: {
   children: ReactNode;
+  from?: "bottom" | "left" | "right" | "top";
   className?: string;
-  from?: "right" | "left" | "bottom";
-  open?: boolean;
 }) {
-  const offset =
-    from === "right" ? { x: "100%" } : from === "left" ? { x: "-100%" } : { y: "100%" };
+  const dir = { bottom: { y: 40 }, top: { y: -40 }, left: { x: -40 }, right: { x: 40 } };
   return (
     <motion.div
       className={className}
-      initial={offset}
-      animate={open ? { x: 0, y: 0 } : offset}
-      transition={{ type: "spring", stiffness: 300, damping: 32 }}
+      initial={{ opacity: 0, ...dir[from] }}
+      animate={{ opacity: 1, x: 0, y: 0 }}
+      transition={{ duration: 0.45, ease: EASE }}
     >
       {children}
     </motion.div>
@@ -148,24 +132,28 @@ export function SlideIn({
 /* ------------------------------ NumberCounter ----------------------------- */
 export function NumberCounter({
   value,
-  className,
-  suffix = "",
   prefix = "",
+  suffix = "",
+  className = "",
 }: {
   value: number;
-  className?: string;
-  suffix?: string;
   prefix?: string;
+  suffix?: string;
+  className?: string;
 }) {
   const ref = useRef<HTMLSpanElement>(null);
   const inView = useInView(ref, { once: true });
   const mv = useMotionValue(0);
-  const spring = useSpring(mv, { stiffness: 90, damping: 22 });
-  const rounded = useTransform(spring, (v) => `${prefix}${Math.round(v).toLocaleString("es-MX")}${suffix}`);
+  const spring = useSpring(mv, { stiffness: 60, damping: 20 });
+  const text = useTransform(spring, (v) => `${prefix}${Math.round(v).toLocaleString("es-MX")}${suffix}`);
 
   useEffect(() => {
     if (inView) mv.set(value);
   }, [inView, value, mv]);
 
-  return <motion.span ref={ref} className={className}>{rounded}</motion.span>;
+  return (
+    <span ref={ref} className={className}>
+      <motion.span>{text}</motion.span>
+    </span>
+  );
 }

@@ -2,28 +2,34 @@
 
 import { forwardRef } from "react";
 import { motion, type HTMLMotionProps } from "framer-motion";
+import { Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Icon } from "@/components/icon";
 
 type Variant = "primary" | "secondary" | "outline" | "ghost" | "danger";
 type Size = "sm" | "md" | "lg";
 
+const base =
+  "inline-flex items-center justify-center gap-2 font-medium rounded-lg transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none";
+
 const variants: Record<Variant, string> = {
-  primary: "bg-primary text-on-primary hover:brightness-110 shadow-sm",
-  secondary: "bg-secondary-container text-on-secondary hover:bg-secondary shadow-sm",
-  outline: "border border-primary text-primary hover:bg-primary-fixed",
-  ghost: "text-on-surface-variant hover:bg-surface-container",
-  danger: "bg-error text-on-error hover:brightness-110 shadow-sm",
+  primary: "bg-[var(--color-primary)] text-white hover:bg-[var(--color-primary-h)] focus-visible:ring-[var(--color-primary)]",
+  secondary: "bg-[var(--color-surface)] border border-[var(--color-border)] text-[var(--color-text)] hover:bg-[var(--color-bg)]",
+  outline: "bg-transparent border border-[var(--color-primary)] text-[var(--color-primary)] hover:bg-[var(--color-primary)] hover:text-white",
+  ghost: "text-[var(--color-text-muted)] hover:bg-[var(--color-bg)] hover:text-[var(--color-text)]",
+  danger: "bg-[var(--color-danger)] text-white hover:bg-red-700",
 };
+
 const sizes: Record<Size, string> = {
-  sm: "h-9 px-4 text-label-md",
-  md: "h-11 px-5 text-label-lg",
-  lg: "h-14 px-6 text-label-lg",
+  sm: "h-8 px-3 text-xs",
+  md: "h-10 px-4 text-sm",
+  lg: "h-12 px-6 text-base",
 };
 
 export interface ButtonProps extends HTMLMotionProps<"button"> {
   variant?: Variant;
   size?: Size;
+  /** Material Symbol name rendered before the label (additive convenience). */
   icon?: string;
   iconFill?: boolean;
   loading?: boolean;
@@ -38,23 +44,13 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
   return (
     <motion.button
       ref={ref}
-      whileTap={{ scale: 0.96 }}
-      transition={{ type: "spring", stiffness: 400, damping: 25 }}
+      type="button"
+      whileTap={{ scale: 0.97 }}
       disabled={disabled || loading}
-      className={cn(
-        "inline-flex items-center justify-center gap-2 rounded-lg font-label-lg transition-all outline-none focus-visible:ring-2 focus-visible:ring-secondary disabled:opacity-50 disabled:pointer-events-none",
-        variants[variant],
-        sizes[size],
-        fullWidth && "w-full",
-        className,
-      )}
+      className={cn(base, variants[variant], sizes[size], fullWidth && "w-full", className)}
       {...props}
     >
-      {loading ? (
-        <span className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
-      ) : (
-        icon && <Icon name={icon} fill={iconFill} className="text-[20px]" />
-      )}
+      {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : icon && <Icon name={icon} fill={iconFill} className="text-[20px]" />}
       {children}
     </motion.button>
   );

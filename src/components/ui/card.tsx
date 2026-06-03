@@ -1,33 +1,50 @@
+"use client";
+
+import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 
 export function Card({
-  className,
   children,
-  ...props
-}: React.HTMLAttributes<HTMLDivElement>) {
+  hover = false,
+  className = "",
+  onClick,
+}: {
+  children: React.ReactNode;
+  hover?: boolean;
+  className?: string;
+  onClick?: () => void;
+}) {
   return (
-    <div
+    <motion.div
+      onClick={onClick}
+      whileHover={hover ? { y: -2, boxShadow: "var(--shadow-lg)" } : undefined}
       className={cn(
-        "bg-surface-container-lowest border border-outline-variant rounded-xl shadow-sm",
+        "bg-[var(--color-surface)] border border-[var(--color-border)] rounded-xl p-6 shadow-[var(--shadow-sm)]",
+        hover && "cursor-pointer",
         className,
       )}
-      {...props}
     >
       {children}
-    </div>
+    </motion.div>
   );
 }
 
-export function CardHeader({ className, children }: React.HTMLAttributes<HTMLDivElement>) {
-  return <div className={cn("p-lg pb-0", className)}>{children}</div>;
-}
-
-export function CardBody({ className, children }: React.HTMLAttributes<HTMLDivElement>) {
-  return <div className={cn("p-lg", className)}>{children}</div>;
-}
-
-export function CardTitle({ className, children }: React.HTMLAttributes<HTMLHeadingElement>) {
+export function CardHeader({
+  title,
+  subtitle,
+  action,
+}: {
+  title: string;
+  subtitle?: string;
+  action?: React.ReactNode;
+}) {
   return (
-    <h3 className={cn("font-headline-sm text-headline-sm text-on-surface", className)}>{children}</h3>
+    <div className="flex items-start justify-between mb-4">
+      <div>
+        <h3 className="text-[var(--text-lg)] font-semibold text-[var(--color-text)]">{title}</h3>
+        {subtitle && <p className="text-[var(--text-sm)] text-[var(--color-text-muted)] mt-0.5">{subtitle}</p>}
+      </div>
+      {action}
+    </div>
   );
 }

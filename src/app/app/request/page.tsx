@@ -37,8 +37,8 @@ export default function RequestPage() {
       <main className="max-w-xl mx-auto px-margin-mobile pt-8 pb-32">
         <FadeInOnScroll>
           <form onSubmit={onSubmit} className="space-y-lg">
-            {done && <Alert tone="success" title="¡Listo!">Traslado programado correctamente. Redirigiendo…</Alert>}
-            {error && <Alert tone="error" title="No se pudo programar">{error}</Alert>}
+            {done && <Alert type="success" title="¡Listo!" message="Traslado programado correctamente. Redirigiendo…" />}
+            {error && <Alert type="error" title="No se pudo programar" message={error} />}
 
             <Input name="origin" label="Origen" icon="location_on" placeholder="Selecciona origen" required />
             <Input name="destination" label="Destino" icon="my_location" placeholder="Selecciona destino" required />

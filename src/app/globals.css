@@ -21,11 +21,37 @@
   --outline-variant: 195 198 211;
   --primary: 0 40 99;
 
+  /* ---- design-system skill tokens (themed to MT Empresarial navy) ---- */
   --color-primary: #002863;
+  --color-primary-h: #001944;
   --color-secondary: #1e6bff;
   --color-accent: #00b4d8;
+  --color-success: #16a34a;
+  --color-warning: #d97706;
+  --color-danger: #dc2626;
   --color-surface: #ffffff;
   --color-bg: #f7f9fc;
+  --color-text: #0f172a;
+  --color-text-muted: #64748b;
+  --color-border: #e2e8f0;
+
+  --space-xs: 4px;  --space-sm: 8px;  --space-md: 16px; --space-lg: 24px;
+  --space-xl: 32px; --space-2xl: 48px; --space-3xl: 64px; --space-4xl: 96px;
+
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+  --text-xs: 0.75rem;  --text-sm: 0.875rem; --text-md: 1rem;     --text-lg: 1.125rem;
+  --text-xl: 1.25rem;  --text-2xl: 1.5rem;  --text-3xl: 1.875rem; --text-4xl: 2.25rem;
+
+  --shadow-xs: 0 1px 2px 0 rgb(0 0 0 / .05);
+  --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / .1), 0 1px 2px -1px rgb(0 0 0 / .1);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / .1), 0 2px 4px -2px rgb(0 0 0 / .1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / .1), 0 4px 6px -4px rgb(0 0 0 / .1);
+  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / .1), 0 8px 10px -6px rgb(0 0 0 / .1);
+
+  --radius-sm: 4px;  --radius-md: 8px; --radius-lg: 12px; --radius-xl: 16px; --radius-full: 9999px;
+
+  --ease-default: cubic-bezier(0.25, 0.1, 0.25, 1);
+  --duration-fast: 150ms; --duration-base: 250ms; --duration-slow: 400ms;
 }
 
 .dark {
@@ -41,6 +67,13 @@
   --on-surface-variant: 176 185 200;
   --outline-variant: 52 66 92;
   --primary: 175 198 255;
+
+  /* design-system dark overrides */
+  --color-surface: #1e293b;
+  --color-bg: #0f172a;
+  --color-text: #f1f5f9;
+  --color-text-muted: #94a3b8;
+  --color-border: #334155;
 }
 
 @layer base {

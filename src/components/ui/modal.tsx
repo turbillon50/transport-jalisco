@@ -1,23 +1,32 @@
 "use client";
 
-import { AnimatePresence, motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
+import { X } from "lucide-react";
 import { useEffect } from "react";
 import { cn } from "@/lib/utils";
-import { Icon } from "@/components/icon";
 
 export function Modal({
   open,
   onClose,
   title,
   children,
-  className,
+  size = "md",
 }: {
   open: boolean;
   onClose: () => void;
-  title?: string;
+  title: string;
   children: React.ReactNode;
-  className?: string;
+  size?: "sm" | "md" | "lg" | "xl";
 }) {
+  const maxW = { sm: "max-w-sm", md: "max-w-md", lg: "max-w-lg", xl: "max-w-2xl" };
+
+  useEffect(() => {
+    if (open) document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [open]);
+
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
       if (e.key === "Escape") onClose();
@@ -29,90 +38,39 @@ export function Modal({
   return (
     <AnimatePresence>
       {open && (
-        <motion.div
-          className="fixed inset-0 z-[100] flex items-center justify-center p-4"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-        >
-          <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={onClose} />
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+            onClick={onClose}
+          />
           <motion.div
             role="dialog"
             aria-modal="true"
-            initial={{ opacity: 0, scale: 0.94, y: 16 }}
+            initial={{ opacity: 0, scale: 0.95, y: 8 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.96, y: 8 }}
-            transition={{ type: "spring", stiffness: 320, damping: 28 }}
+            exit={{ opacity: 0, scale: 0.95, y: 8 }}
+            transition={{ duration: 0.2, ease: "easeOut" }}
             className={cn(
-              "relative w-full max-w-lg bg-surface-container-lowest border border-outline-variant rounded-2xl shadow-2xl",
-              className,
+              "relative bg-[var(--color-surface)] rounded-2xl shadow-[var(--shadow-xl)] w-full p-6 max-h-[90vh] overflow-y-auto",
+              maxW[size],
             )}
           >
-            {title && (
-              <div className="flex items-center justify-between p-lg border-b border-outline-variant">
-                <h3 className="font-headline-sm text-headline-sm text-primary">{title}</h3>
-                <button
-                  onClick={onClose}
-                  aria-label="Cerrar"
-                  className="p-2 rounded-full hover:bg-surface-container transition-colors"
-                >
-                  <Icon name="close" className="text-on-surface-variant" />
-                </button>
-              </div>
-            )}
-            <div className="p-lg">{children}</div>
-          </motion.div>
-        </motion.div>
-      )}
-    </AnimatePresence>
-  );
-}
-
-/** Right-hand drawer used by ops drill-downs (driver detail, etc.). */
-export function Drawer({
-  open,
-  onClose,
-  title,
-  children,
-  width = "400px",
-}: {
-  open: boolean;
-  onClose: () => void;
-  title?: string;
-  children: React.ReactNode;
-  width?: string;
-}) {
-  return (
-    <AnimatePresence>
-      {open && (
-        <motion.div
-          className="fixed inset-0 z-[100]"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-        >
-          <div className="absolute inset-0 bg-black/40" onClick={onClose} />
-          <motion.aside
-            initial={{ x: "100%" }}
-            animate={{ x: 0 }}
-            exit={{ x: "100%" }}
-            transition={{ type: "spring", stiffness: 320, damping: 34 }}
-            style={{ width }}
-            className="absolute right-0 top-0 h-full max-w-full bg-surface-container-lowest border-l border-outline-variant shadow-2xl flex flex-col"
-          >
-            <div className="p-lg border-b border-outline-variant flex justify-between items-center bg-surface">
-              {title && <h3 className="font-headline-md text-headline-md text-primary">{title}</h3>}
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-lg font-semibold text-[var(--color-text)]">{title}</h2>
               <button
                 onClick={onClose}
                 aria-label="Cerrar"
-                className="p-2 rounded-full hover:bg-surface-variant transition-colors"
+                className="p-1.5 rounded-lg hover:bg-[var(--color-bg)] text-[var(--color-text-muted)]"
               >
-                <Icon name="close" />
+                <X className="w-4 h-4" />
               </button>
             </div>
-            <div className="p-lg overflow-y-auto flex-1">{children}</div>
-          </motion.aside>
-        </motion.div>
+            {children}
+          </motion.div>
+        </div>
       )}
     </AnimatePresence>
   );
