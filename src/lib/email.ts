@@ -95,3 +95,41 @@ export async function sendOpsNewServiceEmail(s: ServiceEmailData) {
     ),
   });
 }
+
+export async function sendDriverAssignedEmail(to: string, name: string, driverName: string, s: ServiceEmailData) {
+  return send({
+    to,
+    subject: "Tu chofer fue asignado 🚗",
+    html: shell(
+      "Chofer asignado",
+      `<p style="line-height:1.6;color:#434651">Hola ${name}, <b>${driverName}</b> realizará tu traslado
+       <b>${s.origin} → ${s.destination}</b>. Te avisaremos cuando vaya en camino.</p>
+       <p style="margin-top:16px">${btn(`${APP_URL}/app/active`, "Seguir en vivo")}</p>`,
+    ),
+  });
+}
+
+export async function sendDriverNewServiceEmail(to: string, driverName: string, s: ServiceEmailData) {
+  return send({
+    to,
+    subject: `Nuevo servicio asignado: ${s.origin} → ${s.destination}`,
+    html: shell(
+      `Hola ${driverName}`,
+      `<p style="line-height:1.6;color:#434651">Se te asignó un nuevo traslado.</p>
+       <table style="width:100%;border-collapse:collapse;margin-top:14px;font-size:14px">
+         <tr><td style="padding:8px 0;color:#737783">Origen</td><td style="padding:8px 0;font-weight:700;text-align:right">${s.origin}</td></tr>
+         <tr><td style="padding:8px 0;color:#737783">Destino</td><td style="padding:8px 0;font-weight:700;text-align:right">${s.destination}</td></tr>
+       </table>
+       <p style="margin-top:16px">${btn(`${APP_URL}/driver`, "Ver mi panel")}</p>`,
+    ),
+  });
+}
+
+export async function sendServiceStatusEmail(to: string, name: string, title: string, body: string) {
+  return send({
+    to,
+    subject: title,
+    html: shell(title, `<p style="line-height:1.6;color:#434651">Hola ${name}, ${body}</p>
+      <p style="margin-top:16px">${btn(`${APP_URL}/app/active`, "Ver mi servicio")}</p>`),
+  });
+}

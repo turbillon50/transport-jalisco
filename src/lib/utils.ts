@@ -14,6 +14,20 @@ export function formatCurrency(n: number | string | null | undefined) {
   }).format(v || 0);
 }
 
+export function relativeTime(d: Date | string): string {
+  const date = new Date(d);
+  const diff = Date.now() - date.getTime();
+  const min = Math.floor(diff / 60000);
+  if (min < 1) return "Justo ahora";
+  if (min < 60) return `hace ${min} min`;
+  const h = Math.floor(min / 60);
+  if (h < 24) return `hace ${h} h`;
+  const days = Math.floor(h / 24);
+  if (days === 1) return "Ayer";
+  if (days < 7) return `hace ${days} días`;
+  return date.toLocaleDateString("es-MX", { day: "2-digit", month: "short" });
+}
+
 export function formatDateParts(d: Date | string | null | undefined) {
   const date = d ? new Date(d) : new Date();
   const day = date.getDate().toString().padStart(2, "0");

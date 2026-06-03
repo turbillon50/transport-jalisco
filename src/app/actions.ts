@@ -5,7 +5,13 @@ import { auth, currentUser, clerkClient } from "@clerk/nextjs/server";
 import { eq } from "drizzle-orm";
 import { db, hasDb } from "@/db";
 import { services, serviceEvents, featureFlags, auditLog, notifications, users } from "@/db/schema";
-import { sendServiceRequestedEmail, sendOpsNewServiceEmail } from "@/lib/email";
+import {
+  sendServiceRequestedEmail,
+  sendOpsNewServiceEmail,
+  sendDriverAssignedEmail,
+  sendServiceStatusEmail,
+} from "@/lib/email";
+import { notifyUser, dbUserIdByClerk } from "@/lib/notify";
 
 async function actor() {
   try {
@@ -54,6 +60,16 @@ export async function createService(formData: FormData): Promise<ActionResult> {
         })
         .returning({ id: services.id });
       if (row) await db.insert(serviceEvents).values({ serviceId: row.id, type: "created", note: `por ${userId ?? "usuario"}` });
+      const uid = await dbUserIdByClerk(userId);
+      if (uid) {
+        // Asociar el servicio al usuario y dejarle la notificación in-app.
+        if (row) await db.update(services).set({ userId: uid }).where(eq(services.id, row.id));
+        await notifyUser(uid, {
+          title: "Solicitud recibida",
+          body: `Tu traslado ${origin} → ${destination} fue registrado. Te avisaremos al asignar chofer.`,
+          icon: "check_circle",
+        });
+      }
       await logAudit("Creó servicio", `${origin} → ${destination}`);
     } catch {
       return { ok: false, message: "No se pudo guardar el servicio. Intenta de nuevo." };
@@ -128,27 +144,110 @@ export async function sendCampaign(formData: FormData): Promise<ActionResult> {
   const segment = String(formData.get("segment") ?? "all");
   if (!title || !body) return { ok: false, message: "Título y mensaje son obligatorios." };
 
+  let delivered = 0;
   if (hasDb) {
     try {
-      await db.insert(notifications).values({ title, body, icon: "campaign" });
+      const targets =
+        segment === "all"
+          ? await db.select({ id: users.id }).from(users)
+          : await db.select({ id: users.id }).from(users).where(eq(users.role, segment as "user" | "driver" | "ops" | "admin"));
+      if (targets.length) {
+        await db.insert(notifications).values(targets.map((u) => ({ userId: u.id, title, body, icon: "campaign" })));
+        delivered = targets.length;
+      } else {
+        await db.insert(notifications).values({ title, body, icon: "campaign" });
+      }
       await logAudit("Envió campaña push", `${segment}: ${title}`);
     } catch {
       return { ok: false, message: "No se pudo registrar la campaña." };
     }
   }
   revalidatePath("/admin/notifications");
-  return { ok: true, message: `Campaña enviada al segmento «${segment}».` };
+  revalidatePath("/app/alerts");
+  return { ok: true, message: `Campaña enviada al segmento «${segment}»${delivered ? ` (${delivered} usuarios)` : ""}.` };
 }
 
 export async function assignDriver(serviceId: string, driverName: string): Promise<ActionResult> {
   if (hasDb) {
     try {
-      await db.update(services).set({ status: "asignado" }).where(eq(services.id, serviceId));
-    } catch {
-      /* non-fatal in demo */
+      const [svc] = await db
+        .update(services)
+        .set({ status: "asignado" })
+        .where(eq(services.id, serviceId))
+        .returning({ userId: services.userId, origin: services.origin, destination: services.destination, passengers: services.passengers });
+      if (svc) {
+        await db.insert(serviceEvents).values({ serviceId, type: "assigned", note: driverName });
+        if (svc.userId) {
+          await notifyUser(svc.userId, {
+            title: "Chofer asignado",
+            body: `${driverName} realizará tu traslado ${svc.origin} → ${svc.destination}.`,
+            icon: "person_pin",
+          });
+          const [u] = await db.select({ email: users.email, name: users.name }).from(users).where(eq(users.id, svc.userId)).limit(1);
+          if (u?.email) {
+            await sendDriverAssignedEmail(u.email, u.name, driverName, {
+              origin: svc.origin,
+              destination: svc.destination,
+              passengers: svc.passengers,
+            });
+          }
+        }
+      }
+    } catch (e) {
+      console.error("[assignDriver]", e);
     }
   }
   await logAudit("Asignó servicio", `${serviceId} → ${driverName}`);
   revalidatePath("/ops/assignments");
+  revalidatePath("/app/alerts");
   return { ok: true, message: `${driverName} asignado al servicio.` };
+}
+
+type ServiceStatus = "driver_arrived" | "started" | "completed";
+const STATUS_COPY: Record<ServiceStatus, { title: string; body: string; icon: string; dbStatus: "en_curso" | "completado" }> = {
+  driver_arrived: { title: "Tu chofer llegó", body: "tu chofer llegó al punto de origen.", icon: "location_on", dbStatus: "en_curso" },
+  started: { title: "Servicio iniciado", body: "tu traslado comenzó. ¡Buen viaje!", icon: "navigation", dbStatus: "en_curso" },
+  completed: { title: "Servicio completado", body: "tu trayecto finalizó con éxito. Gracias por viajar con MT Empresarial.", icon: "check_circle", dbStatus: "completado" },
+};
+
+/** Avance de estado del servicio por el chofer → notifica al usuario (in-app + correo). */
+export async function advanceService(serviceId: string, status: ServiceStatus): Promise<ActionResult> {
+  const copy = STATUS_COPY[status];
+  if (hasDb) {
+    try {
+      const [svc] = await db
+        .update(services)
+        .set({ status: copy.dbStatus })
+        .where(eq(services.id, serviceId))
+        .returning({ userId: services.userId });
+      if (svc) {
+        await db.insert(serviceEvents).values({ serviceId, type: status });
+        if (svc.userId) {
+          await notifyUser(svc.userId, { title: copy.title, body: copy.body.charAt(0).toUpperCase() + copy.body.slice(1), icon: copy.icon });
+          const [u] = await db.select({ email: users.email, name: users.name }).from(users).where(eq(users.id, svc.userId)).limit(1);
+          if (u?.email) await sendServiceStatusEmail(u.email, u.name, copy.title, copy.body);
+        }
+      }
+    } catch (e) {
+      console.error("[advanceService]", e);
+    }
+  }
+  revalidatePath("/app/alerts");
+  revalidatePath("/app/active");
+  return { ok: true, message: copy.title };
+}
+
+/** Marca como leídas todas las notificaciones del usuario actual. */
+export async function markNotificationsRead(): Promise<ActionResult> {
+  if (hasDb) {
+    try {
+      const { userId } = await auth();
+      const uid = await dbUserIdByClerk(userId);
+      if (uid) await db.update(notifications).set({ read: true }).where(eq(notifications.userId, uid));
+    } catch (e) {
+      console.error("[markNotificationsRead]", e);
+    }
+  }
+  revalidatePath("/app/alerts");
+  return { ok: true, message: "Notificaciones marcadas como leídas." };
 }
