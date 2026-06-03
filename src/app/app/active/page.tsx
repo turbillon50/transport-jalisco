@@ -1,16 +1,21 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import { MapView } from "@/components/map-view";
 import { Icon } from "@/components/icon";
 import { GDL_CENTER, services } from "@/lib/mock";
 import { PageTransition, SlideIn } from "@/components/motion";
+import { advanceService } from "@/app/actions";
 
 const PHASES = ["En camino", "En el origen", "Servicio iniciado"] as const;
 
 export default function ActiveService() {
   const s = services[0];
   const [phase, setPhase] = useState(0);
+  const [, startTransition] = useTransition();
+
+  const emit = (status: "driver_arrived" | "started" | "completed") =>
+    startTransition(() => { void advanceService(s.id, status); });
   const route: [number, number][] = [
     [-103.37, 20.61], [-103.355, 20.63], [-103.34, 20.655], [-103.325, 20.68],
   ];
@@ -54,10 +59,17 @@ export default function ActiveService() {
             </div>
 
             <div className="flex gap-4 w-full">
-              <button className="flex flex-col items-center justify-center gap-1 w-20 h-20 rounded-xl bg-surface-container-lowest border border-outline-variant text-primary shadow-sm hover:bg-primary-fixed transition-all active:scale-95">
+              <button onClick={() => { setPhase((p) => Math.max(p, 1)); emit("driver_arrived"); }} className="flex flex-col items-center justify-center gap-1 w-20 h-20 rounded-xl bg-surface-container-lowest border border-outline-variant text-primary shadow-sm hover:bg-primary-fixed transition-all active:scale-95">
                 <Icon name="location_on" className="text-headline-md" /><span className="text-[10px] uppercase font-semibold">Llegué</span>
               </button>
-              <button onClick={() => setPhase((p) => Math.min(PHASES.length - 1, p + 1))} className="flex-1 h-20 flex items-center justify-center gap-3 rounded-xl bg-primary-container text-white font-bold text-headline-sm shadow-xl hover:bg-primary transition-all active:scale-95">
+              <button
+                onClick={() => {
+                  const last = phase >= PHASES.length - 1;
+                  emit(last ? "completed" : "started");
+                  setPhase((p) => Math.min(PHASES.length - 1, p + 1));
+                }}
+                className="flex-1 h-20 flex items-center justify-center gap-3 rounded-xl bg-primary-container text-white font-bold text-headline-sm shadow-xl hover:bg-primary transition-all active:scale-95"
+              >
                 <Icon name={phase < PHASES.length - 1 ? "play_arrow" : "check_circle"} fill />
                 {phase < PHASES.length - 1 ? "Iniciar servicio" : "Finalizar"}
               </button>

@@ -10,9 +10,10 @@ import { Icon } from "@/components/icon";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { cn } from "@/lib/utils";
 
-export function AppShell({ role, children }: { role: Role; children: React.ReactNode }) {
+export function AppShell({ role, children, unread = 0 }: { role: Role; children: React.ReactNode; unread?: number }) {
   const pathname = usePathname();
   const items = NAV[role];
+  const badgeText = unread > 9 ? "9+" : String(unread);
   const isActive = (href: string) =>
     href === `/${role === "user" ? "app" : role}` ? pathname === href : pathname.startsWith(href);
 
@@ -46,7 +47,9 @@ export function AppShell({ role, children }: { role: Role; children: React.React
                 <span className="relative flex items-center gap-3.5">
                   <span className="relative">
                     <Icon name={it.icon} fill={active} />
-                    {it.badge && <span className="absolute -top-0.5 -right-1 w-2 h-2 rounded-full bg-error" />}
+                    {it.badge && unread > 0 && (
+                      <span className="absolute -top-1.5 -right-2 min-w-[16px] h-4 px-1 rounded-full bg-error text-on-error text-[10px] font-bold flex items-center justify-center">{badgeText}</span>
+                    )}
                   </span>
                   <span className="text-label-lg font-label-lg">{it.label}</span>
                 </span>
@@ -94,7 +97,9 @@ export function AppShell({ role, children }: { role: Role; children: React.React
               >
                 <span className={cn("relative flex items-center justify-center h-7 px-3.5 rounded-full transition-colors", active && "bg-primary-fixed")}>
                   <Icon name={it.icon} fill={active} />
-                  {it.badge && <span className="absolute top-0 right-2 w-2 h-2 rounded-full bg-error border-2 border-surface-container-lowest" />}
+                  {it.badge && unread > 0 && (
+                    <span className="absolute -top-1 right-1 min-w-[16px] h-4 px-1 rounded-full bg-error text-on-error text-[10px] font-bold flex items-center justify-center border border-surface-container-lowest">{badgeText}</span>
+                  )}
                 </span>
                 <span className="text-[11px] font-semibold">{it.label}</span>
               </Link>
