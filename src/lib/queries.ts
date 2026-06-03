@@ -1,5 +1,6 @@
 import { db, hasDb } from "@/db";
-import { featureFlags } from "@/db/schema";
+import { featureFlags, users as usersTable } from "@/db/schema";
+import { desc } from "drizzle-orm";
 import * as mock from "@/lib/mock";
 
 /**
@@ -16,4 +17,34 @@ export async function getFeatureFlags() {
     }
   }
   return mock.featureFlagsSeed;
+}
+
+export interface AdminUserRow {
+  id: string;
+  clerkId: string | null;
+  name: string;
+  email: string;
+  role: string;
+  joined: string;
+}
+
+export async function getUsers(): Promise<AdminUserRow[]> {
+  if (hasDb) {
+    try {
+      const rows = await db.select().from(usersTable).orderBy(desc(usersTable.createdAt));
+      if (rows.length) {
+        return rows.map((r) => ({
+          id: r.id,
+          clerkId: r.clerkId,
+          name: r.name,
+          email: r.email,
+          role: r.role,
+          joined: new Date(r.createdAt).toLocaleDateString("es-MX", { day: "2-digit", month: "short", year: "numeric" }),
+        }));
+      }
+    } catch {
+      /* fall through to seed */
+    }
+  }
+  return mock.adminUsers.map((u) => ({ id: u.id, clerkId: null, name: u.name, email: u.email, role: u.role, joined: u.joined }));
 }

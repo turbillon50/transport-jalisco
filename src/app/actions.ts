@@ -1,10 +1,10 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { auth, currentUser } from "@clerk/nextjs/server";
+import { auth, currentUser, clerkClient } from "@clerk/nextjs/server";
 import { eq } from "drizzle-orm";
 import { db, hasDb } from "@/db";
-import { services, serviceEvents, featureFlags, auditLog, notifications } from "@/db/schema";
+import { services, serviceEvents, featureFlags, auditLog, notifications, users } from "@/db/schema";
 import { sendServiceRequestedEmail, sendOpsNewServiceEmail } from "@/lib/email";
 
 async function actor() {
@@ -100,6 +100,23 @@ export async function toggleFeatureFlag(key: string, value: boolean): Promise<Ac
 }
 
 export async function updateUserRole(userId: string, role: "user" | "driver" | "ops" | "admin"): Promise<ActionResult> {
+  if (hasDb) {
+    try {
+      const [row] = await db.update(users).set({ role }).where(eq(users.id, userId)).returning({ clerkId: users.clerkId });
+      // Reflejar el rol también en Clerk para que el middleware enrute correcto.
+      if (row?.clerkId) {
+        try {
+          const client = await clerkClient();
+          await client.users.updateUserMetadata(row.clerkId, { publicMetadata: { role } });
+        } catch (e) {
+          console.error("[updateUserRole] clerk:", e);
+        }
+      }
+    } catch (e) {
+      console.error("[updateUserRole] db:", e);
+      return { ok: false, message: "No se pudo actualizar el rol." };
+    }
+  }
   await logAudit("Cambió rol de usuario", `${userId} → ${role}`);
   revalidatePath("/admin/users");
   return { ok: true, message: `Rol actualizado a ${role}.` };
