@@ -5,6 +5,7 @@ import { auth, currentUser } from "@clerk/nextjs/server";
 import { eq } from "drizzle-orm";
 import { db, hasDb } from "@/db";
 import { services, serviceEvents, featureFlags, auditLog, notifications } from "@/db/schema";
+import { sendServiceRequestedEmail, sendOpsNewServiceEmail } from "@/lib/email";
 
 async function actor() {
   try {
@@ -57,6 +58,25 @@ export async function createService(formData: FormData): Promise<ActionResult> {
     } catch {
       return { ok: false, message: "No se pudo guardar el servicio. Intenta de nuevo." };
     }
+  }
+
+  // Notificaciones por correo (tolerantes a fallos): confirmación al usuario + aviso a operaciones.
+  try {
+    const u = await currentUser();
+    const to = u?.emailAddresses?.[0]?.emailAddress;
+    const name = u?.firstName ?? u?.username ?? "Usuario";
+    const data = {
+      origin,
+      destination,
+      passengers: Number.isFinite(passengers) ? passengers : 1,
+      when: scheduled || undefined,
+    };
+    await Promise.allSettled([
+      to ? sendServiceRequestedEmail(to, name, data) : Promise.resolve(),
+      sendOpsNewServiceEmail(data),
+    ]);
+  } catch (e) {
+    console.error("[createService] email:", e);
   }
 
   revalidatePath("/app");
