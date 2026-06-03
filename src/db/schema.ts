@@ -127,6 +127,34 @@ export const pushSubscriptions = pgTable("push_subscriptions", {
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
 });
 
+export const paymentMethodTypeEnum = pgEnum("payment_method_type", [
+  "tarjeta",
+  "efectivo",
+  "transferencia",
+  "empresarial",
+]);
+
+export const paymentMethods = pgTable("payment_methods", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  userId: uuid("user_id").references(() => users.id, { onDelete: "cascade" }).notNull(),
+  type: paymentMethodTypeEnum("type").notNull(),
+  label: text("label").notNull(),
+  brand: text("brand"),
+  last4: text("last4"),
+  isDefault: boolean("is_default").notNull().default(false),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+});
+
+export const ratings = pgTable("ratings", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  serviceId: uuid("service_id").references(() => services.id, { onDelete: "cascade" }),
+  raterId: uuid("rater_id").references(() => users.id, { onDelete: "set null" }),
+  rateeId: uuid("ratee_id").references(() => users.id, { onDelete: "cascade" }).notNull(),
+  stars: integer("stars").notNull(),
+  comment: text("comment"),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+});
+
 export type User = typeof users.$inferSelect;
 export type Vehicle = typeof vehicles.$inferSelect;
 export type Service = typeof services.$inferSelect;
@@ -135,3 +163,5 @@ export type Notification = typeof notifications.$inferSelect;
 export type FeatureFlag = typeof featureFlags.$inferSelect;
 export type AuditEntry = typeof auditLog.$inferSelect;
 export type PushSubscriptionRow = typeof pushSubscriptions.$inferSelect;
+export type PaymentMethod = typeof paymentMethods.$inferSelect;
+export type Rating = typeof ratings.$inferSelect;

@@ -13,6 +13,7 @@ export const NAV: Record<Role, NavItem[]> = {
     { href: "/app/request", icon: "add_circle", label: "Solicitar" },
     { href: "/app/active", icon: "navigation", label: "En vivo" },
     { href: "/app/alerts", icon: "notifications", label: "Alertas", badge: true },
+    { href: "/app/profile", icon: "person", label: "Perfil" },
   ],
   driver: [
     { href: "/driver", icon: "dashboard", label: "Panel" },

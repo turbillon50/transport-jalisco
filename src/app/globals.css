@@ -111,6 +111,19 @@
 }
 
 /* Utility helpers reused from the original export */
+/* Safe-area (notch / status bar) handling for sticky headers */
+.app-topbar {
+  padding-top: env(safe-area-inset-top);
+}
+.page-subheader {
+  top: calc(4rem + env(safe-area-inset-top));
+}
+@media (min-width: 768px) {
+  .page-subheader {
+    top: 0;
+  }
+}
+
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
 }

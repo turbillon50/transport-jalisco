@@ -33,7 +33,12 @@ DO $$ BEGIN ALTER TABLE "services" ADD CONSTRAINT "services_vehicle_id_vehicles_
 DO $$ BEGIN ALTER TABLE "vehicles" ADD CONSTRAINT "vehicles_driver_id_users_id_fk" FOREIGN KEY ("driver_id") REFERENCES "public"."users"("id") ON DELETE set null ON UPDATE no action; EXCEPTION WHEN duplicate_object THEN null; END $$;--> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "push_subscriptions" ("id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,"user_id" uuid,"endpoint" text NOT NULL,"p256dh" text NOT NULL,"auth" text NOT NULL,"created_at" timestamp with time zone DEFAULT now() NOT NULL,CONSTRAINT "push_subscriptions_endpoint_unique" UNIQUE("endpoint"));--> statement-breakpoint
 DO $$ BEGIN ALTER TABLE "push_subscriptions" ADD CONSTRAINT "push_subscriptions_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE cascade ON UPDATE no action; EXCEPTION WHEN duplicate_object THEN null; END $$;--> statement-breakpoint
-ALTER TABLE "users" ADD COLUMN IF NOT EXISTS "deleted_at" timestamp with time zone;
+ALTER TABLE "users" ADD COLUMN IF NOT EXISTS "deleted_at" timestamp with time zone;--> statement-breakpoint
+DO $$ BEGIN CREATE TYPE "public"."payment_method_type" AS ENUM('tarjeta','efectivo','transferencia','empresarial'); EXCEPTION WHEN duplicate_object THEN null; END $$;--> statement-breakpoint
+CREATE TABLE IF NOT EXISTS "payment_methods" ("id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,"user_id" uuid NOT NULL,"type" "payment_method_type" NOT NULL,"label" text NOT NULL,"brand" text,"last4" text,"is_default" boolean DEFAULT false NOT NULL,"created_at" timestamp with time zone DEFAULT now() NOT NULL);--> statement-breakpoint
+DO $$ BEGIN ALTER TABLE "payment_methods" ADD CONSTRAINT "payment_methods_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE cascade ON UPDATE no action; EXCEPTION WHEN duplicate_object THEN null; END $$;--> statement-breakpoint
+CREATE TABLE IF NOT EXISTS "ratings" ("id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,"service_id" uuid,"rater_id" uuid,"ratee_id" uuid NOT NULL,"stars" integer NOT NULL,"comment" text,"created_at" timestamp with time zone DEFAULT now() NOT NULL);--> statement-breakpoint
+DO $$ BEGIN ALTER TABLE "ratings" ADD CONSTRAINT "ratings_ratee_id_users_id_fk" FOREIGN KEY ("ratee_id") REFERENCES "public"."users"("id") ON DELETE cascade ON UPDATE no action; EXCEPTION WHEN duplicate_object THEN null; END $$;
 `;
 
 export async function GET(req: NextRequest) {

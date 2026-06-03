@@ -1,84 +1,62 @@
-import Image from "next/image";
 import type { Metadata } from "next";
-import { vehicles, fleetStats } from "@/lib/mock";
+import { getVehicles } from "@/lib/queries";
 import { Icon } from "@/components/icon";
-import { Button, Input } from "@/components/ui";
-import { PageTransition, FadeInOnScroll, StaggerContainer, StaggerItem, HoverCard, NumberCounter } from "@/components/motion";
-import { cn } from "@/lib/utils";
+import { Button, Input, Badge, type BadgeVariant } from "@/components/ui";
+import { EmptyState } from "@/components/ui-bits";
+import { PageTransition, FadeInOnScroll, StaggerContainer, StaggerItem, HoverCard } from "@/components/motion";
 
 export const metadata: Metadata = { title: "Gestión de flota" };
+export const dynamic = "force-dynamic";
 
-const statusBadge: Record<string, string> = {
-  operativo: "bg-green-100 text-green-800 border-green-200",
-  mantenimiento: "bg-orange-100 text-orange-800 border-orange-200",
-  inactivo: "bg-error-container text-on-error-container border-error/30",
-};
-const statusDot: Record<string, string> = { operativo: "bg-green-500", mantenimiento: "bg-orange-500", inactivo: "bg-error" };
-const statusLabel: Record<string, string> = { operativo: "Operativo", mantenimiento: "Mantenimiento", inactivo: "Inactivo" };
+const tone: Record<string, BadgeVariant> = { operativo: "success", mantenimiento: "warning", inactivo: "danger" };
 
-export default function FleetPage() {
-  const STATS = [
-    { label: "Total Unidades", value: fleetStats.total, cls: "text-primary" },
-    { label: "En Servicio", value: fleetStats.enServicio, cls: "text-secondary" },
-    { label: "Mantenimiento", value: fleetStats.mantenimiento, cls: "text-tertiary-container", border: "border-l-4 border-l-tertiary-container" },
-    { label: "Inactivos", value: fleetStats.inactivos, cls: "text-error", border: "border-l-4 border-l-error" },
-  ];
+export default async function FleetPage() {
+  const vehicles = await getVehicles();
 
   return (
     <PageTransition className="w-full max-w-[1440px] mx-auto px-margin-mobile md:px-margin-desktop py-8">
       <FadeInOnScroll>
         <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
           <div>
-            <h2 className="text-headline-lg font-semibold text-primary mb-1">Gestión de Flota</h2>
-            <p className="text-on-surface-variant text-body-md">Monitoreo y administración de unidades operativas.</p>
+            <h2 className="text-headline-lg font-semibold text-primary mb-1">Gestión de flota</h2>
+            <p className="text-on-surface-variant text-body-md">{vehicles.length} unidades registradas.</p>
           </div>
           <div className="flex flex-col sm:flex-row gap-3">
-            <div className="min-w-[260px]"><Input icon="search" placeholder="Buscar vehículo o placas..." /></div>
-            <Button icon="add">Añadir Vehículo</Button>
+            <div className="min-w-[240px]"><Input icon="search" placeholder="Buscar vehículo o placas…" /></div>
+            <Button icon="add">Añadir vehículo</Button>
           </div>
         </div>
       </FadeInOnScroll>
 
-      <StaggerContainer className="grid grid-cols-2 md:grid-cols-4 gap-gutter mb-8">
-        {STATS.map((s) => (
-          <StaggerItem key={s.label}>
-            <div className={cn("bg-surface-container-lowest border border-outline-variant p-lg rounded-xl flex flex-col justify-center items-center text-center", s.border)}>
-              <span className="text-label-md text-outline uppercase tracking-wider mb-2">{s.label}</span>
-              <span className={cn("text-display-lg font-bold", s.cls)}><NumberCounter value={s.value} /></span>
-            </div>
-          </StaggerItem>
-        ))}
-      </StaggerContainer>
-
-      <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-gutter">
-        {vehicles.map((v) => (
-          <StaggerItem key={v.id}>
-            <HoverCard className="bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden h-full">
-              <div className="relative h-48 w-full overflow-hidden">
-                <Image src={v.image} alt={v.model} fill className="object-cover" sizes="(max-width:768px) 100vw, 33vw" />
-                <div className={cn("absolute top-4 right-4 px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1 border", statusBadge[v.status])}>
-                  <span className={cn("w-2 h-2 rounded-full", statusDot[v.status])} /> {statusLabel[v.status]}
-                </div>
-              </div>
-              <div className="p-lg">
+      {vehicles.length === 0 ? (
+        <div className="bg-surface-container-lowest border border-outline-variant rounded-xl">
+          <EmptyState icon="local_shipping" title="Sin unidades aún" body="Registra tu primera unidad para gestionar la flota." action={<Button icon="add">Añadir vehículo</Button>} />
+        </div>
+      ) : (
+        <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-gutter">
+          {vehicles.map((v) => (
+            <StaggerItem key={v.id}>
+              <HoverCard className="bg-surface-container-lowest border border-outline-variant rounded-xl p-lg h-full">
                 <div className="flex justify-between items-start mb-4">
-                  <div><h3 className="text-headline-sm font-semibold text-primary">{v.model}</h3><span className="text-label-md text-outline">Placas: {v.plate}</span></div>
-                  <Icon name="more_vert" className="text-outline cursor-pointer hover:text-primary" />
+                  <div className="flex items-center gap-3">
+                    <div className="w-12 h-12 rounded-lg bg-primary-fixed text-primary flex items-center justify-center"><Icon name="airport_shuttle" /></div>
+                    <div><h3 className="text-headline-sm font-semibold text-primary">{v.model}</h3><span className="text-label-md text-outline">Placas: {v.plate}</span></div>
+                  </div>
+                  <Badge variant={tone[v.status] ?? "default"}>{v.status}</Badge>
                 </div>
-                <div className="space-y-3 mb-6 text-on-surface-variant">
+                <div className="space-y-2 text-on-surface-variant mb-4">
                   <div className="flex items-center gap-3"><Icon name="group" className="text-[18px]" /><span className="text-body-md">Capacidad: {v.capacity} pasajeros</span></div>
-                  <div className="flex items-center gap-3"><Icon name="history" className="text-[18px]" /><span className="text-body-md">{v.detail}</span></div>
-                  <div className="flex items-center gap-3"><Icon name="distance" className="text-[18px]" /><span className="text-body-md">{v.odometer}</span></div>
+                  <div className="flex items-center gap-3"><Icon name="distance" className="text-[18px]" /><span className="text-body-md">Odómetro: {(v.odometer ?? 0).toLocaleString("es-MX")} km</span></div>
                 </div>
                 <div className="flex gap-2">
                   <Button variant="outline" size="sm" className="flex-grow">Detalles</Button>
                   <Button size="sm" className="flex-grow" disabled={v.status === "mantenimiento"}>Asignar</Button>
                 </div>
-              </div>
-            </HoverCard>
-          </StaggerItem>
-        ))}
-      </StaggerContainer>
+              </HoverCard>
+            </StaggerItem>
+          ))}
+        </StaggerContainer>
+      )}
     </PageTransition>
   );
 }

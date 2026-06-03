@@ -1,21 +1,9 @@
 "use client";
 
 import {
-  Area,
-  AreaChart,
-  Bar,
-  BarChart,
-  Cell,
-  Pie,
-  PieChart,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Legend,
+  Area, AreaChart, Bar, BarChart, Cell, Pie, PieChart, ResponsiveContainer,
+  Tooltip, XAxis, YAxis, CartesianGrid, Legend,
 } from "recharts";
-import { analyticsServices, serviceTypeBreakdown } from "@/lib/mock";
 
 const tooltipStyle = {
   background: "rgb(var(--sc-lowest))",
@@ -25,10 +13,13 @@ const tooltipStyle = {
   fontSize: 13,
 };
 
-export function ServicesLineChart() {
+export interface DayPoint { day: string; servicios: number; ingresos: number }
+export interface Slice { name: string; value: number; color: string }
+
+export function ServicesLineChart({ data }: { data: DayPoint[] }) {
   return (
     <ResponsiveContainer width="100%" height={280}>
-      <AreaChart data={analyticsServices} margin={{ left: -20, right: 8, top: 8 }}>
+      <AreaChart data={data} margin={{ left: -20, right: 8, top: 8 }}>
         <defs>
           <linearGradient id="g-serv" x1="0" y1="0" x2="0" y2="1">
             <stop offset="0%" stopColor="#1e6bff" stopOpacity={0.4} />
@@ -37,7 +28,7 @@ export function ServicesLineChart() {
         </defs>
         <CartesianGrid strokeDasharray="3 3" stroke="rgb(var(--outline-variant))" vertical={false} />
         <XAxis dataKey="day" stroke="rgb(var(--on-surface-variant))" fontSize={12} tickLine={false} axisLine={false} />
-        <YAxis stroke="rgb(var(--on-surface-variant))" fontSize={12} tickLine={false} axisLine={false} />
+        <YAxis stroke="rgb(var(--on-surface-variant))" fontSize={12} tickLine={false} axisLine={false} allowDecimals={false} />
         <Tooltip contentStyle={tooltipStyle} />
         <Area type="monotone" dataKey="servicios" stroke="#1e6bff" strokeWidth={3} fill="url(#g-serv)" />
       </AreaChart>
@@ -45,10 +36,10 @@ export function ServicesLineChart() {
   );
 }
 
-export function RevenueBarChart() {
+export function RevenueBarChart({ data }: { data: DayPoint[] }) {
   return (
     <ResponsiveContainer width="100%" height={280}>
-      <BarChart data={analyticsServices} margin={{ left: -10, right: 8, top: 8 }}>
+      <BarChart data={data} margin={{ left: -10, right: 8, top: 8 }}>
         <CartesianGrid strokeDasharray="3 3" stroke="rgb(var(--outline-variant))" vertical={false} />
         <XAxis dataKey="day" stroke="rgb(var(--on-surface-variant))" fontSize={12} tickLine={false} axisLine={false} />
         <YAxis stroke="rgb(var(--on-surface-variant))" fontSize={12} tickLine={false} axisLine={false} />
@@ -59,14 +50,12 @@ export function RevenueBarChart() {
   );
 }
 
-export function ServiceTypeDonut() {
+export function ServiceTypeDonut({ data }: { data: Slice[] }) {
   return (
     <ResponsiveContainer width="100%" height={280}>
       <PieChart>
-        <Pie data={serviceTypeBreakdown} dataKey="value" nameKey="name" innerRadius={62} outerRadius={100} paddingAngle={3}>
-          {serviceTypeBreakdown.map((d) => (
-            <Cell key={d.name} fill={d.color} stroke="transparent" />
-          ))}
+        <Pie data={data} dataKey="value" nameKey="name" innerRadius={62} outerRadius={100} paddingAngle={3}>
+          {data.map((d) => <Cell key={d.name} fill={d.color} stroke="transparent" />)}
         </Pie>
         <Tooltip contentStyle={tooltipStyle} />
         <Legend iconType="circle" wrapperStyle={{ fontSize: 13 }} />

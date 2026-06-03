@@ -2,7 +2,8 @@
 
 import { MapView, type MapMarker } from "@/components/map-view";
 import { PageTransition, SlideIn } from "@/components/motion";
-import { GDL_CENTER } from "@/lib/mock";
+
+const GDL_CENTER: [number, number] = [-103.3496, 20.6597];
 
 interface Stat { value: number | string; label: string; cls: string }
 
