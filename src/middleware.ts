@@ -1,10 +1,11 @@
 import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 
+// /admin no se bloquea con Clerk aquí: su layout permite acceso por
+// llave-enlace (cookie) o por rol admin de Clerk.
 const isProtected = createRouteMatcher([
   "/app(.*)",
   "/driver(.*)",
   "/ops(.*)",
-  "/admin(.*)",
 ]);
 
 export default clerkMiddleware((auth, req) => {

@@ -1,13 +1,15 @@
 import { redirect } from "next/navigation";
 import { AppShell } from "@/components/shell/app-shell";
 import { getRole } from "@/lib/auth";
-import { ROLE_HOME } from "@/lib/roles";
+import { hasAdminCookie } from "@/lib/admin-gate";
+
+export const dynamic = "force-dynamic";
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
-  const role = await getRole();
-  // Superadmin area: only the admin role may enter.
-  if (role !== "admin") {
-    redirect(ROLE_HOME[role] ?? "/app");
+  // Acceso por llave-enlace (cookie) o por rol admin de Clerk.
+  if (!hasAdminCookie()) {
+    const role = await getRole();
+    if (role !== "admin") redirect("/");
   }
   return <AppShell role="admin">{children}</AppShell>;
 }
