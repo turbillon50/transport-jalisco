@@ -69,13 +69,13 @@ export function AppShell({ role, children, unread = 0 }: { role: Role; children:
       </aside>
 
       {/* Mobile top bar */}
-      <header className="md:hidden sticky top-0 z-40 h-16 flex items-center justify-between px-margin-mobile bg-surface border-b border-outline-variant">
-        <div className="flex items-center gap-2">
+      <header className="app-topbar md:hidden sticky top-0 z-40 bg-surface border-b border-outline-variant">
+        <div className="h-16 flex items-center justify-between px-margin-mobile">
           <Image src="/icons/logo.png" alt="MT Empresarial" width={120} height={40} className="h-8 w-auto" />
-        </div>
-        <div className="flex items-center gap-1">
-          <ThemeToggle />
-          <UserButton afterSignOutUrl="/" />
+          <div className="flex items-center gap-1">
+            <ThemeToggle />
+            <UserButton afterSignOutUrl="/" />
+          </div>
         </div>
       </header>
 

@@ -2,9 +2,9 @@
 
 import { revalidatePath } from "next/cache";
 import { auth, currentUser, clerkClient } from "@clerk/nextjs/server";
-import { eq } from "drizzle-orm";
+import { eq, and } from "drizzle-orm";
 import { db, hasDb } from "@/db";
-import { services, serviceEvents, featureFlags, auditLog, notifications, users } from "@/db/schema";
+import { services, serviceEvents, featureFlags, auditLog, notifications, users, paymentMethods, ratings } from "@/db/schema";
 import {
   sendServiceRequestedEmail,
   sendOpsNewServiceEmail,
@@ -12,6 +12,15 @@ import {
   sendServiceStatusEmail,
 } from "@/lib/email";
 import { notifyUser, dbUserIdByClerk } from "@/lib/notify";
+
+async function meId(): Promise<string | null> {
+  try {
+    const { userId } = await auth();
+    return dbUserIdByClerk(userId);
+  } catch {
+    return null;
+  }
+}
 
 async function actor() {
   try {
@@ -250,4 +259,112 @@ export async function markNotificationsRead(): Promise<ActionResult> {
   }
   revalidatePath("/app/alerts");
   return { ok: true, message: "Notificaciones marcadas como leídas." };
+}
+
+/* ----------------------------- perfil / foto ------------------------------ */
+export async function updateProfilePhoto(url: string): Promise<ActionResult> {
+  if (!url) return { ok: false, message: "Sin imagen." };
+  if (hasDb) {
+    try {
+      const uid = await meId();
+      if (uid) await db.update(users).set({ avatarUrl: url }).where(eq(users.id, uid));
+    } catch (e) {
+      console.error("[updateProfilePhoto]", e);
+      return { ok: false, message: "No se pudo guardar la foto." };
+    }
+  }
+  revalidatePath("/app/profile");
+  return { ok: true, message: "Foto actualizada." };
+}
+
+/* --------------------------- formas de pago ------------------------------- */
+export async function addPaymentMethod(formData: FormData): Promise<ActionResult> {
+  const type = String(formData.get("type") ?? "tarjeta") as "tarjeta" | "efectivo" | "transferencia" | "empresarial";
+  const brand = String(formData.get("brand") ?? "").trim() || null;
+  const last4 = String(formData.get("last4") ?? "").trim().slice(-4) || null;
+  const labelMap: Record<string, string> = {
+    tarjeta: brand ? `${brand} •••• ${last4 ?? ""}`.trim() : `Tarjeta •••• ${last4 ?? ""}`,
+    efectivo: "Efectivo",
+    transferencia: "Transferencia bancaria",
+    empresarial: "Cargo empresarial",
+  };
+  if (!hasDb) return { ok: true, message: "Forma de pago agregada." };
+  try {
+    const uid = await meId();
+    if (!uid) return { ok: false, message: "Usuario no sincronizado." };
+    const existing = await db.select({ id: paymentMethods.id }).from(paymentMethods).where(eq(paymentMethods.userId, uid));
+    await db.insert(paymentMethods).values({
+      userId: uid,
+      type,
+      label: labelMap[type] ?? "Forma de pago",
+      brand,
+      last4,
+      isDefault: existing.length === 0,
+    });
+  } catch (e) {
+    console.error("[addPaymentMethod]", e);
+    return { ok: false, message: "No se pudo agregar la forma de pago." };
+  }
+  revalidatePath("/app/profile");
+  return { ok: true, message: "Forma de pago agregada." };
+}
+
+export async function deletePaymentMethod(id: string): Promise<ActionResult> {
+  if (hasDb) {
+    try {
+      const uid = await meId();
+      if (uid) await db.delete(paymentMethods).where(and(eq(paymentMethods.id, id), eq(paymentMethods.userId, uid)));
+    } catch (e) {
+      console.error("[deletePaymentMethod]", e);
+    }
+  }
+  revalidatePath("/app/profile");
+  return { ok: true, message: "Forma de pago eliminada." };
+}
+
+export async function setDefaultPaymentMethod(id: string): Promise<ActionResult> {
+  if (hasDb) {
+    try {
+      const uid = await meId();
+      if (uid) {
+        await db.update(paymentMethods).set({ isDefault: false }).where(eq(paymentMethods.userId, uid));
+        await db.update(paymentMethods).set({ isDefault: true }).where(and(eq(paymentMethods.id, id), eq(paymentMethods.userId, uid)));
+      }
+    } catch (e) {
+      console.error("[setDefaultPaymentMethod]", e);
+    }
+  }
+  revalidatePath("/app/profile");
+  return { ok: true, message: "Forma de pago predeterminada actualizada." };
+}
+
+/* ------------------------------ calificaciones ---------------------------- */
+export async function rateService(serviceId: string, stars: number, comment: string): Promise<ActionResult> {
+  const s = Math.max(1, Math.min(5, Math.round(stars)));
+  if (!hasDb) return { ok: true, message: "¡Gracias por tu calificación!" };
+  try {
+    const raterId = await meId();
+    // Califica a la contraparte del servicio (si soy el pasajero, califico al chofer; si soy chofer, al pasajero).
+    const [svc] = await db
+      .select({ userId: services.userId, driverId: services.driverId })
+      .from(services)
+      .where(eq(services.id, serviceId))
+      .limit(1);
+    if (!svc) return { ok: false, message: "Servicio no encontrado." };
+    const rateeId = raterId === svc.driverId ? svc.userId : svc.driverId;
+    if (!rateeId) return { ok: false, message: "No hay a quién calificar todavía." };
+
+    await db.insert(ratings).values({ serviceId, raterId, rateeId, stars: s, comment: comment?.trim() || null });
+
+    // Recalcular promedio del calificado.
+    const rows = await db.select({ stars: ratings.stars }).from(ratings).where(eq(ratings.rateeId, rateeId));
+    const avg = rows.reduce((a, r) => a + r.stars, 0) / rows.length;
+    await db.update(users).set({ rating: avg.toFixed(1) }).where(eq(users.id, rateeId));
+    await notifyUser(rateeId, { title: "Nueva calificación", body: `Recibiste ${s} estrellas por tu servicio.`, icon: "star" });
+  } catch (e) {
+    console.error("[rateService]", e);
+    return { ok: false, message: "No se pudo registrar la calificación." };
+  }
+  revalidatePath("/app");
+  return { ok: true, message: "¡Gracias por tu calificación!" };
 }
