@@ -1,11 +1,12 @@
 import { eq } from "drizzle-orm";
 import { db, hasDb } from "@/db";
 import { notifications, users } from "@/db/schema";
+import { sendPushToUser } from "@/lib/push";
 
-/** Inserta una notificación in-app para un usuario (tolerante a fallos). */
+/** Inserta una notificación in-app + Web Push para un usuario (tolerante a fallos). */
 export async function notifyUser(
   userId: string | null,
-  n: { title: string; body: string; icon?: string },
+  n: { title: string; body: string; icon?: string; url?: string },
 ): Promise<void> {
   if (!hasDb || !userId) return;
   try {
@@ -18,6 +19,8 @@ export async function notifyUser(
   } catch (e) {
     console.error("[notify] insert:", e);
   }
+  // Web Push en paralelo (no bloquea ni rompe si no hay suscripciones / VAPID).
+  await sendPushToUser(userId, { title: n.title, body: n.body, url: n.url, icon: n.icon });
 }
 
 /** Resuelve el id (uuid) del usuario en la DB a partir de su clerk_id. */

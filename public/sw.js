@@ -1,6 +1,6 @@
 // MT Empresarial — PWA service worker (Next.js app).
 // Network-first for navigations (always fresh app), cache-first for static assets.
-const VERSION = "mt-v4";
+const VERSION = "mt-v5";
 const STATIC = `static-${VERSION}`;
 const RUNTIME = `runtime-${VERSION}`;
 
@@ -25,6 +25,41 @@ self.addEventListener("activate", (e) => {
         Promise.all(keys.filter((k) => k !== STATIC && k !== RUNTIME).map((k) => caches.delete(k))),
       )
       .then(() => self.clients.claim()),
+  );
+});
+
+// ---- Web Push ----
+self.addEventListener("push", (e) => {
+  let data = { title: "MT Empresarial", body: "", url: "/app/alerts" };
+  try {
+    if (e.data) data = { ...data, ...e.data.json() };
+  } catch (_) {
+    if (e.data) data.body = e.data.text();
+  }
+  e.waitUntil(
+    self.registration.showNotification(data.title, {
+      body: data.body,
+      icon: "/icons/icon-192.png",
+      badge: "/icons/icon-192.png",
+      data: { url: data.url || "/app/alerts" },
+      vibrate: [80, 40, 80],
+    }),
+  );
+});
+
+self.addEventListener("notificationclick", (e) => {
+  e.notification.close();
+  const url = (e.notification.data && e.notification.data.url) || "/app/alerts";
+  e.waitUntil(
+    self.clients.matchAll({ type: "window", includeUncontrolled: true }).then((list) => {
+      for (const c of list) {
+        if ("focus" in c) {
+          c.navigate(url);
+          return c.focus();
+        }
+      }
+      return self.clients.openWindow(url);
+    }),
   );
 });
 
