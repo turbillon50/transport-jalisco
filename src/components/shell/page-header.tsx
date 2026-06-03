@@ -14,7 +14,7 @@ export function PageHeader({
 }) {
   const router = useRouter();
   return (
-    <header className="sticky top-0 z-30 h-16 flex items-center justify-between px-margin-mobile md:px-margin-desktop bg-surface/95 backdrop-blur border-b border-outline-variant">
+    <header className="sticky top-16 md:top-0 z-30 h-16 flex items-center justify-between px-margin-mobile md:px-margin-desktop bg-surface/95 backdrop-blur border-b border-outline-variant">
       <div className="flex items-center gap-3">
         {back && (
           <button
