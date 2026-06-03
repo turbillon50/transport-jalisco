@@ -1,5 +1,9 @@
 import { AppShell } from "@/components/shell/app-shell";
+import { ensureUser } from "@/lib/sync-user";
 
-export default function DriverLayout({ children }: { children: React.ReactNode }) {
+export const dynamic = "force-dynamic";
+
+export default async function DriverLayout({ children }: { children: React.ReactNode }) {
+  await ensureUser();
   return <AppShell role="driver">{children}</AppShell>;
 }
