@@ -5,7 +5,10 @@ import { getDriverServices, getMyRating } from "@/lib/queries";
 import { Icon } from "@/components/icon";
 import { StatusBadge } from "@/components/status-badge";
 import { Stars, EmptyState } from "@/components/ui-bits";
+import { DriverControls } from "@/components/driver-controls";
 import { PageTransition, FadeInOnScroll, StaggerContainer, StaggerItem, HoverCard } from "@/components/motion";
+
+const ACTIVE = ["asignado", "confirmado", "en_curso"];
 
 export const metadata: Metadata = { title: "Panel del chofer" };
 export const dynamic = "force-dynamic";
@@ -49,8 +52,8 @@ export default async function DriverDashboard() {
           <StaggerContainer className="space-y-3">
             {(today.length ? today : services).map((s) => (
               <StaggerItem key={s.id}>
-                <Link href={`/app/service/${s.id}`}>
-                  <HoverCard lift={-2} className="bg-surface-container-lowest border border-outline-variant rounded-xl p-md flex items-center justify-between gap-4 cursor-pointer">
+                <div className="bg-surface-container-lowest border border-outline-variant rounded-xl p-md space-y-3">
+                  <Link href={`/app/service/${s.id}`} className="flex items-center justify-between gap-4">
                     <div className="flex items-center gap-4 min-w-0">
                       <div className="bg-surface-container-high w-14 h-14 rounded-lg flex flex-col items-center justify-center shrink-0">
                         <span className="font-bold text-primary text-sm">{s.time.slice(0, 5)}</span>
@@ -62,8 +65,9 @@ export default async function DriverDashboard() {
                       </div>
                     </div>
                     <div className="flex items-center gap-3 shrink-0"><StatusBadge status={s.status} /><Icon name="chevron_right" className="text-outline" /></div>
-                  </HoverCard>
-                </Link>
+                  </Link>
+                  {ACTIVE.includes(s.status) && <DriverControls serviceId={s.id} status={s.status} />}
+                </div>
               </StaggerItem>
             ))}
           </StaggerContainer>
