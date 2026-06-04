@@ -23,7 +23,7 @@ export function AssignmentsBoard({ services, drivers }: { services: Svc[]; drive
     setPendings((p) => p.filter((s) => s.id !== serviceId));
     setSelected(null);
     setToast(`${driver.name} asignado al servicio.`);
-    start(() => { void assignDriver(serviceId, driver.name); });
+    start(() => { void assignDriver(serviceId, driver.id, driver.name); });
   }
 
   return (

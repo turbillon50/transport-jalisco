@@ -176,16 +176,25 @@ export async function sendCampaign(formData: FormData): Promise<ActionResult> {
   return { ok: true, message: `Campaña enviada al segmento «${segment}»${delivered ? ` (${delivered} usuarios)` : ""}.` };
 }
 
-export async function assignDriver(serviceId: string, driverName: string): Promise<ActionResult> {
+export async function assignDriver(serviceId: string, driverId: string, driverName: string): Promise<ActionResult> {
   if (hasDb) {
     try {
       const [svc] = await db
         .update(services)
-        .set({ status: "asignado" })
+        .set({ status: "asignado", driverId: driverId || null })
         .where(eq(services.id, serviceId))
         .returning({ userId: services.userId, origin: services.origin, destination: services.destination, passengers: services.passengers });
       if (svc) {
         await db.insert(serviceEvents).values({ serviceId, type: "assigned", note: driverName });
+        // Notifica al chofer asignado.
+        if (driverId) {
+          await notifyUser(driverId, {
+            title: "Nuevo servicio asignado",
+            body: `Se te asignó el traslado ${svc.origin} → ${svc.destination}.`,
+            icon: "directions_car",
+            url: "/driver",
+          });
+        }
         if (svc.userId) {
           await notifyUser(svc.userId, {
             title: "Chofer asignado",
