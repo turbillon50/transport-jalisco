@@ -1,6 +1,8 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { getServiceById } from "@/lib/queries";
+import { getRole } from "@/lib/auth";
+import { DriverActions } from "@/components/driver-actions";
 import { MapView } from "@/components/map-view";
 import { PageHeader } from "@/components/shell/page-header";
 import { Icon } from "@/components/icon";
@@ -15,8 +17,9 @@ export const dynamic = "force-dynamic";
 const GDL: [number, number] = [-103.3496, 20.6597];
 
 export default async function ServiceDetail({ params }: { params: { id: string } }) {
-  const service = await getServiceById(params.id);
+  const [service, role] = await Promise.all([getServiceById(params.id), getRole()]);
   if (!service) notFound();
+  const canDrive = role === "driver" || role === "ops" || role === "admin";
 
   const route: [number, number][] = [
     [-103.36, 20.62], [-103.35, 20.64], [-103.34, 20.66], [-103.33, 20.68],
@@ -66,6 +69,12 @@ export default async function ServiceDetail({ params }: { params: { id: string }
               <Icon name="hourglass_top" className="text-3xl text-outline" />
               <p className="mt-1">Aún sin chofer asignado. Te avisaremos en cuanto se asigne.</p>
             </div>
+          )}
+
+          {canDrive && (
+            <FadeInOnScroll delay={0.08}>
+              <DriverActions serviceId={service.id} status={service.status} />
+            </FadeInOnScroll>
           )}
 
           {service.status === "completado" && (
