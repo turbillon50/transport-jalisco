@@ -25,8 +25,8 @@ export default function LandingPage() {
   return (
     <div className="min-h-[100dvh] bg-background text-on-background">
       {/* Nav */}
-      <header className="sticky top-0 z-50 glass-effect border-b border-outline-variant">
-        <div className="max-w-6xl mx-auto px-margin-mobile md:px-8 h-16 flex items-center justify-between">
+      <header className="sticky top-0 z-50 glass-effect border-b border-outline-variant" style={{ paddingTop: "env(safe-area-inset-top, 0px)" }}>
+        <div className="max-w-6xl mx-auto px-margin-mobile md:px-8 min-h-16 py-2 flex items-center justify-between">
           <Image src="/icons/logo.png" alt="MT Empresarial" width={150} height={40} className="h-9 w-auto" priority />
           <div className="flex items-center gap-2">
             <ThemeToggle />
