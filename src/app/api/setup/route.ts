@@ -34,6 +34,12 @@ DO $$ BEGIN ALTER TABLE "vehicles" ADD CONSTRAINT "vehicles_driver_id_users_id_f
 CREATE TABLE IF NOT EXISTS "push_subscriptions" ("id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,"user_id" uuid,"endpoint" text NOT NULL,"p256dh" text NOT NULL,"auth" text NOT NULL,"created_at" timestamp with time zone DEFAULT now() NOT NULL,CONSTRAINT "push_subscriptions_endpoint_unique" UNIQUE("endpoint"));--> statement-breakpoint
 DO $$ BEGIN ALTER TABLE "push_subscriptions" ADD CONSTRAINT "push_subscriptions_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE cascade ON UPDATE no action; EXCEPTION WHEN duplicate_object THEN null; END $$;--> statement-breakpoint
 ALTER TABLE "users" ADD COLUMN IF NOT EXISTS "deleted_at" timestamp with time zone;--> statement-breakpoint
+ALTER TABLE "users" ADD COLUMN IF NOT EXISTS "phone" text;--> statement-breakpoint
+ALTER TABLE "users" ADD COLUMN IF NOT EXISTS "avatar_url" text;--> statement-breakpoint
+ALTER TABLE "users" ADD COLUMN IF NOT EXISTS "rating" numeric(2, 1);--> statement-breakpoint
+ALTER TABLE "users" ADD COLUMN IF NOT EXISTS "clerk_id" text;--> statement-breakpoint
+ALTER TABLE "vehicles" ADD COLUMN IF NOT EXISTS "image_url" text;--> statement-breakpoint
+ALTER TABLE "vehicles" ADD COLUMN IF NOT EXISTS "odometer" integer DEFAULT 0;
 DO $$ BEGIN CREATE TYPE "public"."payment_method_type" AS ENUM('tarjeta','efectivo','transferencia','empresarial'); EXCEPTION WHEN duplicate_object THEN null; END $$;--> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "payment_methods" ("id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,"user_id" uuid NOT NULL,"type" "payment_method_type" NOT NULL,"label" text NOT NULL,"brand" text,"last4" text,"is_default" boolean DEFAULT false NOT NULL,"created_at" timestamp with time zone DEFAULT now() NOT NULL);--> statement-breakpoint
 DO $$ BEGIN ALTER TABLE "payment_methods" ADD CONSTRAINT "payment_methods_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE cascade ON UPDATE no action; EXCEPTION WHEN duplicate_object THEN null; END $$;--> statement-breakpoint
