@@ -48,7 +48,14 @@ export async function getUsers(): Promise<AdminUserRow[]> {
   if (!hasDb) return [];
   try {
     const rows = await db
-      .select()
+      .select({
+        id: usersTable.id,
+        clerkId: usersTable.clerkId,
+        name: usersTable.name,
+        email: usersTable.email,
+        role: usersTable.role,
+        createdAt: usersTable.createdAt,
+      })
       .from(usersTable)
       .where(isNull(usersTable.deletedAt))
       .orderBy(desc(usersTable.createdAt));
@@ -276,7 +283,20 @@ export async function getVehicles() {
 export async function getDrivers() {
   if (!hasDb) return [];
   try {
-    return await db.select().from(usersTable).where(and(eq(usersTable.role, "driver"), isNull(usersTable.deletedAt))).orderBy(desc(usersTable.createdAt));
+    return await db
+      .select({
+        id: usersTable.id,
+        clerkId: usersTable.clerkId,
+        name: usersTable.name,
+        email: usersTable.email,
+        phone: usersTable.phone,
+        avatarUrl: usersTable.avatarUrl,
+        rating: usersTable.rating,
+        createdAt: usersTable.createdAt,
+      })
+      .from(usersTable)
+      .where(and(eq(usersTable.role, "driver"), isNull(usersTable.deletedAt)))
+      .orderBy(desc(usersTable.createdAt));
   } catch {
     return [];
   }
@@ -339,17 +359,15 @@ async function count(where: ReturnType<typeof eq>): Promise<number> {
 
 export async function getOpsStats() {
   if (!hasDb) return { hoy: 0, enCurso: 0, pendientes: 0, choferes: 0 };
-  try {
-    const [hoy, enCurso, pendientes] = await Promise.all([
-      count(inArray(services.status, ["pendiente", "asignado", "confirmado", "en_curso"]) as never),
-      count(eq(services.status, "en_curso")),
-      count(eq(services.status, "pendiente")),
-    ]);
-    const drivers = await getDrivers();
-    return { hoy, enCurso, pendientes, choferes: drivers.length };
-  } catch {
-    return { hoy: 0, enCurso: 0, pendientes: 0, choferes: 0 };
-  }
+  // Cada conteo es independiente: si uno falla, los demas siguen reales.
+  const safe = async (q: Promise<number>) => { try { return await q; } catch { return 0; } };
+  const [hoy, enCurso, pendientes, choferes] = await Promise.all([
+    safe(count(inArray(services.status, ["pendiente", "asignado", "confirmado", "en_curso"]) as never)),
+    safe(count(eq(services.status, "en_curso"))),
+    safe(count(eq(services.status, "pendiente"))),
+    (async () => { try { return (await getDrivers()).length; } catch { return 0; } })(),
+  ]);
+  return { hoy, enCurso, pendientes, choferes };
 }
 
 /* ----------------------------- payment methods ---------------------------- */
