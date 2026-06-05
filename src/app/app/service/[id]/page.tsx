@@ -6,6 +6,7 @@ import { auth } from "@clerk/nextjs/server";
 import { dbUserIdByClerk } from "@/lib/notify";
 import { DriverActions } from "@/components/driver-actions";
 import { MapView } from "@/components/map-view";
+import { EmptyState } from "@/components/ui-bits";
 import { PageHeader } from "@/components/shell/page-header";
 import { Icon } from "@/components/icon";
 import { Button } from "@/components/ui";
@@ -16,7 +17,6 @@ import { PageTransition, FadeInOnScroll } from "@/components/motion";
 export const metadata: Metadata = { title: "Detalle del servicio" };
 export const dynamic = "force-dynamic";
 
-const GDL: [number, number] = [-103.3496, 20.6597];
 
 export default async function ServiceDetail({ params }: { params: { id: string } }) {
   const [service, role] = await Promise.all([getServiceById(params.id), getRole()]);
@@ -28,16 +28,33 @@ export default async function ServiceDetail({ params }: { params: { id: string }
   }
   const canDrive = role === "driver" || role === "ops" || role === "admin";
 
-  const route: [number, number][] = [
-    [-103.36, 20.62], [-103.35, 20.64], [-103.34, 20.66], [-103.33, 20.68],
-  ];
+  const hasGeo = service.originLat != null && service.originLng != null && service.destLat != null && service.destLng != null;
+  const route: [number, number][] = hasGeo
+    ? [
+        [service.originLng as number, service.originLat as number],
+        [service.destLng as number, service.destLat as number],
+      ]
+    : [];
+  const center: [number, number] | null = hasGeo
+    ? [((service.originLng as number) + (service.destLng as number)) / 2, ((service.originLat as number) + (service.destLat as number)) / 2]
+    : null;
 
   return (
     <PageTransition className="flex flex-col min-h-[100dvh]">
       <PageHeader title="Detalle del servicio" back />
       <div className="flex-grow flex flex-col md:flex-row max-w-[1440px] mx-auto w-full">
         <section className="relative w-full h-[260px] md:h-auto md:flex-1">
-          <MapView center={GDL} markers={[{ id: "o", lng: route[0][0], lat: route[0][1], type: "vehicle" }, { id: "d", lng: route[3][0], lat: route[3][1], type: "destination", label: "B" }]} route={route} className="h-full md:absolute md:inset-0" />
+          {hasGeo && center ? (
+            <MapView center={center} zoom={12.5} markers={[{ id: "o", lng: route[0][0], lat: route[0][1], type: "vehicle", label: service.plate ?? "" }, { id: "d", lng: route[1][0], lat: route[1][1], type: "destination", label: "B" }]} route={route} className="h-full md:absolute md:inset-0" />
+          ) : (
+            <div className="h-full md:absolute md:inset-0 flex items-center justify-center bg-surface-container-low">
+              <EmptyState
+                icon="map"
+                title="Ubicación en preparación"
+                body="Aún no hay coordenadas para este traslado. Te mostraremos el mapa en vivo en cuanto estén disponibles."
+              />
+            </div>
+          )}
         </section>
 
         <section className="w-full md:w-[480px] bg-surface flex flex-col px-margin-mobile py-lg gap-lg md:overflow-y-auto">
