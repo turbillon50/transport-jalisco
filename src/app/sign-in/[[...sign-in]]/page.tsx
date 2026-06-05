@@ -1,12 +1,13 @@
 import { SignIn } from "@clerk/nextjs";
 import Image from "next/image";
+import { PageTransition } from "@/components/motion";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = { title: "Iniciar sesión" };
 
 export default function SignInPage() {
   return (
-    <div className="min-h-[100dvh] grid lg:grid-cols-2">
+    <PageTransition className="min-h-[100dvh] grid lg:grid-cols-2">
       <div className="hidden lg:flex relative gradient-mesh text-white flex-col justify-between p-12 overflow-hidden">
         <div className="absolute inset-0 road-pattern animate-subtle-drift pointer-events-none" />
         <Image src="/icons/logo.png" alt="MT Empresarial" width={200} height={64} className="relative w-44 h-auto bg-white rounded-2xl p-4 shadow-2xl" />
@@ -23,6 +24,6 @@ export default function SignInPage() {
           }}
         />
       </div>
-    </div>
+    </PageTransition>
   );
 }

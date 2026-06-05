@@ -394,3 +394,45 @@ export async function getMyRating(): Promise<{ avg: number | null; count: number
     return { avg: null, count: 0 };
   }
 }
+
+/* ----------------------------- driver map (geo) ---------------------------- */
+export interface DriverMapData {
+  origin: string;
+  destination: string;
+  time: string;
+  passengers: number;
+  originLat: number | null;
+  originLng: number | null;
+  destLat: number | null;
+  destLng: number | null;
+}
+
+/** Servicio activo del chofer con coordenadas reales para el mapa GPS. */
+export async function getDriverActiveGeo(): Promise<DriverMapData | null> {
+  if (!hasDb) return null;
+  try {
+    const uid = await myId();
+    if (!uid) return null;
+    const rows = await db
+      .select()
+      .from(services)
+      .where(and(eq(services.driverId, uid), inArray(services.status, ["asignado", "confirmado", "en_curso"])))
+      .orderBy(desc(services.createdAt))
+      .limit(1);
+    if (!rows.length) return null;
+    const s = rows[0];
+    const when = s.scheduledAt ?? s.createdAt;
+    return {
+      origin: s.origin,
+      destination: s.destination,
+      time: fmtParts(when).time,
+      passengers: s.passengers,
+      originLat: s.originLat,
+      originLng: s.originLng,
+      destLat: s.destLat,
+      destLng: s.destLng,
+    };
+  } catch {
+    return null;
+  }
+}

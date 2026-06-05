@@ -1,25 +1,60 @@
 import type { Metadata } from "next";
 import { MapScreen } from "@/components/map-screen";
+import { getDriverActiveGeo } from "@/lib/queries";
 
 export const metadata: Metadata = { title: "Mapa GPS" };
+export const dynamic = "force-dynamic";
 
-export default function DriverMap() {
+/** Distancia haversine en km. */
+function km(aLat: number, aLng: number, bLat: number, bLng: number) {
+  const R = 6371;
+  const dLat = ((bLat - aLat) * Math.PI) / 180;
+  const dLng = ((bLng - aLng) * Math.PI) / 180;
+  const h =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos((aLat * Math.PI) / 180) * Math.cos((bLat * Math.PI) / 180) * Math.sin(dLng / 2) ** 2;
+  return 2 * R * Math.asin(Math.sqrt(h));
+}
+
+export default async function DriverMap() {
+  const svc = await getDriverActiveGeo();
+  const hasGeo =
+    svc?.originLat != null && svc?.originLng != null && svc?.destLat != null && svc?.destLng != null;
+
+  if (!svc || !hasGeo) {
+    return (
+      <MapScreen
+        markers={[]}
+        stats={[
+          { value: "—", label: "Distancia", cls: "text-secondary" },
+          { value: "—", label: "ETA", cls: "text-primary" },
+          { value: svc?.time ?? "—", label: "Cita", cls: "text-on-surface" },
+          { value: svc ? "Sin GPS" : "Sin servicio", label: "Estado", cls: "text-on-surface-variant" },
+        ]}
+      />
+    );
+  }
+
+  const dist = km(svc.originLat!, svc.originLng!, svc.destLat!, svc.destLng!);
+  const etaMin = Math.max(1, Math.round((dist / 30) * 60)); // 30 km/h promedio urbano
   const route: [number, number][] = [
-    [-103.37, 20.61], [-103.355, 20.63], [-103.34, 20.655], [-103.325, 20.68],
+    [svc.originLng!, svc.originLat!],
+    [svc.destLng!, svc.destLat!],
   ];
+
   return (
     <MapScreen
       zoom={12.5}
       route={route}
       markers={[
-        { id: "me", lng: route[0][0], lat: route[0][1], type: "vehicle", label: "Tú" },
-        { id: "dest", lng: route[3][0], lat: route[3][1], type: "destination", label: "B" },
+        { id: "me", lng: svc.originLng!, lat: svc.originLat!, type: "vehicle", label: "Tú" },
+        { id: "dest", lng: svc.destLng!, lat: svc.destLat!, type: "destination", label: svc.destination },
       ]}
       stats={[
-        { value: "12 km", label: "Distancia", cls: "text-secondary" },
-        { value: "18 min", label: "ETA", cls: "text-primary" },
-        { value: "08:00", label: "Cita", cls: "text-on-surface" },
-        { value: "1", label: "Pasajero", cls: "text-on-surface" },
+        { value: `${dist.toFixed(1)} km`, label: "Distancia", cls: "text-secondary" },
+        { value: `${etaMin} min`, label: "ETA", cls: "text-primary" },
+        { value: svc.time, label: "Cita", cls: "text-on-surface" },
+        { value: svc.passengers, label: svc.passengers === 1 ? "Pasajero" : "Pasajeros", cls: "text-on-surface" },
       ]}
     />
   );
