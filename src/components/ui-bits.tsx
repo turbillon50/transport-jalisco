@@ -10,7 +10,7 @@ export function Stars({ value, size = 16, className }: { value: number | null; s
           key={i}
           name="star"
           fill={i < Math.round(v)}
-          className={cn(i < Math.round(v) ? "text-tertiary-fixed-dim" : "text-outline-variant")}
+          className={cn(i < Math.round(v) ? "text-[#00b4d8]" : "text-outline-variant")}
           style={{ fontSize: size }}
         />
       ))}

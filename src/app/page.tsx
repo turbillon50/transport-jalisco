@@ -46,13 +46,13 @@ export default function LandingPage() {
         <div className="relative max-w-6xl mx-auto px-margin-mobile md:px-8 py-24 md:py-32 text-center">
           <FadeInOnScroll>
             <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 border border-white/20 text-label-md uppercase tracking-widest mb-6">
-              <span className="w-2 h-2 rounded-full bg-tertiary-fixed-dim animate-pulse" /> Logística de Confianza · Jalisco
+              <span className="w-2 h-2 rounded-full bg-[#00b4d8] animate-pulse" /> Logística de Confianza · Jalisco
             </span>
           </FadeInOnScroll>
           <FadeInOnScroll delay={0.08}>
             <h1 className="text-4xl md:text-6xl font-bold tracking-tight leading-tight mb-6">
               Transporte empresarial<br />
-              <span className="text-tertiary-fixed-dim">Tu destino, nuestra ruta.</span>
+              <span className="text-secondary-fixed-dim">Tu destino, nuestra ruta.</span>
             </h1>
           </FadeInOnScroll>
           <FadeInOnScroll delay={0.16}>
@@ -128,7 +128,7 @@ export default function LandingPage() {
                 Únete a MT Empresarial y digitaliza tus traslados corporativos hoy mismo.
               </p>
               <Link href="/sign-up">
-                <Button size="lg" icon="arrow_forward" className="bg-tertiary-fixed-dim text-on-tertiary-fixed hover:brightness-105">
+                <Button size="lg" icon="arrow_forward" className="bg-secondary text-white hover:brightness-105">
                   Empezar ahora
                 </Button>
               </Link>

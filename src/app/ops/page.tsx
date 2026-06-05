@@ -12,7 +12,7 @@ export default async function OpsDashboard() {
   const [stats, pending] = await Promise.all([getOpsStats(), getUnassignedServices()]);
   const cards = [
     { label: "Servicios activos", value: stats.hoy, foot: "Programados", dot: "bg-secondary" },
-    { label: "En curso", value: stats.enCurso, foot: "En ruta", dot: "bg-tertiary-fixed-dim" },
+    { label: "En curso", value: stats.enCurso, foot: "En ruta", dot: "bg-[#00b4d8]" },
     { label: "Pendientes", value: stats.pendientes, foot: "Por asignar", icon: "error" },
     { label: "Choferes", value: stats.choferes, foot: "Registrados", dot: "bg-green-500" },
   ];

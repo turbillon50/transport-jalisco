@@ -31,7 +31,7 @@ export function RatingForm({ serviceId }: { serviceId: string }) {
               aria-label={`${n} estrellas`}
               className="p-1"
             >
-              <Icon name="star" fill={(hover || stars) >= n} className={cn("text-3xl", (hover || stars) >= n ? "text-tertiary-fixed-dim" : "text-outline-variant")} />
+              <Icon name="star" fill={(hover || stars) >= n} className={cn("text-3xl", (hover || stars) >= n ? "text-[#00b4d8]" : "text-outline-variant")} />
             </button>
           );
         })}

@@ -23,7 +23,7 @@ export default async function AdminDashboard() {
   const kpis = [
     { icon: "directions_car", label: "Servicios totales", value: analytics.totals.servicios, cls: "text-secondary" },
     { icon: "task_alt", label: "Completados", value: analytics.totals.completados, cls: "text-green-600" },
-    { icon: "schedule", label: "Pendientes", value: stats.pendientes, cls: "text-tertiary-container" },
+    { icon: "schedule", label: "Pendientes", value: stats.pendientes, cls: "text-[#00b4d8]" },
     { icon: "badge", label: "Choferes", value: stats.choferes, cls: "text-primary" },
   ];
 

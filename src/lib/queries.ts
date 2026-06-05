@@ -282,6 +282,51 @@ export async function getDrivers() {
   }
 }
 
+export interface AdminDriverRow {
+  id: string;
+  name: string;
+  email: string;
+  phone: string | null;
+  rating: number | null;
+  blocked: boolean;
+  vehiclePlate: string | null;
+  vehicleModel: string | null;
+}
+
+/** Choferes para el panel admin: incluye bloqueados (deletedAt != null) y su vehículo. */
+export async function getDriversAdmin(): Promise<AdminDriverRow[]> {
+  if (!hasDb) return [];
+  try {
+    const rows = await db
+      .select({
+        id: usersTable.id,
+        name: usersTable.name,
+        email: usersTable.email,
+        phone: usersTable.phone,
+        rating: usersTable.rating,
+        deletedAt: usersTable.deletedAt,
+        vehiclePlate: vehicles.plate,
+        vehicleModel: vehicles.model,
+      })
+      .from(usersTable)
+      .leftJoin(vehicles, eq(vehicles.driverId, usersTable.id))
+      .where(eq(usersTable.role, "driver"))
+      .orderBy(desc(usersTable.createdAt));
+    return rows.map((r) => ({
+      id: r.id,
+      name: r.name,
+      email: r.email,
+      phone: r.phone,
+      rating: r.rating != null ? Number(r.rating) : null,
+      blocked: r.deletedAt != null,
+      vehiclePlate: r.vehiclePlate ?? null,
+      vehicleModel: r.vehicleModel ?? null,
+    }));
+  } catch {
+    return [];
+  }
+}
+
 /* ------------------------------- dashboards ------------------------------- */
 async function count(where: ReturnType<typeof eq>): Promise<number> {
   try {
@@ -324,7 +369,7 @@ export async function getPaymentMethods() {
 }
 
 const STATUS_SLICE: { key: SvcStatus; name: string; color: string }[] = [
-  { key: "pendiente", name: "Pendiente", color: "#f7bd3d" },
+  { key: "pendiente", name: "Pendiente", color: "#00b4d8" },
   { key: "asignado", name: "Asignado", color: "#1e6bff" },
   { key: "en_curso", name: "En curso", color: "#00b4d8" },
   { key: "completado", name: "Completado", color: "#16a34a" },

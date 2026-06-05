@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { auth, currentUser, clerkClient } from "@clerk/nextjs/server";
 import { eq, and } from "drizzle-orm";
 import { db, hasDb } from "@/db";
-import { services, serviceEvents, featureFlags, auditLog, notifications, users, paymentMethods, ratings } from "@/db/schema";
+import { services, serviceEvents, featureFlags, auditLog, notifications, users, vehicles, paymentMethods, ratings } from "@/db/schema";
 import {
   sendServiceRequestedEmail,
   sendOpsNewServiceEmail,
@@ -13,6 +13,7 @@ import {
 } from "@/lib/email";
 import { notifyUser, dbUserIdByClerk } from "@/lib/notify";
 import { getRole } from "@/lib/auth";
+import { hasAdminCookie } from "@/lib/admin-gate";
 import { ensureUser } from "@/lib/sync-user";
 
 async function meId(): Promise<string | null> {
@@ -48,7 +49,10 @@ export type ActionResult = { ok: boolean; message: string };
 /** Verifica que el rol actual esté dentro de los permitidos. */
 async function requireRole(...allowed: ("user" | "driver" | "ops" | "admin")[]): Promise<boolean> {
   const role = await getRole();
-  return allowed.includes(role);
+  if (allowed.includes(role)) return true;
+  // Admin por llave-enlace (cookie): permite acciones admin sin login de Clerk.
+  if (allowed.includes("admin") && hasAdminCookie()) return true;
+  return false;
 }
 
 export async function createService(formData: FormData): Promise<ActionResult> {
@@ -411,4 +415,95 @@ export async function rateService(serviceId: string, stars: number, comment: str
   }
   revalidatePath("/app");
   return { ok: true, message: "¡Gracias por tu calificación!" };
+}
+
+
+/* --------------------------------- choferes -------------------------------- */
+
+/** Alta de chofer desde el panel admin (opcionalmente con vehículo). */
+export async function createDriver(formData: FormData): Promise<ActionResult> {
+  if (!(await requireRole("ops", "admin"))) return { ok: false, message: "No autorizado." };
+
+  const name = String(formData.get("name") ?? "").trim();
+  const phone = String(formData.get("phone") ?? "").trim();
+  const emailIn = String(formData.get("email") ?? "").trim().toLowerCase();
+  const plate = String(formData.get("plate") ?? "").trim().toUpperCase();
+  const model = String(formData.get("model") ?? "").trim();
+  const capacityRaw = String(formData.get("capacity") ?? "").trim();
+
+  if (!name || !phone) return { ok: false, message: "Nombre y teléfono son obligatorios." };
+  if (!hasDb) return { ok: false, message: "Base de datos no configurada." };
+
+  // Email placeholder único si no se proporciona (la columna es notNull).
+  const email = emailIn || `chofer+${Math.random().toString(36).slice(2, 10)}@mtempresarial.life`;
+
+  try {
+    const [row] = await db
+      .insert(users)
+      .values({ name, email, role: "driver", phone })
+      .returning({ id: users.id });
+    if (!row) return { ok: false, message: "No se pudo crear el chofer." };
+
+    if (plate) {
+      const capacity = Number.isFinite(Number(capacityRaw)) && capacityRaw ? Number(capacityRaw) : 4;
+      await db
+        .insert(vehicles)
+        .values({ plate, model: model || "Sin modelo", capacity, driverId: row.id })
+        .onConflictDoUpdate({
+          target: vehicles.plate,
+          set: { model: model || "Sin modelo", capacity, driverId: row.id },
+        });
+    }
+
+    await logAudit("driver.create", `${name} (${phone})`, plate ? `placa ${plate}` : undefined);
+    revalidatePath("/admin/drivers");
+    return { ok: true, message: `Chofer ${name} dado de alta.` };
+  } catch (e) {
+    console.error("[createDriver]", e);
+    return { ok: false, message: "No se pudo crear el chofer. Revisa los datos (placa duplicada, etc.)." };
+  }
+}
+
+/** Edita datos básicos de un chofer. */
+export async function updateDriver(id: string, formData: FormData): Promise<ActionResult> {
+  if (!(await requireRole("ops", "admin"))) return { ok: false, message: "No autorizado." };
+
+  const name = String(formData.get("name") ?? "").trim();
+  const phone = String(formData.get("phone") ?? "").trim();
+  const email = String(formData.get("email") ?? "").trim().toLowerCase();
+
+  if (!name || !phone) return { ok: false, message: "Nombre y teléfono son obligatorios." };
+  if (!hasDb) return { ok: false, message: "Base de datos no configurada." };
+
+  try {
+    await db
+      .update(users)
+      .set({ name, phone, ...(email ? { email } : {}) })
+      .where(and(eq(users.id, id), eq(users.role, "driver")));
+    await logAudit("driver.update", id, name);
+    revalidatePath("/admin/drivers");
+    return { ok: true, message: "Chofer actualizado." };
+  } catch (e) {
+    console.error("[updateDriver]", e);
+    return { ok: false, message: "No se pudo actualizar el chofer." };
+  }
+}
+
+/** Bloquea (soft-delete) o reactiva a un chofer. */
+export async function setDriverBlocked(id: string, blocked: boolean): Promise<ActionResult> {
+  if (!(await requireRole("ops", "admin"))) return { ok: false, message: "No autorizado." };
+  if (!hasDb) return { ok: false, message: "Base de datos no configurada." };
+
+  try {
+    await db
+      .update(users)
+      .set({ deletedAt: blocked ? new Date() : null })
+      .where(and(eq(users.id, id), eq(users.role, "driver")));
+    await logAudit(blocked ? "driver.block" : "driver.unblock", id);
+    revalidatePath("/admin/drivers");
+    return { ok: true, message: blocked ? "Chofer bloqueado." : "Chofer reactivado." };
+  } catch (e) {
+    console.error("[setDriverBlocked]", e);
+    return { ok: false, message: "No se pudo cambiar el estado del chofer." };
+  }
 }

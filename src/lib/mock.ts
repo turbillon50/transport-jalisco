@@ -112,7 +112,7 @@ export const serviceTypeBreakdown = [
   { name: "Aeropuerto", value: 42, color: "#002863" },
   { name: "Corporativo", value: 28, color: "#1e6bff" },
   { name: "Eventos", value: 18, color: "#00b4d8" },
-  { name: "Otros", value: 12, color: "#f7bd3d" },
+  { name: "Otros", value: 12, color: "#00b4d8" },
 ];
 
 export const adminUsers = [

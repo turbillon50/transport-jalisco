@@ -12,7 +12,7 @@ export default async function OpsMap() {
       markers={[]}
       stats={[
         { value: stats.enCurso, label: "En ruta", cls: "text-secondary" },
-        { value: stats.pendientes, label: "Pendientes", cls: "text-tertiary-container" },
+        { value: stats.pendientes, label: "Pendientes", cls: "text-[#00b4d8]" },
         { value: stats.hoy, label: "Activos", cls: "text-on-surface" },
         { value: stats.choferes, label: "Choferes", cls: "text-primary" },
       ]}

@@ -13,8 +13,11 @@ const roleTone: Record<string, BadgeVariant> = {
   user: "default",
   driver: "info",
   ops: "success",
-  admin: "warning",
+  admin: "default",
 };
+
+// Estilo de marca (azul) para el rol admin — sin dorado.
+const ADMIN_BADGE_CLS = "bg-primary/10 text-primary border border-primary/30";
 
 export function UsersTable({ initialUsers }: { initialUsers: AdminUserRow[] }) {
   const [rows, setRows] = useState(initialUsers);
@@ -56,7 +59,7 @@ export function UsersTable({ initialUsers }: { initialUsers: AdminUserRow[] }) {
                 </div>
                 <span className="text-body-md text-on-surface-variant truncate">{u.email}</span>
                 <div className="flex items-center gap-2">
-                  <Badge variant={roleTone[u.role] ?? "default"}>{u.role}</Badge>
+                  <Badge variant={roleTone[u.role] ?? "default"} className={u.role === "admin" ? ADMIN_BADGE_CLS : ""}>{u.role}</Badge>
                   <div className="relative">
                     <select
                       aria-label={`Rol de ${u.name}`}
