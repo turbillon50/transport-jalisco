@@ -13,7 +13,7 @@ export function Icon({
 }) {
   return (
     <span
-      className={cn("material-symbols-outlined", fill && "fill", className)}
+      className={cn("material-symbols-outlined inline-block overflow-hidden w-[1em] h-[1em] leading-none", fill && "fill", className)}
       style={style}
       aria-hidden="true"
     >

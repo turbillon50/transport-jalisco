@@ -12,6 +12,8 @@ import {
   sendServiceStatusEmail,
 } from "@/lib/email";
 import { notifyUser, dbUserIdByClerk } from "@/lib/notify";
+import { getRole } from "@/lib/auth";
+import { ensureUser } from "@/lib/sync-user";
 
 async function meId(): Promise<string | null> {
   try {
@@ -43,6 +45,12 @@ async function logAudit(action: string, target?: string, meta?: string) {
 
 export type ActionResult = { ok: boolean; message: string };
 
+/** Verifica que el rol actual esté dentro de los permitidos. */
+async function requireRole(...allowed: ("user" | "driver" | "ops" | "admin")[]): Promise<boolean> {
+  const role = await getRole();
+  return allowed.includes(role);
+}
+
 export async function createService(formData: FormData): Promise<ActionResult> {
   const origin = String(formData.get("origin") ?? "").trim();
   const destination = String(formData.get("destination") ?? "").trim();
@@ -57,9 +65,15 @@ export async function createService(formData: FormData): Promise<ActionResult> {
   if (hasDb) {
     try {
       const { userId } = await auth();
+      let uid = await dbUserIdByClerk(userId);
+      if (!uid) {
+        await ensureUser();
+        uid = await dbUserIdByClerk(userId);
+      }
       const [row] = await db
         .insert(services)
         .values({
+          userId: uid,
           origin,
           destination,
           passengers: Number.isFinite(passengers) ? passengers : 1,
@@ -69,10 +83,7 @@ export async function createService(formData: FormData): Promise<ActionResult> {
         })
         .returning({ id: services.id });
       if (row) await db.insert(serviceEvents).values({ serviceId: row.id, type: "created", note: `por ${userId ?? "usuario"}` });
-      const uid = await dbUserIdByClerk(userId);
       if (uid) {
-        // Asociar el servicio al usuario y dejarle la notificación in-app.
-        if (row) await db.update(services).set({ userId: uid }).where(eq(services.id, row.id));
         await notifyUser(uid, {
           title: "Solicitud recibida",
           body: `Tu traslado ${origin} → ${destination} fue registrado. Te avisaremos al asignar chofer.`,
@@ -109,6 +120,7 @@ export async function createService(formData: FormData): Promise<ActionResult> {
 }
 
 export async function toggleFeatureFlag(key: string, value: boolean): Promise<ActionResult> {
+  if (!(await requireRole("admin"))) return { ok: false, message: "No autorizado." };
   if (hasDb) {
     try {
       await db
@@ -125,6 +137,7 @@ export async function toggleFeatureFlag(key: string, value: boolean): Promise<Ac
 }
 
 export async function updateUserRole(userId: string, role: "user" | "driver" | "ops" | "admin"): Promise<ActionResult> {
+  if (!(await requireRole("admin"))) return { ok: false, message: "No autorizado." };
   if (hasDb) {
     try {
       const [row] = await db.update(users).set({ role }).where(eq(users.id, userId)).returning({ clerkId: users.clerkId });
@@ -151,6 +164,7 @@ export async function sendCampaign(formData: FormData): Promise<ActionResult> {
   const title = String(formData.get("title") ?? "").trim();
   const body = String(formData.get("body") ?? "").trim();
   const segment = String(formData.get("segment") ?? "all");
+  if (!(await requireRole("admin"))) return { ok: false, message: "No autorizado." };
   if (!title || !body) return { ok: false, message: "Título y mensaje son obligatorios." };
 
   let delivered = 0;
@@ -160,12 +174,11 @@ export async function sendCampaign(formData: FormData): Promise<ActionResult> {
         segment === "all"
           ? await db.select({ id: users.id }).from(users)
           : await db.select({ id: users.id }).from(users).where(eq(users.role, segment as "user" | "driver" | "ops" | "admin"));
-      if (targets.length) {
-        await db.insert(notifications).values(targets.map((u) => ({ userId: u.id, title, body, icon: "campaign" })));
-        delivered = targets.length;
-      } else {
-        await db.insert(notifications).values({ title, body, icon: "campaign" });
+      if (!targets.length) {
+        return { ok: false, message: "El segmento no tiene usuarios" };
       }
+      await db.insert(notifications).values(targets.map((u) => ({ userId: u.id, title, body, icon: "campaign" })));
+      delivered = targets.length;
       await logAudit("Envió campaña push", `${segment}: ${title}`);
     } catch {
       return { ok: false, message: "No se pudo registrar la campaña." };
@@ -177,6 +190,7 @@ export async function sendCampaign(formData: FormData): Promise<ActionResult> {
 }
 
 export async function assignDriver(serviceId: string, driverId: string, driverName: string): Promise<ActionResult> {
+  if (!(await requireRole("ops", "admin"))) return { ok: false, message: "No autorizado." };
   if (hasDb) {
     try {
       const [svc] = await db
@@ -229,10 +243,31 @@ const STATUS_COPY: Record<ServiceStatus, { title: string; body: string; icon: st
 };
 
 /** Avance de estado del servicio por el chofer → notifica al usuario (in-app + correo). */
+const VALID_PREV: Record<ServiceStatus, ("pendiente" | "asignado" | "confirmado" | "en_curso" | "completado" | "cancelado")[]> = {
+  driver_arrived: ["asignado", "confirmado"],
+  started: ["asignado", "confirmado", "en_curso"],
+  completed: ["en_curso"],
+};
+
 export async function advanceService(serviceId: string, status: ServiceStatus): Promise<ActionResult> {
   const copy = STATUS_COPY[status];
+  const role = await getRole();
+  if (!["driver", "ops", "admin"].includes(role)) return { ok: false, message: "No autorizado." };
   if (hasDb) {
     try {
+      const [current] = await db
+        .select({ status: services.status, driverId: services.driverId })
+        .from(services)
+        .where(eq(services.id, serviceId))
+        .limit(1);
+      if (!current) return { ok: false, message: "Servicio no encontrado." };
+      if (role === "driver") {
+        const uid = await meId();
+        if (!uid || current.driverId !== uid) return { ok: false, message: "No autorizado." };
+      }
+      if (!VALID_PREV[status].includes(current.status)) {
+        return { ok: false, message: "Transición de estado no válida." };
+      }
       const [svc] = await db
         .update(services)
         .set({ status: copy.dbStatus })

@@ -12,8 +12,6 @@ import { PageTransition, SlideIn } from "@/components/motion";
 export const metadata: Metadata = { title: "Servicio en curso" };
 export const dynamic = "force-dynamic";
 
-const GDL: [number, number] = [-103.3496, 20.6597];
-
 export default async function ActiveService() {
   const s = await getActiveService();
 
@@ -31,14 +29,31 @@ export default async function ActiveService() {
     );
   }
 
-  const route: [number, number][] = [
-    [-103.37, 20.61], [-103.355, 20.63], [-103.34, 20.655], [-103.325, 20.68],
-  ];
+  const hasGeo = s.originLat != null && s.originLng != null && s.destLat != null && s.destLng != null;
+  const route: [number, number][] = hasGeo
+    ? [
+        [s.originLng as number, s.originLat as number],
+        [s.destLng as number, s.destLat as number],
+      ]
+    : [];
+  const center: [number, number] | null = hasGeo
+    ? [((s.originLng as number) + (s.destLng as number)) / 2, ((s.originLat as number) + (s.destLat as number)) / 2]
+    : null;
 
   return (
     <PageTransition className="relative h-[calc(100dvh-8rem)] md:h-[100dvh] overflow-hidden">
-      <MapView center={GDL} zoom={12.5} className="absolute inset-0 h-full" route={route}
-        markers={[{ id: "v", lng: route[0][0], lat: route[0][1], type: "vehicle", label: s.plate ?? "" }, { id: "d", lng: route[3][0], lat: route[3][1], type: "destination", label: "B" }]} />
+      {hasGeo && center ? (
+        <MapView center={center} zoom={12.5} className="absolute inset-0 h-full" route={route}
+          markers={[{ id: "v", lng: route[0][0], lat: route[0][1], type: "vehicle", label: s.plate ?? "" }, { id: "d", lng: route[1][0], lat: route[1][1], type: "destination", label: "B" }]} />
+      ) : (
+        <div className="absolute inset-0 flex items-center justify-center">
+          <EmptyState
+            icon="map"
+            title="Ubicación en preparación"
+            body="Aún no hay coordenadas para este traslado. Te mostraremos el mapa en vivo en cuanto estén disponibles."
+          />
+        </div>
+      )}
 
       <div className="absolute inset-x-0 bottom-0 z-10 p-margin-mobile md:p-margin-desktop pointer-events-none">
         <SlideIn from="bottom" className="pointer-events-auto">

@@ -22,15 +22,15 @@ export function ServicesLineChart({ data }: { data: DayPoint[] }) {
       <AreaChart data={data} margin={{ left: -20, right: 8, top: 8 }}>
         <defs>
           <linearGradient id="g-serv" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="#1e6bff" stopOpacity={0.4} />
-            <stop offset="100%" stopColor="#1e6bff" stopOpacity={0} />
+            <stop offset="0%" stopColor="#0070ea" stopOpacity={0.4} />
+            <stop offset="100%" stopColor="#0070ea" stopOpacity={0} />
           </linearGradient>
         </defs>
         <CartesianGrid strokeDasharray="3 3" stroke="rgb(var(--outline-variant))" vertical={false} />
         <XAxis dataKey="day" stroke="rgb(var(--on-surface-variant))" fontSize={12} tickLine={false} axisLine={false} />
         <YAxis stroke="rgb(var(--on-surface-variant))" fontSize={12} tickLine={false} axisLine={false} allowDecimals={false} />
         <Tooltip contentStyle={tooltipStyle} />
-        <Area type="monotone" dataKey="servicios" stroke="#1e6bff" strokeWidth={3} fill="url(#g-serv)" />
+        <Area type="monotone" dataKey="servicios" stroke="#0070ea" strokeWidth={3} fill="url(#g-serv)" />
       </AreaChart>
     </ResponsiveContainer>
   );

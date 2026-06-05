@@ -1,4 +1,4 @@
-import { eq } from "drizzle-orm";
+import { eq, and, isNull } from "drizzle-orm";
 import { db, hasDb } from "@/db";
 import { notifications, users } from "@/db/schema";
 import { sendPushToUser } from "@/lib/push";
@@ -27,7 +27,7 @@ export async function notifyUser(
 export async function dbUserIdByClerk(clerkId: string | null | undefined): Promise<string | null> {
   if (!hasDb || !clerkId) return null;
   try {
-    const [r] = await db.select({ id: users.id }).from(users).where(eq(users.clerkId, clerkId)).limit(1);
+    const [r] = await db.select({ id: users.id }).from(users).where(and(eq(users.clerkId, clerkId), isNull(users.deletedAt))).limit(1);
     return r?.id ?? null;
   } catch {
     return null;

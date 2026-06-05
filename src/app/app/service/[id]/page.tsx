@@ -2,6 +2,8 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { getServiceById } from "@/lib/queries";
 import { getRole } from "@/lib/auth";
+import { auth } from "@clerk/nextjs/server";
+import { dbUserIdByClerk } from "@/lib/notify";
 import { DriverActions } from "@/components/driver-actions";
 import { MapView } from "@/components/map-view";
 import { PageHeader } from "@/components/shell/page-header";
@@ -19,6 +21,11 @@ const GDL: [number, number] = [-103.3496, 20.6597];
 export default async function ServiceDetail({ params }: { params: { id: string } }) {
   const [service, role] = await Promise.all([getServiceById(params.id), getRole()]);
   if (!service) notFound();
+  if (role !== "ops" && role !== "admin") {
+    const { userId } = await auth();
+    const uid = await dbUserIdByClerk(userId);
+    if (!uid || (service.userId !== uid && service.driverId !== uid)) notFound();
+  }
   const canDrive = role === "driver" || role === "ops" || role === "admin";
 
   const route: [number, number][] = [

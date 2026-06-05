@@ -8,7 +8,7 @@ import {
   paymentMethods,
   ratings,
 } from "@/db/schema";
-import { desc, eq, and, inArray, sql } from "drizzle-orm";
+import { desc, eq, and, inArray, sql, isNull } from "drizzle-orm";
 import { alias } from "drizzle-orm/pg-core";
 import { auth } from "@clerk/nextjs/server";
 import { relativeTime } from "@/lib/utils";
@@ -47,10 +47,12 @@ export interface AdminUserRow {
 export async function getUsers(): Promise<AdminUserRow[]> {
   if (!hasDb) return [];
   try {
-    const rows = await db.select().from(usersTable).orderBy(desc(usersTable.createdAt));
-    return rows
-      .filter((r) => !r.deletedAt)
-      .map((r) => ({
+    const rows = await db
+      .select()
+      .from(usersTable)
+      .where(isNull(usersTable.deletedAt))
+      .orderBy(desc(usersTable.createdAt));
+    return rows.map((r) => ({
         id: r.id,
         clerkId: r.clerkId,
         name: r.name,
@@ -137,6 +139,12 @@ export interface ServiceRow {
   vehicleModel: string | null;
   plate: string | null;
   passengerName: string | null;
+  userId: string | null;
+  driverId: string | null;
+  originLat: number | null;
+  originLng: number | null;
+  destLat: number | null;
+  destLng: number | null;
 }
 
 function fmtParts(d: Date | null) {
@@ -173,6 +181,12 @@ function mapService(r: {
     vehicleModel: r.vehicle?.model ?? null,
     plate: r.vehicle?.plate ?? null,
     passengerName: r.passenger?.name ?? null,
+    userId: r.s.userId,
+    driverId: r.s.driverId,
+    originLat: r.s.originLat,
+    originLng: r.s.originLng,
+    destLat: r.s.destLat,
+    destLng: r.s.destLng,
   };
 }
 
@@ -262,7 +276,7 @@ export async function getVehicles() {
 export async function getDrivers() {
   if (!hasDb) return [];
   try {
-    return await db.select().from(usersTable).where(eq(usersTable.role, "driver")).orderBy(desc(usersTable.createdAt));
+    return await db.select().from(usersTable).where(and(eq(usersTable.role, "driver"), isNull(usersTable.deletedAt))).orderBy(desc(usersTable.createdAt));
   } catch {
     return [];
   }
