@@ -133,3 +133,23 @@ export async function sendServiceStatusEmail(to: string, name: string, title: st
       <p style="margin-top:16px">${btn(`${APP_URL}/app/active`, "Ver mi servicio")}</p>`),
   });
 }
+
+export async function sendInvitationEmail(
+  to: string,
+  inviterName: string,
+  roleLabel: string,
+  url: string,
+) {
+  return send({
+    to,
+    subject: `${inviterName} te invitó a MT Empresarial`,
+    html: shell(
+      "Tienes una invitación 🎟️",
+      `<p style="line-height:1.6;color:#434651"><b>${inviterName}</b> te invitó a unirte a la plataforma de
+       MT Empresarial con el rol de <b style="color:#002863">${roleLabel}</b>.</p>
+       <p style="line-height:1.6;color:#434651">Acepta la invitación para crear tu cuenta en segundos.</p>
+       <p style="margin-top:16px">${btn(url, "Aceptar invitación")}</p>
+       <p style="line-height:1.6;color:#94a3b8;font-size:12px;margin-top:14px">Si el botón no funciona, copia y pega este enlace:<br><span style="color:#1e6bff">${url}</span></p>`,
+    ),
+  });
+}

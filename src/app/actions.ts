@@ -2,19 +2,23 @@
 
 import { revalidatePath } from "next/cache";
 import { auth, currentUser, clerkClient } from "@clerk/nextjs/server";
-import { eq, and } from "drizzle-orm";
+import { eq, and, desc, sql } from "drizzle-orm";
 import { db, hasDb } from "@/db";
-import { services, serviceEvents, featureFlags, auditLog, notifications, users, vehicles, paymentMethods, ratings } from "@/db/schema";
+import { services, serviceEvents, featureFlags, auditLog, notifications, users, vehicles, paymentMethods, ratings, invitations } from "@/db/schema";
 import {
   sendServiceRequestedEmail,
   sendOpsNewServiceEmail,
   sendDriverAssignedEmail,
   sendServiceStatusEmail,
+  sendInvitationEmail,
+  sendWelcomeEmail,
 } from "@/lib/email";
 import { notifyUser, dbUserIdByClerk } from "@/lib/notify";
 import { getRole } from "@/lib/auth";
+import { CAN_INVITE, ROLE_HOME, ROLE_LABEL, ROLE_RANK, type Role } from "@/lib/roles";
 import { hasAdminCookie } from "@/lib/admin-gate";
 import { ensureUser } from "@/lib/sync-user";
+import { randomBytes } from "crypto";
 
 async function meId(): Promise<string | null> {
   try {
@@ -505,5 +509,287 @@ export async function setDriverBlocked(id: string, blocked: boolean): Promise<Ac
   } catch (e) {
     console.error("[setDriverBlocked]", e);
     return { ok: false, message: "No se pudo cambiar el estado del chofer." };
+  }
+}
+
+/* ============================ INVITACIONES POR ROL ============================ */
+
+const APP_BASE = process.env.NEXT_PUBLIC_APP_URL || "https://mtempresarial.life";
+
+export type InvitationRow = {
+  id: string;
+  code: string;
+  role: Role;
+  label: string | null;
+  status: "Activa" | "Usada" | "Revocada" | "Expirada";
+  usedByName: string | null;
+  createdAt: string;
+  url: string;
+};
+
+/** Resuelve {id, name} del usuario actual en la tabla `users`. */
+async function meIdAndName(): Promise<{ id: string | null; name: string }> {
+  const a = await actor();
+  const id = await meId();
+  return { id, name: a.name };
+}
+
+/** Crea una invitación para un rol permitido por la jerarquía del invitador. */
+export async function createInvitation(
+  role: Role,
+  opts?: { label?: string; email?: string; expiresInDays?: number },
+): Promise<ActionResult & { code?: string; url?: string }> {
+  const caller = await getRole();
+  if (!CAN_INVITE[caller].includes(role)) {
+    return { ok: false, message: "No puedes invitar a ese rol." };
+  }
+  if (!hasDb) return { ok: false, message: "Base de datos no configurada." };
+
+  const { id: miId, name: miNombre } = await meIdAndName();
+
+  try {
+    let code = "";
+    let inserted = false;
+    for (let attempt = 0; attempt < 5 && !inserted; attempt++) {
+      code = randomBytes(4).toString("hex").toUpperCase();
+      try {
+        await db.insert(invitations).values({
+          code,
+          role,
+          label: opts?.label?.trim() || null,
+          createdBy: miId,
+          createdByName: miNombre,
+          createdByRole: caller,
+          expiresAt:
+            opts?.expiresInDays && opts.expiresInDays > 0
+              ? new Date(Date.now() + opts.expiresInDays * 86400_000)
+              : null,
+          active: true,
+        });
+        inserted = true;
+      } catch (e) {
+        const msg = String((e as Error)?.message ?? e);
+        if (!/unique|duplicate/i.test(msg)) throw e;
+      }
+    }
+    if (!inserted) return { ok: false, message: "No se pudo generar el código, intenta de nuevo." };
+
+    const url = `${APP_BASE}/invite/${code}`;
+    await logAudit("invite.create", role, code);
+
+    const email = opts?.email?.trim().toLowerCase();
+    if (email) {
+      sendInvitationEmail(email, miNombre, ROLE_LABEL[role], url).catch(() => {});
+    }
+
+    revalidatePath("/invitar");
+    return { ok: true, message: "Invitación creada.", code, url };
+  } catch (e) {
+    console.error("[createInvitation]", e);
+    return { ok: false, message: "No se pudo crear la invitación." };
+  }
+}
+
+/** Lista las invitaciones del usuario (todas si es admin). */
+export async function getMyInvitations(): Promise<InvitationRow[]> {
+  if (!hasDb) return [];
+  const caller = await getRole();
+  const miId = await meId();
+
+  try {
+    const usedByUser = users;
+    const rows = await db
+      .select({
+        id: invitations.id,
+        code: invitations.code,
+        role: invitations.role,
+        label: invitations.label,
+        active: invitations.active,
+        usedBy: invitations.usedBy,
+        usedByName: usedByUser.name,
+        expiresAt: invitations.expiresAt,
+        createdAt: invitations.createdAt,
+      })
+      .from(invitations)
+      .leftJoin(usedByUser, eq(invitations.usedBy, usedByUser.id))
+      .where(caller === "admin" || !miId ? sql`true` : eq(invitations.createdBy, miId))
+      .orderBy(desc(invitations.createdAt));
+
+    if (caller !== "admin" && !miId) return [];
+
+    return rows.map((r) => {
+      const expired = r.expiresAt ? new Date(r.expiresAt).getTime() < Date.now() : false;
+      let status: InvitationRow["status"];
+      if (r.usedBy) status = "Usada";
+      else if (!r.active) status = "Revocada";
+      else if (expired) status = "Expirada";
+      else status = "Activa";
+      return {
+        id: r.id,
+        code: r.code,
+        role: r.role as Role,
+        label: r.label,
+        status,
+        usedByName: r.usedByName ?? null,
+        createdAt: new Date(r.createdAt).toISOString(),
+        url: `${APP_BASE}/invite/${r.code}`,
+      };
+    });
+  } catch (e) {
+    console.error("[getMyInvitations]", e);
+    return [];
+  }
+}
+
+/** Revoca una invitación; si fue usada por un subordinado no-admin, revoca su acceso. */
+export async function revokeInvitation(id: string): Promise<ActionResult> {
+  if (!hasDb) return { ok: false, message: "Base de datos no configurada." };
+  const caller = await getRole();
+  const miId = await meId();
+
+  try {
+    const [inv] = await db
+      .select()
+      .from(invitations)
+      .where(eq(invitations.id, id))
+      .limit(1);
+    if (!inv) return { ok: false, message: "Invitación no encontrada." };
+
+    const esCreador = miId && inv.createdBy === miId;
+    if (caller !== "admin" && !esCreador) {
+      return { ok: false, message: "No autorizado." };
+    }
+
+    await db.update(invitations).set({ active: false }).where(eq(invitations.id, id));
+
+    // Si ya fue usada por un subordinado (rank menor, no admin), revoca su acceso.
+    if (inv.usedBy) {
+      const [target] = await db
+        .select({ role: users.role })
+        .from(users)
+        .where(eq(users.id, inv.usedBy))
+        .limit(1);
+      if (target && target.role !== "admin" && ROLE_RANK[target.role as Role] < ROLE_RANK[caller]) {
+        await db.update(users).set({ deletedAt: new Date() }).where(eq(users.id, inv.usedBy));
+      }
+    }
+
+    await logAudit("invite.revoke", inv.code);
+    revalidatePath("/invitar");
+    return { ok: true, message: "Invitación revocada." };
+  } catch (e) {
+    console.error("[revokeInvitation]", e);
+    return { ok: false, message: "No se pudo revocar la invitación." };
+  }
+}
+
+/** Registro público con código de invitación (estilo Castores: server-to-server + ticket). */
+export async function registerWithInvite(input: {
+  code: string;
+  name: string;
+  email: string;
+  password: string;
+  phone?: string;
+  acceptTerms: boolean;
+}): Promise<ActionResult & { ticketUrl?: string; role?: Role }> {
+  const code = String(input.code ?? "").trim().toUpperCase();
+  const name = String(input.name ?? "").trim();
+  const email = String(input.email ?? "").trim().toLowerCase();
+  const password = String(input.password ?? "");
+  const phone = String(input.phone ?? "").trim() || null;
+
+  if (!input.acceptTerms) return { ok: false, message: "Debes aceptar los Términos y la Privacidad." };
+  if (!name) return { ok: false, message: "Tu nombre es obligatorio." };
+  if (!email || !email.includes("@")) return { ok: false, message: "Correo inválido." };
+  if (password.length < 8) return { ok: false, message: "La contraseña debe tener al menos 8 caracteres." };
+  if (!code) return { ok: false, message: "Falta el código de invitación." };
+  if (!hasDb) return { ok: false, message: "Base de datos no configurada." };
+
+  try {
+    // 1) Valida la invitación.
+    const [inv] = await db
+      .select()
+      .from(invitations)
+      .where(eq(invitations.code, code))
+      .limit(1);
+    if (!inv || !inv.active || inv.usedBy) {
+      return { ok: false, message: "Invitación no válida o ya utilizada." };
+    }
+    if (inv.expiresAt && new Date(inv.expiresAt).getTime() < Date.now()) {
+      return { ok: false, message: "La invitación expiró." };
+    }
+
+    // 2) ¿Correo ya registrado (con clerkId)?
+    const [existing] = await db
+      .select({ id: users.id, clerkId: users.clerkId })
+      .from(users)
+      .where(sql`lower(${users.email}) = ${email}`)
+      .limit(1);
+    if (existing?.clerkId) {
+      return { ok: false, message: "Ese correo ya está registrado, inicia sesión." };
+    }
+
+    // 3) Crea el usuario en Clerk (email pre-verificado por Backend API).
+    const parts = name.split(/\s+/);
+    const firstName = parts[0] ?? name;
+    const lastName = parts.slice(1).join(" ") || undefined;
+
+    const client = await clerkClient();
+    let clerkUserId: string;
+    try {
+      const created = await client.users.createUser({
+        emailAddress: [email],
+        password,
+        firstName,
+        lastName,
+        publicMetadata: { role: inv.role },
+        skipPasswordChecks: false,
+      });
+      clerkUserId = created.id;
+    } catch (e: unknown) {
+      const err = e as { errors?: Array<{ long_message?: string; message?: string }> };
+      const long = err?.errors?.[0]?.long_message || err?.errors?.[0]?.message;
+      console.error("[registerWithInvite] Clerk createUser:", e);
+      return { ok: false, message: long || "No se pudo crear la cuenta. Revisa tus datos." };
+    }
+
+    // 4) Upsert en la tabla users (después de Clerk, para no dejar basura).
+    let userRowId: string;
+    if (existing && !existing.clerkId) {
+      await db
+        .update(users)
+        .set({ clerkId: clerkUserId, role: inv.role, name, phone })
+        .where(eq(users.id, existing.id));
+      userRowId = existing.id;
+    } else {
+      const [row] = await db
+        .insert(users)
+        .values({ clerkId: clerkUserId, name, email, role: inv.role, phone })
+        .returning({ id: users.id });
+      userRowId = row.id;
+    }
+
+    // 5) Marca la invitación como usada.
+    await db
+      .update(invitations)
+      .set({ usedBy: userRowId, usedAt: new Date(), active: false })
+      .where(eq(invitations.id, inv.id));
+
+    await logAudit("invite.accept", inv.role, code);
+
+    // 6) Emite un sign_in_token de un solo uso → entra directo a su panel.
+    const t = await client.signInTokens.createSignInToken({
+      userId: clerkUserId,
+      expiresInSeconds: 600,
+    });
+    const ticketUrl = `/sign-in?__clerk_ticket=${t.token}&redirect_url=${encodeURIComponent(ROLE_HOME[inv.role as Role])}`;
+
+    // 7) Bienvenida (no bloqueante).
+    sendWelcomeEmail(email, firstName).catch(() => {});
+
+    return { ok: true, message: "Cuenta creada.", ticketUrl, role: inv.role as Role };
+  } catch (e) {
+    console.error("[registerWithInvite]", e);
+    return { ok: false, message: "No se pudo completar el registro. Intenta de nuevo." };
   }
 }

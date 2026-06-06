@@ -155,6 +155,21 @@ export const ratings = pgTable("ratings", {
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
 });
 
+export const invitations = pgTable("invitations", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  code: text("code").notNull().unique(),
+  role: roleEnum("role").notNull(),
+  label: text("label"),
+  createdBy: uuid("created_by").references(() => users.id, { onDelete: "set null" }),
+  createdByName: text("created_by_name"),
+  createdByRole: roleEnum("created_by_role"),
+  usedBy: uuid("used_by").references(() => users.id, { onDelete: "set null" }),
+  usedAt: timestamp("used_at", { withTimezone: true }),
+  expiresAt: timestamp("expires_at", { withTimezone: true }),
+  active: boolean("active").notNull().default(true),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+});
+
 export type User = typeof users.$inferSelect;
 export type Vehicle = typeof vehicles.$inferSelect;
 export type Service = typeof services.$inferSelect;
@@ -165,3 +180,4 @@ export type AuditEntry = typeof auditLog.$inferSelect;
 export type PushSubscriptionRow = typeof pushSubscriptions.$inferSelect;
 export type PaymentMethod = typeof paymentMethods.$inferSelect;
 export type Rating = typeof ratings.$inferSelect;
+export type Invitation = typeof invitations.$inferSelect;

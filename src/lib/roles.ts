@@ -13,11 +13,13 @@ export const NAV: Record<Role, NavItem[]> = {
     { href: "/app/request", icon: "add_circle", label: "Solicitar" },
     { href: "/app/active", icon: "navigation", label: "En vivo" },
     { href: "/app/alerts", icon: "notifications", label: "Alertas", badge: true },
+    { href: "/invitar", icon: "person_add", label: "Invitar" },
     { href: "/app/profile", icon: "person", label: "Perfil" },
   ],
   driver: [
     { href: "/driver", icon: "dashboard", label: "Panel" },
     { href: "/driver/map", icon: "map", label: "Mapa GPS" },
+    { href: "/invitar", icon: "person_add", label: "Invitar" },
     { href: "/app/alerts", icon: "notifications", label: "Alertas", badge: true },
   ],
   ops: [
@@ -26,12 +28,14 @@ export const NAV: Record<Role, NavItem[]> = {
     { href: "/ops/map", icon: "map", label: "Mapa" },
     { href: "/ops/fleet", icon: "local_shipping", label: "Flota" },
     { href: "/ops/drivers", icon: "badge", label: "Choferes" },
+    { href: "/invitar", icon: "person_add", label: "Invitar" },
   ],
   admin: [
     { href: "/admin", icon: "shield_person", label: "Panel" },
     { href: "/admin/analytics", icon: "monitoring", label: "Analytics" },
     { href: "/admin/users", icon: "group", label: "Usuarios" },
     { href: "/admin/drivers", icon: "local_taxi", label: "Choferes" },
+    { href: "/invitar", icon: "person_add", label: "Invitaciones" },
     { href: "/admin/notifications", icon: "campaign", label: "Push" },
     { href: "/admin/settings", icon: "settings", label: "Ajustes" },
   ],
@@ -49,4 +53,13 @@ export const ROLE_HOME: Record<Role, string> = {
   driver: "/driver",
   ops: "/ops",
   admin: "/admin",
+};
+
+export const ROLE_RANK: Record<Role, number> = { user: 0, driver: 1, ops: 2, admin: 3 };
+
+export const CAN_INVITE: Record<Role, Role[]> = {
+  admin: ["admin", "ops", "driver", "user"],
+  ops: ["driver", "user"],
+  driver: ["user"],
+  user: ["user"],
 };
