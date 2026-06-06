@@ -39,7 +39,7 @@ ALTER TABLE "users" ADD COLUMN IF NOT EXISTS "avatar_url" text;--> statement-bre
 ALTER TABLE "users" ADD COLUMN IF NOT EXISTS "rating" numeric(2, 1);--> statement-breakpoint
 ALTER TABLE "users" ADD COLUMN IF NOT EXISTS "clerk_id" text;--> statement-breakpoint
 ALTER TABLE "vehicles" ADD COLUMN IF NOT EXISTS "image_url" text;--> statement-breakpoint
-ALTER TABLE "vehicles" ADD COLUMN IF NOT EXISTS "odometer" integer DEFAULT 0;
+ALTER TABLE "vehicles" ADD COLUMN IF NOT EXISTS "odometer" integer DEFAULT 0;--> statement-breakpoint
 DO $$ BEGIN CREATE TYPE "public"."payment_method_type" AS ENUM('tarjeta','efectivo','transferencia','empresarial'); EXCEPTION WHEN duplicate_object THEN null; END $$;--> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "payment_methods" ("id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,"user_id" uuid NOT NULL,"type" "payment_method_type" NOT NULL,"label" text NOT NULL,"brand" text,"last4" text,"is_default" boolean DEFAULT false NOT NULL,"created_at" timestamp with time zone DEFAULT now() NOT NULL);--> statement-breakpoint
 DO $$ BEGIN ALTER TABLE "payment_methods" ADD CONSTRAINT "payment_methods_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE cascade ON UPDATE no action; EXCEPTION WHEN duplicate_object THEN null; END $$;--> statement-breakpoint
@@ -71,7 +71,20 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: "DATABASE_URL no configurada" }, { status: 500 });
   }
 
-  const stmts = MIGRATION.split("--> statement-breakpoint").map((s) => s.trim()).filter(Boolean);
+  // Un comando por ejecución (Neon HTTP usa prepared statements: no acepta
+  // varios comandos juntos). Los bloques DO $$..$$ se respetan completos.
+  const stmts = MIGRATION.split("--> statement-breakpoint")
+    .map((s) => s.trim())
+    .filter(Boolean)
+    .flatMap((chunk) =>
+      chunk.includes("$$")
+        ? [chunk]
+        : chunk
+            .split(/;\s*(?:\n|$)/)
+            .map((c) => c.trim())
+            .filter(Boolean)
+            .map((c) => `${c};`),
+    );
   let applied = 0;
   const errors: string[] = [];
 
