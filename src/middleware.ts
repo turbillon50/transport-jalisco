@@ -9,9 +9,10 @@ const isProtected = createRouteMatcher([
   "/invitar(.*)",
 ]);
 
-export default clerkMiddleware((auth, req) => {
+export default clerkMiddleware(async (auth, req) => {
   if (isProtected(req)) {
-    auth().protect();
+    const { userId, redirectToSignIn } = await auth();
+    if (!userId) return redirectToSignIn({ returnBackUrl: req.url });
   }
 });
 
