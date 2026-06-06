@@ -124,5 +124,18 @@ export async function GET(req: NextRequest) {
     /* ignore */
   }
 
-  return NextResponse.json({ ok: errors.length === 0, applied, total: stmts.length, seeded, tables, errors });
+  // Verificación explícita: columnas de vehicles (image_url / odometer / driver_id).
+  let vehicleColumns: string[] = [];
+  try {
+    const res = await db.execute(
+      sql.raw("SELECT column_name FROM information_schema.columns WHERE table_schema='public' AND table_name='vehicles' ORDER BY column_name"),
+    );
+    const r = res as unknown as { rows?: Array<{ column_name: string }> } | Array<{ column_name: string }>;
+    const rows = Array.isArray(r) ? r : r.rows ?? [];
+    vehicleColumns = rows.map((row) => row.column_name);
+  } catch {
+    /* ignore */
+  }
+
+  return NextResponse.json({ ok: errors.length === 0, applied, total: stmts.length, seeded, tables, vehicleColumns, errors });
 }
