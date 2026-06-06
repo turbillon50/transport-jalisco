@@ -1,8 +1,9 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { getProfile } from "@/lib/auth";
-import { getDriverServices, getMyRating } from "@/lib/queries";
+import { getDriverServices, getMyRating, getDriverActiveGeo } from "@/lib/queries";
 import { Icon } from "@/components/icon";
+import { MapView } from "@/components/map-view";
 import { StatusBadge } from "@/components/status-badge";
 import { Stars, EmptyState } from "@/components/ui-bits";
 import { DriverControls } from "@/components/driver-controls";
@@ -14,7 +15,10 @@ export const metadata: Metadata = { title: "Panel del chofer" };
 export const dynamic = "force-dynamic";
 
 export default async function DriverDashboard() {
-  const [profile, services, rating] = await Promise.all([getProfile(), getDriverServices(), getMyRating()]);
+  const [profile, services, rating, geo] = await Promise.all([getProfile(), getDriverServices(), getMyRating(), getDriverActiveGeo()]);
+  const geoOk = geo?.originLat != null && geo?.originLng != null && geo?.destLat != null && geo?.destLng != null;
+  const miniRoute: [number, number][] = geoOk ? [[geo!.originLng!, geo!.originLat!], [geo!.destLng!, geo!.destLat!]] : [];
+  const miniCenter: [number, number] | null = geoOk ? [(geo!.originLng! + geo!.destLng!) / 2, (geo!.originLat! + geo!.destLat!) / 2] : null;
   const today = services.filter((s) => ["asignado", "confirmado", "en_curso"].includes(s.status));
 
   return (
@@ -33,11 +37,27 @@ export default async function DriverDashboard() {
       </FadeInOnScroll>
 
       <FadeInOnScroll delay={0.05}>
-        <Link href="/driver/map">
-          <HoverCard className="bg-primary-container p-lg rounded-xl text-white relative overflow-hidden cursor-pointer">
-            <div className="absolute -right-4 -bottom-4 opacity-10"><Icon name="map" className="text-[100px]" /></div>
-            <h3 className="text-headline-sm font-semibold mb-1 relative">Mapa GPS en vivo</h3>
-            <p className="text-body-md opacity-80 relative">Visualiza tu ruta y el tráfico en tiempo real.</p>
+        <Link href="/driver/map" className="block">
+          <HoverCard className="bg-primary-container rounded-xl text-white relative overflow-hidden cursor-pointer">
+            {geoOk && miniCenter ? (
+              <>
+                <div className="h-44 w-full">
+                  <MapView center={miniCenter} zoom={11.5} route={miniRoute}
+                    markers={[{ id: "o", lng: miniRoute[0][0], lat: miniRoute[0][1], type: "vehicle", label: "Tú" }, { id: "d", lng: miniRoute[1][0], lat: miniRoute[1][1], type: "destination", label: "B" }]}
+                    className="h-full pointer-events-none" />
+                </div>
+                <div className="p-lg">
+                  <h3 className="text-headline-sm font-semibold mb-1">Mapa GPS en vivo</h3>
+                  <p className="text-body-md opacity-80">{geo!.origin} → {geo!.destination} · toca para abrir a pantalla completa.</p>
+                </div>
+              </>
+            ) : (
+              <div className="p-lg relative">
+                <div className="absolute -right-4 -bottom-4 opacity-10"><Icon name="map" className="text-[100px]" /></div>
+                <h3 className="text-headline-sm font-semibold mb-1 relative">Mapa GPS en vivo</h3>
+                <p className="text-body-md opacity-80 relative">Cuando tengas un traslado activo verás aquí tu ruta en tiempo real.</p>
+              </div>
+            )}
           </HoverCard>
         </Link>
       </FadeInOnScroll>

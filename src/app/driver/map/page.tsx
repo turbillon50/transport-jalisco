@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { MapScreen } from "@/components/map-screen";
+import { DriverLocationPinger } from "@/components/driver-location-pinger";
 import { getDriverActiveGeo } from "@/lib/queries";
 
 export const metadata: Metadata = { title: "Mapa GPS" };
@@ -43,19 +44,24 @@ export default async function DriverMap() {
   ];
 
   return (
-    <MapScreen
-      zoom={12.5}
-      route={route}
-      markers={[
-        { id: "me", lng: svc.originLng!, lat: svc.originLat!, type: "vehicle", label: "Tú" },
-        { id: "dest", lng: svc.destLng!, lat: svc.destLat!, type: "destination", label: svc.destination },
-      ]}
-      stats={[
-        { value: `${dist.toFixed(1)} km`, label: "Distancia", cls: "text-secondary" },
-        { value: `${etaMin} min`, label: "ETA", cls: "text-primary" },
-        { value: svc.time, label: "Cita", cls: "text-on-surface" },
-        { value: svc.passengers, label: svc.passengers === 1 ? "Pasajero" : "Pasajeros", cls: "text-on-surface" },
-      ]}
-    />
+    <div className="relative">
+      <div className="absolute top-3 left-3 z-20">
+        <DriverLocationPinger serviceId={svc.id} />
+      </div>
+      <MapScreen
+        zoom={12.5}
+        route={route}
+        markers={[
+          { id: "me", lng: svc.originLng!, lat: svc.originLat!, type: "vehicle", label: "Tú" },
+          { id: "dest", lng: svc.destLng!, lat: svc.destLat!, type: "destination", label: svc.destination },
+        ]}
+        stats={[
+          { value: `${dist.toFixed(1)} km`, label: "Distancia", cls: "text-secondary" },
+          { value: `${etaMin} min`, label: "ETA", cls: "text-primary" },
+          { value: svc.time, label: "Cita", cls: "text-on-surface" },
+          { value: svc.passengers, label: svc.passengers === 1 ? "Pasajero" : "Pasajeros", cls: "text-on-surface" },
+        ]}
+      />
+    </div>
   );
 }

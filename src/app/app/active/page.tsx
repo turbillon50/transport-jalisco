@@ -1,6 +1,6 @@
 import Link from "next/link";
 import type { Metadata } from "next";
-import { getActiveService } from "@/lib/queries";
+import { getActiveService, getServiceDriverLocation } from "@/lib/queries";
 import { MapView } from "@/components/map-view";
 import { Icon } from "@/components/icon";
 import { Button } from "@/components/ui";
@@ -40,11 +40,22 @@ export default async function ActiveService() {
     ? [((s.originLng as number) + (s.destLng as number)) / 2, ((s.originLat as number) + (s.destLat as number)) / 2]
     : null;
 
+  // Ubicación en vivo del chofer (si la está compartiendo) + ETA al destino.
+  const driverLoc = hasGeo ? await getServiceDriverLocation(s.id) : null;
+  const vehLng = driverLoc?.lng ?? (hasGeo ? (s.originLng as number) : 0);
+  const vehLat = driverLoc?.lat ?? (hasGeo ? (s.originLat as number) : 0);
+  function km(aLat: number, aLng: number, bLat: number, bLng: number) {
+    const R = 6371, dLat = ((bLat - aLat) * Math.PI) / 180, dLng = ((bLng - aLng) * Math.PI) / 180;
+    const h = Math.sin(dLat / 2) ** 2 + Math.cos((aLat * Math.PI) / 180) * Math.cos((bLat * Math.PI) / 180) * Math.sin(dLng / 2) ** 2;
+    return 2 * R * Math.asin(Math.sqrt(h));
+  }
+  const etaMin = hasGeo ? Math.max(1, Math.round((km(vehLat, vehLng, s.destLat as number, s.destLng as number) / 30) * 60)) : null;
+
   return (
     <PageTransition className="relative h-[calc(100dvh-8rem)] md:h-[100dvh] overflow-hidden">
       {hasGeo && center ? (
         <MapView center={center} zoom={12.5} className="absolute inset-0 h-full" route={route}
-          markers={[{ id: "v", lng: route[0][0], lat: route[0][1], type: "vehicle", label: s.plate ?? "" }, { id: "d", lng: route[1][0], lat: route[1][1], type: "destination", label: "B" }]} />
+          markers={[{ id: "v", lng: vehLng, lat: vehLat, type: "vehicle", label: s.plate ?? "" }, { id: "d", lng: route[1][0], lat: route[1][1], type: "destination", label: "B" }]} />
       ) : (
         <div className="absolute inset-0 flex items-center justify-center">
           <EmptyState
@@ -66,8 +77,21 @@ export default async function ActiveService() {
                   <h2 className="text-headline-sm font-semibold text-on-surface">{s.origin} → {s.destination}</h2>
                 </div>
               </div>
-              <StatusBadge status={s.status} />
+              <div className="flex items-center gap-2">
+                {etaMin != null && (
+                  <span className="flex items-center gap-1 bg-primary-fixed text-primary text-label-md font-semibold px-3 py-1 rounded-full">
+                    <Icon name="schedule" className="text-[16px]" /> ETA {etaMin} min
+                  </span>
+                )}
+                <StatusBadge status={s.status} />
+              </div>
             </div>
+
+            {driverLoc && (
+              <p className="flex items-center gap-1.5 text-label-md text-secondary -mt-2">
+                <Icon name="my_location" className="text-[16px]" /> Ubicación del chofer actualizada {driverLoc.time}
+              </p>
+            )}
 
             {s.driverName && (
               <div className="flex items-center justify-between pt-4 border-t border-outline-variant">
