@@ -10,7 +10,7 @@ import { createHash } from "node:crypto";
  * Para rotar la llave: genera un token nuevo y reemplaza este hash con
  *   node -e "console.log(require('crypto').createHash('sha256').update('NUEVO_TOKEN').digest('hex'))"
  */
-export const ADMIN_KEY_HASH = "9939da4f1d8aa8f1dfe5aee67a9b08ab12d43b31d4decbd8bec5bd987d6e7166";
+export const ADMIN_KEY_HASH = "882b628dd458cf8d014d058bb73f28e2ba2315c6305a8df76b52e2358ad577ba";
 export const ADMIN_COOKIE = "mt_admin";
 
 export function hashToken(token: string): string {
