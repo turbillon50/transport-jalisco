@@ -623,3 +623,106 @@ export async function getServiceDriverLocation(serviceId: string): Promise<{ lat
     return null;
   }
 }
+
+/* --------------------------- documentos del chofer ------------------------- */
+export type DocKind = "foto_chofer" | "foto_unidad" | "licencia" | "tarjeta_circulacion" | "otro";
+export type DocStatus = "pendiente" | "aprobado" | "rechazado";
+
+export interface DriverDocRow {
+  id: string;
+  kind: DocKind;
+  url: string;
+  fileName: string | null;
+  status: DocStatus;
+  note: string | null;
+  isPdf: boolean;
+  time: string;
+}
+
+function mapDoc(r: { id: string; kind: string; url: string; fileName: string | null; status: string; note: string | null; createdAt: Date }): DriverDocRow {
+  return {
+    id: r.id,
+    kind: r.kind as DocKind,
+    url: r.url,
+    fileName: r.fileName,
+    status: r.status as DocStatus,
+    note: r.note,
+    isPdf: /\.pdf($|\?)/i.test(r.url) || (r.fileName ?? "").toLowerCase().endsWith(".pdf"),
+    time: relativeTime(r.createdAt),
+  };
+}
+
+/** Documentos del chofer actual (el más reciente por tipo). */
+export async function getMyDriverDocuments(): Promise<DriverDocRow[]> {
+  if (!hasDb) return [];
+  try {
+    const { driverDocuments } = await import("@/db/schema");
+    const uid = await myId();
+    if (!uid) return [];
+    const rows = await db
+      .select()
+      .from(driverDocuments)
+      .where(eq(driverDocuments.driverId, uid))
+      .orderBy(desc(driverDocuments.createdAt))
+      .limit(100);
+    const latest = new Map<string, DriverDocRow>();
+    for (const r of rows) if (!latest.has(r.kind)) latest.set(r.kind, mapDoc(r));
+    return [...latest.values()];
+  } catch {
+    return [];
+  }
+}
+
+export interface DriverDocsGroup {
+  driverId: string;
+  name: string;
+  email: string;
+  vehiclePlate: string | null;
+  docs: DriverDocRow[];
+  pending: number;
+}
+
+/** Todos los documentos agrupados por chofer (panel admin de verificación). */
+export async function getAllDriverDocuments(): Promise<DriverDocsGroup[]> {
+  if (!hasDb) return [];
+  try {
+    const { driverDocuments } = await import("@/db/schema");
+    const rows = await db
+      .select({
+        id: driverDocuments.id,
+        kind: driverDocuments.kind,
+        url: driverDocuments.url,
+        fileName: driverDocuments.fileName,
+        status: driverDocuments.status,
+        note: driverDocuments.note,
+        createdAt: driverDocuments.createdAt,
+        driverId: driverDocuments.driverId,
+        name: usersTable.name,
+        email: usersTable.email,
+        plate: vehicles.plate,
+      })
+      .from(driverDocuments)
+      .leftJoin(usersTable, eq(driverDocuments.driverId, usersTable.id))
+      .leftJoin(vehicles, eq(vehicles.driverId, usersTable.id))
+      .orderBy(desc(driverDocuments.createdAt))
+      .limit(500);
+    const groups = new Map<string, DriverDocsGroup>();
+    const seen = new Set<string>(); // driverId+kind → solo el más reciente
+    for (const r of rows) {
+      let g = groups.get(r.driverId);
+      if (!g) {
+        g = { driverId: r.driverId, name: r.name ?? "—", email: r.email ?? "", vehiclePlate: r.plate ?? null, docs: [], pending: 0 };
+        groups.set(r.driverId, g);
+      }
+      const key = `${r.driverId}:${r.kind}`;
+      if (seen.has(key)) continue;
+      seen.add(key);
+      const d = mapDoc(r);
+      g.docs.push(d);
+      if (d.status === "pendiente") g.pending++;
+    }
+    return [...groups.values()].sort((a, b) => b.pending - a.pending);
+  } catch {
+    return [];
+  }
+}

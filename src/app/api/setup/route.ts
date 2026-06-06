@@ -54,6 +54,12 @@ CREATE TABLE IF NOT EXISTS "messages" ("id" uuid PRIMARY KEY DEFAULT gen_random_
 DO $$ BEGIN ALTER TABLE "messages" ADD CONSTRAINT "messages_service_id_services_id_fk" FOREIGN KEY ("service_id") REFERENCES "public"."services"("id") ON DELETE cascade ON UPDATE no action; EXCEPTION WHEN duplicate_object THEN null; END $$;--> statement-breakpoint
 DO $$ BEGIN ALTER TABLE "messages" ADD CONSTRAINT "messages_from_user_users_id_fk" FOREIGN KEY ("from_user") REFERENCES "public"."users"("id") ON DELETE set null ON UPDATE no action; EXCEPTION WHEN duplicate_object THEN null; END $$;--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "messages_service_idx" ON "messages" ("service_id","created_at");
+--> statement-breakpoint
+DO $$ BEGIN CREATE TYPE "public"."doc_kind" AS ENUM('foto_chofer','foto_unidad','licencia','tarjeta_circulacion','otro'); EXCEPTION WHEN duplicate_object THEN null; END $$;--> statement-breakpoint
+DO $$ BEGIN CREATE TYPE "public"."doc_status" AS ENUM('pendiente','aprobado','rechazado'); EXCEPTION WHEN duplicate_object THEN null; END $$;--> statement-breakpoint
+CREATE TABLE IF NOT EXISTS "driver_documents" ("id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,"driver_id" uuid NOT NULL,"kind" "doc_kind" NOT NULL,"url" text NOT NULL,"file_name" text,"status" "doc_status" DEFAULT 'pendiente' NOT NULL,"note" text,"reviewed_by" text,"reviewed_at" timestamp with time zone,"created_at" timestamp with time zone DEFAULT now() NOT NULL);--> statement-breakpoint
+DO $$ BEGIN ALTER TABLE "driver_documents" ADD CONSTRAINT "driver_documents_driver_id_users_id_fk" FOREIGN KEY ("driver_id") REFERENCES "public"."users"("id") ON DELETE cascade ON UPDATE no action; EXCEPTION WHEN duplicate_object THEN null; END $$;--> statement-breakpoint
+CREATE INDEX IF NOT EXISTS "driver_documents_driver_idx" ON "driver_documents" ("driver_id","kind");
 `;
 
 export async function GET(req: NextRequest) {

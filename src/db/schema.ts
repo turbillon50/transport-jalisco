@@ -197,3 +197,29 @@ export const messages = pgTable("messages", {
 });
 
 export type Message = typeof messages.$inferSelect;
+
+export const docKindEnum = pgEnum("doc_kind", [
+  "foto_chofer",
+  "foto_unidad",
+  "licencia",
+  "tarjeta_circulacion",
+  "otro",
+]);
+export const docStatusEnum = pgEnum("doc_status", ["pendiente", "aprobado", "rechazado"]);
+
+export const driverDocuments = pgTable("driver_documents", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  driverId: uuid("driver_id")
+    .references(() => users.id, { onDelete: "cascade" })
+    .notNull(),
+  kind: docKindEnum("kind").notNull(),
+  url: text("url").notNull(),
+  fileName: text("file_name"),
+  status: docStatusEnum("status").notNull().default("pendiente"),
+  note: text("note"),
+  reviewedBy: text("reviewed_by"),
+  reviewedAt: timestamp("reviewed_at", { withTimezone: true }),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+});
+
+export type DriverDocument = typeof driverDocuments.$inferSelect;

@@ -882,3 +882,74 @@ export async function pushDriverLocation(serviceId: string, lat: number, lng: nu
   }
   return { ok: true, message: "ok" };
 }
+
+/* ========================= DOCUMENTOS / VERIFICACIÓN DE CHOFER ================ */
+
+/** El chofer guarda un documento ya subido a Blob (url) y notifica a despacho. */
+export async function saveDriverDocument(kind: string, url: string, fileName?: string): Promise<ActionResult> {
+  const validKinds = ["foto_chofer", "foto_unidad", "licencia", "tarjeta_circulacion", "otro"];
+  if (!validKinds.includes(kind)) return { ok: false, message: "Tipo de documento inválido." };
+  if (!url) return { ok: false, message: "Falta el archivo." };
+  if (!hasDb) return { ok: false, message: "Base de datos no configurada." };
+
+  const role = await getRole();
+  if (!["driver", "ops", "admin"].includes(role)) return { ok: false, message: "No autorizado." };
+  const uid = await meId();
+  if (!uid) return { ok: false, message: "Usuario no sincronizado." };
+
+  try {
+    const { driverDocuments } = await import("@/db/schema");
+    await db.insert(driverDocuments).values({ driverId: uid, kind: kind as "foto_chofer", url, fileName: fileName ?? null, status: "pendiente" });
+    // Avisa a despacho (ops/admin) que hay algo por verificar.
+    const dispatch = await db
+      .select({ id: users.id })
+      .from(users)
+      .where(and(sql`${users.role} in ('ops','admin')`, sql`${users.deletedAt} is null`));
+    const a = await actor();
+    await Promise.allSettled(
+      dispatch.map((d) =>
+        notifyUser(d.id, { title: "Documento por verificar", body: `${a.name} subió un documento (${kind.replace("_", " ")}).`, icon: "verified_user", url: "/admin/verificaciones" }),
+      ),
+    );
+    await logAudit("driver.doc.upload", uid, kind);
+  } catch (e) {
+    console.error("[saveDriverDocument]", e);
+    return { ok: false, message: "No se pudo guardar el documento." };
+  }
+  revalidatePath("/driver/documentos");
+  revalidatePath("/admin/verificaciones");
+  return { ok: true, message: "Documento subido. Quedó en revisión." };
+}
+
+/** Despacho aprueba o rechaza un documento y notifica al chofer. */
+export async function reviewDriverDocument(docId: string, status: "aprobado" | "rechazado", note?: string): Promise<ActionResult> {
+  if (!(await requireRole("ops", "admin"))) return { ok: false, message: "No autorizado." };
+  if (!["aprobado", "rechazado"].includes(status)) return { ok: false, message: "Estado inválido." };
+  if (!hasDb) return { ok: false, message: "Base de datos no configurada." };
+  try {
+    const { driverDocuments } = await import("@/db/schema");
+    const a = await actor();
+    const [row] = await db
+      .update(driverDocuments)
+      .set({ status, note: note?.trim() || null, reviewedBy: a.name, reviewedAt: new Date() })
+      .where(eq(driverDocuments.id, docId))
+      .returning({ driverId: driverDocuments.driverId, kind: driverDocuments.kind });
+    if (row) {
+      await notifyUser(row.driverId, {
+        title: status === "aprobado" ? "Documento aprobado" : "Documento rechazado",
+        body:
+          status === "aprobado"
+            ? `Tu ${row.kind.replace("_", " ")} fue verificado.`
+            : `Tu ${row.kind.replace("_", " ")} fue rechazado${note ? `: ${note}` : ". Súbelo de nuevo."}`,
+        icon: status === "aprobado" ? "verified" : "report",
+        url: "/driver/documentos",
+      });
+      await logAudit(`driver.doc.${status}`, row.driverId, row.kind);
+    }
+  } catch (e) {
+    console.error("[reviewDriverDocument]", e);
+    return { ok: false, message: "No se pudo actualizar el documento." };
+  }
+  revalidatePath("/admin/verificaciones");
+  return { ok: true, message: status === "aprobado" ? "Documento aprobado." : "Documento rechazado." };
+}

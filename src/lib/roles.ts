@@ -19,6 +19,7 @@ export const NAV: Record<Role, NavItem[]> = {
   driver: [
     { href: "/driver", icon: "dashboard", label: "Panel" },
     { href: "/driver/map", icon: "map", label: "Mapa GPS" },
+    { href: "/driver/documentos", icon: "badge", label: "Documentos" },
     { href: "/invitar", icon: "person_add", label: "Invitar" },
     { href: "/app/alerts", icon: "notifications", label: "Alertas", badge: true },
   ],
@@ -35,6 +36,7 @@ export const NAV: Record<Role, NavItem[]> = {
     { href: "/admin/analytics", icon: "monitoring", label: "Analytics" },
     { href: "/admin/users", icon: "group", label: "Usuarios" },
     { href: "/admin/drivers", icon: "local_taxi", label: "Choferes" },
+    { href: "/admin/verificaciones", icon: "verified_user", label: "Verificación" },
     { href: "/admin/invitations", icon: "person_add", label: "Invitaciones" },
     { href: "/admin/notifications", icon: "campaign", label: "Push" },
     { href: "/admin/settings", icon: "settings", label: "Ajustes" },
