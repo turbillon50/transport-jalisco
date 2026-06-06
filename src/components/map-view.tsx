@@ -29,6 +29,7 @@ export function MapView({
 }) {
   const container = useRef<HTMLDivElement>(null);
   const mapRef = useRef<unknown>(null);
+  const roRef = useRef<ResizeObserver | null>(null);
 
   useEffect(() => {
     let map: import("mapbox-gl").Map | null = null;
@@ -51,6 +52,14 @@ export function MapView({
       });
       mapRef.current = map;
       map.addControl(new mapboxgl.NavigationControl({ showCompass: false }), "top-right");
+
+      // Fix mapa gris: el contenedor puede iniciar con alto 0 (transiciones / dvh).
+      // Reajustamos el mapa cuando el contenedor obtiene su tamaño real.
+      const ro = new ResizeObserver(() => map?.resize());
+      ro.observe(container.current);
+      roRef.current = ro;
+      map.on("load", () => map?.resize());
+      setTimeout(() => map?.resize(), 200);
 
       map.on("load", () => {
         if (!map) return;
@@ -79,6 +88,7 @@ export function MapView({
 
     return () => {
       cancelled = true;
+      roRef.current?.disconnect();
       map?.remove();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
