@@ -55,6 +55,7 @@ export async function GET(_req: NextRequest, { params }: { params: { token: stri
 </div>
 <script>
 (function(){
+  try{ localStorage.setItem("mt_panel","1"); }catch(e){}
   try{ if('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js'); }catch(e){}
   var standalone = (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) || window.navigator.standalone === true;
   if(standalone){ location.replace('/admin'); }
