@@ -797,3 +797,88 @@ export async function registerWithInvite(input: {
     return { ok: false, message: "No se pudo completar el registro. Intenta de nuevo." };
   }
 }
+
+/* ============================ MENSAJERÍA POR SERVICIO ======================== */
+
+/**
+ * Envía un mensaje en el hilo de un servicio y notifica (in-app + push) a las
+ * contrapartes: pasajero, chofer y despacho (ops/admin). Auditable: el admin ve
+ * todos los hilos. No toca tablas existentes (solo inserta en `messages`).
+ */
+export async function sendMessage(serviceId: string, body: string): Promise<ActionResult> {
+  const text = String(body ?? "").trim().slice(0, 1000);
+  if (!text) return { ok: false, message: "Escribe un mensaje." };
+  if (!hasDb) return { ok: false, message: "Base de datos no configurada." };
+
+  const role = await getRole();
+  const uid = await meId();
+  const a = await actor();
+  const fromName = a.name || ROLE_LABEL[role];
+
+  try {
+    const { messages } = await import("@/db/schema");
+    const [svc] = await db
+      .select({ userId: services.userId, driverId: services.driverId, origin: services.origin, destination: services.destination })
+      .from(services)
+      .where(eq(services.id, serviceId))
+      .limit(1);
+    if (!svc) return { ok: false, message: "Servicio no encontrado." };
+
+    const isParticipant =
+      role === "ops" || role === "admin" || (uid != null && (uid === svc.userId || uid === svc.driverId));
+    if (!isParticipant) return { ok: false, message: "No autorizado." };
+
+    await db.insert(messages).values({ serviceId, fromUser: uid, fromName, fromRole: role, body: text });
+
+    // Destinatarios: las contrapartes del servicio + despacho (si escribe user/driver).
+    const recipients = new Set<string>();
+    if (svc.userId && svc.userId !== uid) recipients.add(svc.userId);
+    if (svc.driverId && svc.driverId !== uid) recipients.add(svc.driverId);
+    if (role === "user" || role === "driver") {
+      try {
+        const dispatch = await db
+          .select({ id: users.id })
+          .from(users)
+          .where(and(sql`${users.role} in ('ops','admin')`, sql`${users.deletedAt} is null`));
+        for (const d of dispatch) if (d.id !== uid) recipients.add(d.id);
+      } catch { /* sin despacho */ }
+    }
+
+    const url = `/app/service/${serviceId}`;
+    const preview = text.length > 80 ? `${text.slice(0, 80)}…` : text;
+    await Promise.allSettled(
+      [...recipients].map((rid) =>
+        notifyUser(rid, {
+          title: `Mensaje de ${fromName} (${ROLE_LABEL[role]})`,
+          body: preview,
+          icon: "chat_bubble",
+          url,
+        }),
+      ),
+    );
+  } catch (e) {
+    console.error("[sendMessage]", e);
+    return { ok: false, message: "No se pudo enviar el mensaje." };
+  }
+
+  revalidatePath(`/app/service/${serviceId}`);
+  return { ok: true, message: "Mensaje enviado." };
+}
+
+/**
+ * Registra la ubicación en vivo del chofer (location_update) para que el usuario
+ * vea a su chofer en el mapa y operaciones la flota. Best-effort.
+ */
+export async function pushDriverLocation(serviceId: string, lat: number, lng: number): Promise<ActionResult> {
+  if (!Number.isFinite(lat) || !Number.isFinite(lng)) return { ok: false, message: "Coordenadas inválidas." };
+  const role = await getRole();
+  if (!["driver", "ops", "admin"].includes(role)) return { ok: false, message: "No autorizado." };
+  if (!hasDb) return { ok: false, message: "Sin DB." };
+  try {
+    await db.insert(serviceEvents).values({ serviceId, type: "location_update", locationLat: lat, locationLng: lng });
+  } catch (e) {
+    console.error("[pushDriverLocation]", e);
+    return { ok: false, message: "No se pudo registrar la ubicación." };
+  }
+  return { ok: true, message: "ok" };
+}

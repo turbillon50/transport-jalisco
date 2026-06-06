@@ -48,6 +48,12 @@ DO $$ BEGIN ALTER TABLE "ratings" ADD CONSTRAINT "ratings_ratee_id_users_id_fk" 
 CREATE TABLE IF NOT EXISTS "invitations" ("id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,"code" text NOT NULL,"role" "role" NOT NULL,"label" text,"created_by" uuid,"created_by_name" text,"created_by_role" "role","used_by" uuid,"used_at" timestamp with time zone,"expires_at" timestamp with time zone,"active" boolean DEFAULT true NOT NULL,"created_at" timestamp with time zone DEFAULT now() NOT NULL,CONSTRAINT "invitations_code_unique" UNIQUE("code"));--> statement-breakpoint
 DO $$ BEGIN ALTER TABLE "invitations" ADD CONSTRAINT "invitations_created_by_users_id_fk" FOREIGN KEY ("created_by") REFERENCES "public"."users"("id") ON DELETE set null ON UPDATE no action; EXCEPTION WHEN duplicate_object THEN null; END $$;--> statement-breakpoint
 DO $$ BEGIN ALTER TABLE "invitations" ADD CONSTRAINT "invitations_used_by_users_id_fk" FOREIGN KEY ("used_by") REFERENCES "public"."users"("id") ON DELETE set null ON UPDATE no action; EXCEPTION WHEN duplicate_object THEN null; END $$;
+--> statement-breakpoint
+DO $$ BEGIN CREATE TYPE "public"."role" AS ENUM('user','driver','ops','admin'); EXCEPTION WHEN duplicate_object THEN null; END $$;--> statement-breakpoint
+CREATE TABLE IF NOT EXISTS "messages" ("id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,"service_id" uuid NOT NULL,"from_user" uuid,"from_name" text,"from_role" "role" NOT NULL,"to_role" "role","body" text NOT NULL,"read_at" timestamp with time zone,"created_at" timestamp with time zone DEFAULT now() NOT NULL);--> statement-breakpoint
+DO $$ BEGIN ALTER TABLE "messages" ADD CONSTRAINT "messages_service_id_services_id_fk" FOREIGN KEY ("service_id") REFERENCES "public"."services"("id") ON DELETE cascade ON UPDATE no action; EXCEPTION WHEN duplicate_object THEN null; END $$;--> statement-breakpoint
+DO $$ BEGIN ALTER TABLE "messages" ADD CONSTRAINT "messages_from_user_users_id_fk" FOREIGN KEY ("from_user") REFERENCES "public"."users"("id") ON DELETE set null ON UPDATE no action; EXCEPTION WHEN duplicate_object THEN null; END $$;--> statement-breakpoint
+CREATE INDEX IF NOT EXISTS "messages_service_idx" ON "messages" ("service_id","created_at");
 `;
 
 export async function GET(req: NextRequest) {

@@ -474,6 +474,7 @@ export async function getMyRating(): Promise<{ avg: number | null; count: number
 
 /* ----------------------------- driver map (geo) ---------------------------- */
 export interface DriverMapData {
+  id: string;
   origin: string;
   destination: string;
   time: string;
@@ -500,6 +501,7 @@ export async function getDriverActiveGeo(): Promise<DriverMapData | null> {
     const s = rows[0];
     const when = s.scheduledAt ?? s.createdAt;
     return {
+      id: s.id,
       origin: s.origin,
       destination: s.destination,
       time: fmtParts(when).time,
@@ -509,6 +511,114 @@ export async function getDriverActiveGeo(): Promise<DriverMapData | null> {
       destLat: s.destLat,
       destLng: s.destLng,
     };
+  } catch {
+    return null;
+  }
+}
+
+/* ------------------------------- mensajería ------------------------------- */
+export interface MessageRow {
+  id: string;
+  body: string;
+  fromRole: "user" | "driver" | "ops" | "admin";
+  fromName: string;
+  mine: boolean;
+  time: string;
+}
+
+/** Hilo de mensajes de un servicio (orden cronológico). `mine` marca los míos. */
+export async function getServiceMessages(serviceId: string): Promise<MessageRow[]> {
+  if (!hasDb) return [];
+  try {
+    const { messages } = await import("@/db/schema");
+    const uid = await myId();
+    const rows = await db
+      .select()
+      .from(messages)
+      .where(eq(messages.serviceId, serviceId))
+      .orderBy(messages.createdAt)
+      .limit(200);
+    return rows.map((r) => ({
+      id: r.id,
+      body: r.body,
+      fromRole: r.fromRole as MessageRow["fromRole"],
+      fromName: r.fromName ?? "—",
+      mine: !!uid && r.fromUser === uid,
+      time: new Date(r.createdAt).toLocaleTimeString("es-MX", { hour: "2-digit", minute: "2-digit", hour12: true }),
+    }));
+  } catch {
+    return [];
+  }
+}
+
+/* ------------------------------ flota (mapa) ------------------------------ */
+export interface FleetUnit {
+  serviceId: string;
+  lat: number;
+  lng: number;
+  driverName: string | null;
+  plate: string | null;
+  origin: string;
+  destination: string;
+  status: SvcStatus;
+}
+
+/**
+ * Posiciones para el mapa de flota (ops/admin): servicios activos con su última
+ * posición conocida (location_update) o, en su defecto, el origen del traslado.
+ */
+export async function getFleetPositions(): Promise<FleetUnit[]> {
+  if (!hasDb) return [];
+  try {
+    const { serviceEvents } = await import("@/db/schema");
+    const rows = await baseServiceQuery()
+      .where(inArray(services.status, ["asignado", "confirmado", "en_curso"]))
+      .orderBy(desc(services.createdAt))
+      .limit(100);
+    const units: FleetUnit[] = [];
+    for (const r of rows) {
+      let lat = r.s.originLat;
+      let lng = r.s.originLng;
+      try {
+        const [ev] = await db
+          .select({ lat: serviceEvents.locationLat, lng: serviceEvents.locationLng })
+          .from(serviceEvents)
+          .where(and(eq(serviceEvents.serviceId, r.s.id), eq(serviceEvents.type, "location_update")))
+          .orderBy(desc(serviceEvents.timestamp))
+          .limit(1);
+        if (ev?.lat != null && ev?.lng != null) { lat = ev.lat; lng = ev.lng; }
+      } catch { /* sin evento de ubicación */ }
+      if (lat == null || lng == null) continue;
+      units.push({
+        serviceId: r.s.id,
+        lat,
+        lng,
+        driverName: r.driver?.name ?? null,
+        plate: r.vehicle?.plate ?? null,
+        origin: r.s.origin,
+        destination: r.s.destination,
+        status: r.s.status as SvcStatus,
+      });
+    }
+    return units;
+  } catch {
+    return [];
+  }
+}
+
+/** Última posición conocida del chofer de un servicio (para el mapa del usuario). */
+export async function getServiceDriverLocation(serviceId: string): Promise<{ lat: number; lng: number; time: string } | null> {
+  if (!hasDb) return null;
+  try {
+    const { serviceEvents } = await import("@/db/schema");
+    const [ev] = await db
+      .select({ lat: serviceEvents.locationLat, lng: serviceEvents.locationLng, ts: serviceEvents.timestamp })
+      .from(serviceEvents)
+      .where(and(eq(serviceEvents.serviceId, serviceId), eq(serviceEvents.type, "location_update")))
+      .orderBy(desc(serviceEvents.timestamp))
+      .limit(1);
+    if (ev?.lat == null || ev?.lng == null) return null;
+    return { lat: ev.lat, lng: ev.lng, time: relativeTime(ev.ts) };
   } catch {
     return null;
   }

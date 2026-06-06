@@ -181,3 +181,19 @@ export type PushSubscriptionRow = typeof pushSubscriptions.$inferSelect;
 export type PaymentMethod = typeof paymentMethods.$inferSelect;
 export type Rating = typeof ratings.$inferSelect;
 export type Invitation = typeof invitations.$inferSelect;
+
+export const messages = pgTable("messages", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  serviceId: uuid("service_id")
+    .references(() => services.id, { onDelete: "cascade" })
+    .notNull(),
+  fromUser: uuid("from_user").references(() => users.id, { onDelete: "set null" }),
+  fromName: text("from_name"),
+  fromRole: roleEnum("from_role").notNull(),
+  toRole: roleEnum("to_role"),
+  body: text("body").notNull(),
+  readAt: timestamp("read_at", { withTimezone: true }),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+});
+
+export type Message = typeof messages.$inferSelect;

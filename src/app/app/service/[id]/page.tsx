@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import { getServiceById } from "@/lib/queries";
+import { getServiceById, getServiceMessages } from "@/lib/queries";
+import { ServiceChat } from "@/components/service-chat";
 import { getRole } from "@/lib/auth";
 import { auth } from "@clerk/nextjs/server";
 import { dbUserIdByClerk } from "@/lib/notify";
@@ -9,7 +10,6 @@ import { MapView } from "@/components/map-view";
 import { EmptyState } from "@/components/ui-bits";
 import { PageHeader } from "@/components/shell/page-header";
 import { Icon } from "@/components/icon";
-import { Button } from "@/components/ui";
 import { StatusBadge } from "@/components/status-badge";
 import { RatingForm } from "@/components/rating-form";
 import { PageTransition, FadeInOnScroll } from "@/components/motion";
@@ -27,6 +27,7 @@ export default async function ServiceDetail({ params }: { params: { id: string }
     if (!uid || (service.userId !== uid && service.driverId !== uid)) notFound();
   }
   const canDrive = role === "driver" || role === "ops" || role === "admin";
+  const messages = await getServiceMessages(service.id);
 
   const hasGeo = service.originLat != null && service.originLng != null && service.destLat != null && service.destLng != null;
   const route: [number, number][] = hasGeo
@@ -109,10 +110,9 @@ export default async function ServiceDetail({ params }: { params: { id: string }
             </FadeInOnScroll>
           )}
 
-          <div className="flex gap-md pt-lg mt-auto pb-8 md:pb-0">
-            <Button variant="outline" fullWidth icon="chat_bubble">Mensaje</Button>
-            <Button fullWidth icon="call" iconFill>Llamar</Button>
-          </div>
+          <FadeInOnScroll delay={0.12}>
+            <ServiceChat serviceId={service.id} initial={messages} />
+          </FadeInOnScroll>
         </section>
       </div>
     </PageTransition>
