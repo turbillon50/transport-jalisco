@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { auth } from "@clerk/nextjs/server";
 import Image from "next/image";
 import { Icon } from "@/components/icon";
 import { Button } from "@/components/ui";
@@ -21,7 +22,11 @@ const STATS = [
   { value: 12000, label: "Traslados completados", suffix: "+" },
 ];
 
-export default function LandingPage() {
+export const dynamic = "force-dynamic";
+
+export default async function LandingPage() {
+  const { userId } = await auth();
+  const loggedIn = !!userId;
   return (
     <div className="min-h-[100dvh] bg-background text-on-background">
       {/* Nav */}
@@ -30,12 +35,18 @@ export default function LandingPage() {
           <Image src="/icons/logo.png" alt="MT Empresarial" width={150} height={40} className="h-9 w-auto" priority />
           <div className="flex items-center gap-2">
             <ThemeToggle />
-            <Link href="/sign-in" className="hidden sm:inline-flex px-4 py-2 text-label-lg font-semibold text-primary hover:underline">
-              Iniciar sesión
-            </Link>
-            <Link href="/sign-up">
-              <Button size="sm" icon="arrow_forward">Comenzar</Button>
-            </Link>
+            {loggedIn ? (
+              <Link href="/role"><Button size="sm" icon="arrow_forward">Ir a mi panel</Button></Link>
+            ) : (
+              <>
+                <Link href="/sign-in" className="hidden sm:inline-flex px-4 py-2 text-label-lg font-semibold text-primary hover:underline">
+                  Iniciar sesión
+                </Link>
+                <Link href="/sign-up">
+                  <Button size="sm" icon="arrow_forward">Comenzar</Button>
+                </Link>
+              </>
+            )}
           </div>
         </div>
       </header>
@@ -63,9 +74,9 @@ export default function LandingPage() {
           </FadeInOnScroll>
           <FadeInOnScroll delay={0.24}>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <Link href="/sign-up">
+              <Link href={loggedIn ? "/role" : "/sign-up"}>
                 <Button size="lg" icon="rocket_launch" className="bg-secondary-container hover:bg-secondary">
-                  Crear cuenta gratis
+                  {loggedIn ? "Ir a mi panel" : "Crear cuenta gratis"}
                 </Button>
               </Link>
               <Link href="/role">
@@ -127,9 +138,9 @@ export default function LandingPage() {
               <p className="text-white/80 max-w-xl mx-auto mb-8">
                 Únete a MT Empresarial y digitaliza tus traslados corporativos hoy mismo.
               </p>
-              <Link href="/sign-up">
+              <Link href={loggedIn ? "/role" : "/sign-up"}>
                 <Button size="lg" icon="arrow_forward" className="bg-secondary text-white hover:brightness-105">
-                  Empezar ahora
+                  {loggedIn ? "Ir a mi panel" : "Empezar ahora"}
                 </Button>
               </Link>
             </div>
