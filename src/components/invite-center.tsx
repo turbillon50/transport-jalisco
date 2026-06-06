@@ -87,8 +87,8 @@ export function InviteCenter({
     <div className="space-y-6">
       {error && <Alert type="error" message={error} onClose={() => setError(null)} />}
 
-      <div className="flex items-center justify-between">
-        <div>
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div className="min-w-0">
           <h2 className="text-title-lg font-semibold text-on-surface">Invitar a tu equipo</h2>
           <p className="text-body-sm text-on-surface-variant">
             Genera enlaces de invitación con el rol que tú puedes otorgar.
