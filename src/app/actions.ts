@@ -539,13 +539,17 @@ export async function createInvitation(
   role: Role,
   opts?: { label?: string; email?: string; expiresInDays?: number },
 ): Promise<ActionResult & { code?: string; url?: string }> {
-  const caller = await getRole();
-  if (!CAN_INVITE[caller].includes(role)) {
+  const callerRole: Role = hasAdminCookie() ? "admin" : await getRole();
+  if (!CAN_INVITE[callerRole].includes(role)) {
     return { ok: false, message: "No puedes invitar a ese rol." };
   }
   if (!hasDb) return { ok: false, message: "Base de datos no configurada." };
 
-  const { id: miId, name: miNombre } = await meIdAndName();
+  // Resuelve identidad del invitador. Con admin por llave-enlace (cookie, sin
+  // sesión Clerk) no hay miId: usamos createdBy=null y nombre genérico.
+  const me = await meIdAndName();
+  const miId = me.id;
+  const miNombre = miId ? me.name : "Administrador";
 
   try {
     let code = "";
@@ -559,7 +563,7 @@ export async function createInvitation(
           label: opts?.label?.trim() || null,
           createdBy: miId,
           createdByName: miNombre,
-          createdByRole: caller,
+          createdByRole: callerRole,
           expiresAt:
             opts?.expiresInDays && opts.expiresInDays > 0
               ? new Date(Date.now() + opts.expiresInDays * 86400_000)
@@ -593,7 +597,7 @@ export async function createInvitation(
 /** Lista las invitaciones del usuario (todas si es admin). */
 export async function getMyInvitations(): Promise<InvitationRow[]> {
   if (!hasDb) return [];
-  const caller = await getRole();
+  const callerRole: Role = hasAdminCookie() ? "admin" : await getRole();
   const miId = await meId();
 
   try {
@@ -612,10 +616,10 @@ export async function getMyInvitations(): Promise<InvitationRow[]> {
       })
       .from(invitations)
       .leftJoin(usedByUser, eq(invitations.usedBy, usedByUser.id))
-      .where(caller === "admin" || !miId ? sql`true` : eq(invitations.createdBy, miId))
+      .where(callerRole === "admin" || !miId ? sql`true` : eq(invitations.createdBy, miId))
       .orderBy(desc(invitations.createdAt));
 
-    if (caller !== "admin" && !miId) return [];
+    if (callerRole !== "admin" && !miId) return [];
 
     return rows.map((r) => {
       const expired = r.expiresAt ? new Date(r.expiresAt).getTime() < Date.now() : false;
@@ -644,7 +648,7 @@ export async function getMyInvitations(): Promise<InvitationRow[]> {
 /** Revoca una invitación; si fue usada por un subordinado no-admin, revoca su acceso. */
 export async function revokeInvitation(id: string): Promise<ActionResult> {
   if (!hasDb) return { ok: false, message: "Base de datos no configurada." };
-  const caller = await getRole();
+  const callerRole: Role = hasAdminCookie() ? "admin" : await getRole();
   const miId = await meId();
 
   try {
@@ -656,7 +660,7 @@ export async function revokeInvitation(id: string): Promise<ActionResult> {
     if (!inv) return { ok: false, message: "Invitación no encontrada." };
 
     const esCreador = miId && inv.createdBy === miId;
-    if (caller !== "admin" && !esCreador) {
+    if (callerRole !== "admin" && !esCreador) {
       return { ok: false, message: "No autorizado." };
     }
 
@@ -669,7 +673,7 @@ export async function revokeInvitation(id: string): Promise<ActionResult> {
         .from(users)
         .where(eq(users.id, inv.usedBy))
         .limit(1);
-      if (target && target.role !== "admin" && ROLE_RANK[target.role as Role] < ROLE_RANK[caller]) {
+      if (target && target.role !== "admin" && ROLE_RANK[target.role as Role] < ROLE_RANK[callerRole]) {
         await db.update(users).set({ deletedAt: new Date() }).where(eq(users.id, inv.usedBy));
       }
     }

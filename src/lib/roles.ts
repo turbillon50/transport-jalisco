@@ -35,7 +35,7 @@ export const NAV: Record<Role, NavItem[]> = {
     { href: "/admin/analytics", icon: "monitoring", label: "Analytics" },
     { href: "/admin/users", icon: "group", label: "Usuarios" },
     { href: "/admin/drivers", icon: "local_taxi", label: "Choferes" },
-    { href: "/invitar", icon: "person_add", label: "Invitaciones" },
+    { href: "/admin/invitations", icon: "person_add", label: "Invitaciones" },
     { href: "/admin/notifications", icon: "campaign", label: "Push" },
     { href: "/admin/settings", icon: "settings", label: "Ajustes" },
   ],
