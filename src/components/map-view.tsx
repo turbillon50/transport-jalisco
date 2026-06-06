@@ -96,7 +96,7 @@ export function MapView({
 
   return (
     <div className={cn("relative w-full overflow-hidden bg-surface-variant", className)}>
-      <div ref={container} className="absolute inset-0" />
+      <div ref={container} className="h-full w-full" />
       {!process.env.NEXT_PUBLIC_MAPBOX_TOKEN && (
         <div className="absolute inset-0 flex items-center justify-center text-on-surface-variant text-body-md">
           Configura NEXT_PUBLIC_MAPBOX_TOKEN para ver el mapa
