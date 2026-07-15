@@ -82,7 +82,7 @@ export function AppShell({ role, children, unread = 0 }: { role: Role; children:
       <main className="pb-24 md:pb-0 min-h-[calc(100dvh-4rem)] md:min-h-[100dvh]">{children}</main>
 
       {/* Mobile bottom nav */}
-      <nav className="md:hidden fixed bottom-0 inset-x-0 z-50 bg-surface-container-lowest border-t border-outline-variant shadow-[0_-4px_24px_rgba(0,40,99,0.06)]" style={{ paddingBottom: "env(safe-area-inset-bottom,0px)" }}>
+      <nav data-vulcano-bottomnav aria-label="Navegación principal" className="md:hidden fixed bottom-0 inset-x-0 z-50 bg-surface-container-lowest/85 backdrop-blur-xl border-t border-outline-variant shadow-[0_-4px_24px_rgba(0,40,99,0.10)]" style={{ paddingBottom: "env(safe-area-inset-bottom,0px)" }}>
         <div className="flex items-center justify-around px-1 py-2">
           {items.map((it) => {
             const active = isActive(it.href);
