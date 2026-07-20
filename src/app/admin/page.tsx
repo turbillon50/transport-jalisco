@@ -18,7 +18,10 @@ const SHORTCUTS = [
   { href: "/admin/mapa", icon: "map", title: "Mapa en vivo", body: "Ubicacion de unidades RT" },
   { href: "/admin/reportes", icon: "bar_chart", title: "Reportes", body: "KPIs por periodo" },
   { href: "/admin/analytics", icon: "monitoring", title: "Analytics", body: "Metricas avanzadas" },
+  { href: "/admin/verificaciones", icon: "verified_user", title: "Verificacion", body: "Documentos de choferes" },
   { href: "/admin/users", icon: "group", title: "Usuarios", body: "Roles y permisos" },
+  { href: "/admin/invitations", icon: "person_add", title: "Invitaciones", body: "Altas por invitacion" },
+  { href: "/admin/notifications", icon: "campaign", title: "Push", body: "Avisos y campanas" },
   { href: "/admin/settings", icon: "settings", title: "Ajustes", body: "Config y feature flags" },
 ];
 

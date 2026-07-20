@@ -7,38 +7,33 @@ export interface NavItem {
   badge?: boolean;
 }
 
+// Navs a 5 items máximo, operaciones al frente (estándar Vulcano v3).
 export const NAV: Record<Role, NavItem[]> = {
   user: [
     { href: "/app", icon: "home", label: "Inicio" },
     { href: "/app/request", icon: "add_circle", label: "Solicitar" },
     { href: "/app/active", icon: "navigation", label: "En vivo" },
     { href: "/app/alerts", icon: "notifications", label: "Alertas", badge: true },
-    { href: "/invitar", icon: "person_add", label: "Invitar" },
     { href: "/app/profile", icon: "person", label: "Perfil" },
   ],
   driver: [
     { href: "/driver", icon: "dashboard", label: "Panel" },
     { href: "/driver/map", icon: "map", label: "Mapa GPS" },
     { href: "/driver/documentos", icon: "badge", label: "Documentos" },
-    { href: "/invitar", icon: "person_add", label: "Invitar" },
     { href: "/app/alerts", icon: "notifications", label: "Alertas", badge: true },
   ],
   ops: [
-    { href: "/ops", icon: "space_dashboard", label: "Dashboard" },
+    { href: "/ops", icon: "space_dashboard", label: "Panel" },
     { href: "/ops/assignments", icon: "assignment", label: "Asignar" },
     { href: "/ops/map", icon: "map", label: "Mapa" },
     { href: "/ops/fleet", icon: "local_shipping", label: "Flota" },
     { href: "/ops/drivers", icon: "badge", label: "Choferes" },
-    { href: "/invitar", icon: "person_add", label: "Invitar" },
   ],
   admin: [
-    { href: "/admin", icon: "shield_person", label: "Panel" },
-    { href: "/admin/analytics", icon: "monitoring", label: "Analytics" },
-    { href: "/admin/users", icon: "group", label: "Usuarios" },
+    { href: "/admin", icon: "space_dashboard", label: "Panel" },
+    { href: "/admin/traslados", icon: "directions_car", label: "Traslados" },
     { href: "/admin/drivers", icon: "local_taxi", label: "Choferes" },
-    { href: "/admin/verificaciones", icon: "verified_user", label: "Verificación" },
-    { href: "/admin/invitations", icon: "person_add", label: "Invitaciones" },
-    { href: "/admin/notifications", icon: "campaign", label: "Push" },
+    { href: "/admin/mapa", icon: "map", label: "Mapa" },
     { href: "/admin/settings", icon: "settings", label: "Ajustes" },
   ],
 };
