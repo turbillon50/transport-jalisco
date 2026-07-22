@@ -1,97 +1,39 @@
-import Link from "next/link";
 import type { Metadata } from "next";
-import { Icon } from "@/components/icon";
 import { getOpsStats, getAnalytics, getAuditLog } from "@/lib/queries";
-import { ServicesLineChart } from "@/components/charts";
-import { Card } from "@/components/ui";
-import { EmptyState } from "@/components/ui-bits";
-import { PageHeader } from "@/components/shell/page-header";
-import { PageTransition, FadeInOnScroll, StaggerContainer, StaggerItem, HoverCard, NumberCounter } from "@/components/motion";
+import SaludClient from "./SaludClient";
 
-export const metadata: Metadata = { title: "Panel Admin" };
+export const metadata: Metadata = { title: "Salud · Admin MT" };
 export const dynamic = "force-dynamic";
-
-const SHORTCUTS = [
-  { href: "/admin/traslados", icon: "directions_car", title: "Traslados", body: "Asignar y gestionar viajes" },
-  { href: "/admin/drivers", icon: "badge", title: "Choferes", body: "Agregar y gestionar" },
-  { href: "/admin/empresas", icon: "domain", title: "Empresas", body: "Clientes B2B" },
-  { href: "/admin/mapa", icon: "map", title: "Mapa en vivo", body: "Ubicacion de unidades RT" },
-  { href: "/admin/reportes", icon: "bar_chart", title: "Reportes", body: "KPIs por periodo" },
-  { href: "/admin/analytics", icon: "monitoring", title: "Analytics", body: "Metricas avanzadas" },
-  { href: "/admin/verificaciones", icon: "verified_user", title: "Verificacion", body: "Documentos de choferes" },
-  { href: "/admin/users", icon: "group", title: "Usuarios", body: "Roles y permisos" },
-  { href: "/admin/invitations", icon: "person_add", title: "Invitaciones", body: "Altas por invitacion" },
-  { href: "/admin/notifications", icon: "campaign", title: "Push", body: "Avisos y campanas" },
-  { href: "/admin/settings", icon: "settings", title: "Ajustes", body: "Config y feature flags" },
-];
 
 export default async function AdminDashboard() {
   const [stats, analytics, audit] = await Promise.all([getOpsStats(), getAnalytics(), getAuditLog()]);
+
+  const total = analytics.totals.servicios || 0;
+  const done = analytics.totals.completados || 0;
+  const pend = stats.pendientes || 0;
+  const chof = stats.choferes || 0;
+
+  // Score honesto: tasa de completados menos castigo por pendientes acumulados.
+  const rate = total > 0 ? done / total : 1;
+  const penalty = Math.min(30, pend * 3);
+  const score = Math.max(0, Math.min(100, Math.round(rate * 100 - penalty)));
+
   const kpis = [
-    { icon: "directions_car", label: "Servicios totales", value: analytics.totals.servicios, cls: "text-secondary" },
-    { icon: "task_alt", label: "Completados", value: analytics.totals.completados, cls: "text-green-600" },
-    { icon: "schedule", label: "Pendientes", value: stats.pendientes, cls: "text-[#00b4d8]" },
-    { icon: "badge", label: "Choferes", value: stats.choferes, cls: "text-primary" },
+    { label: "Servicios totales", value: total, hint: "Histórico registrado" },
+    { label: "Completados", value: done, hint: total ? `${Math.round(rate * 100)}% del total` : "Sin servicios aún" },
+    { label: "Pendientes", value: pend, hint: pend ? "Requieren asignación" : "Nada en espera" },
+    { label: "Choferes", value: chof, hint: "Alta manual por admin" },
   ];
-  return (
-    <PageTransition>
-      <PageHeader title="Panel Admin" />
-      <main className="px-margin-mobile md:px-margin-desktop py-lg max-w-[1440px] mx-auto space-y-xl">
-        <StaggerContainer className="grid grid-cols-2 lg:grid-cols-4 gap-md">
-          {kpis.map((k) => (
-            <StaggerItem key={k.label}>
-              <HoverCard lift={-3} className="bg-surface-container-lowest border border-outline-variant p-lg rounded-xl">
-                <Icon name={k.icon} className={`text-[28px] mb-2 ${k.cls}`} />
-                <p className="text-display-lg font-bold text-primary leading-none"><NumberCounter value={k.value} /></p>
-                <p className="text-label-md text-on-surface-variant uppercase tracking-wider mt-1">{k.label}</p>
-              </HoverCard>
-            </StaggerItem>
-          ))}
-        </StaggerContainer>
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-lg">
-          <FadeInOnScroll className="lg:col-span-2">
-            <Card className="p-lg h-full">
-              <h3 className="text-headline-sm font-semibold text-on-surface mb-4">Servicios - ultimos 7 dias</h3>
-              <ServicesLineChart data={analytics.weekly} />
-            </Card>
-          </FadeInOnScroll>
-          <FadeInOnScroll delay={0.1}>
-            <Card className="p-lg h-full">
-              <h3 className="text-headline-sm font-semibold text-on-surface mb-4">Bitacora</h3>
-              {audit.length === 0 ? (
-                <EmptyState icon="history" title="Sin actividad" body="Las acciones apareceran aqui." />
-              ) : (
-                <ul className="space-y-4">
-                  {audit.map((a) => (
-                    <li key={a.id} className="flex gap-3">
-                      <div className="w-2 h-2 rounded-full bg-secondary mt-2 shrink-0" />
-                      <div>
-                        <p className="text-label-lg font-semibold text-on-surface">{a.action}</p>
-                        <p className="text-label-md text-on-surface-variant">{a.target} - {a.actor} - {a.time}</p>
-                      </div>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </Card>
-          </FadeInOnScroll>
-        </div>
-        <StaggerContainer className="grid grid-cols-2 lg:grid-cols-4 gap-md">
-          {SHORTCUTS.map((s) => (
-            <StaggerItem key={s.href}>
-              <Link href={s.href}>
-                <HoverCard className="bg-surface-container-lowest border border-outline-variant p-lg rounded-xl h-full cursor-pointer">
-                  <div className="w-11 h-11 rounded-xl bg-primary-fixed text-primary flex items-center justify-center mb-3">
-                    <Icon name={s.icon} fill />
-                  </div>
-                  <h4 className="text-label-lg font-semibold text-on-surface">{s.title}</h4>
-                  <p className="text-body-md text-on-surface-variant">{s.body}</p>
-                </HoverCard>
-              </Link>
-            </StaggerItem>
-          ))}
-        </StaggerContainer>
-      </main>
-    </PageTransition>
-  );
+
+  const alerts: { sev: "alta" | "media" | "baja"; title: string; body: string; href: string }[] = [];
+  if (pend > 0) alerts.push({ sev: "alta", title: `${pend} traslado${pend > 1 ? "s" : ""} sin asignar`, body: "Asigna chofer para no afectar el servicio.", href: "/admin/traslados" });
+  if (chof === 0) alerts.push({ sev: "alta", title: "Sin choferes dados de alta", body: "Agrega choferes para poder asignar viajes.", href: "/admin/drivers" });
+  if (total === 0) alerts.push({ sev: "media", title: "Aún no hay servicios registrados", body: "Los KPIs se llenan al operar el primer traslado.", href: "/admin/empresas" });
+
+  const weekly = (analytics.weekly || []).map((w) => ({
+    label: String(w.day ?? "").slice(0, 3),
+    value: Number(w.servicios ?? 0),
+  }));
+
+  return <SaludClient score={score} kpis={kpis} alerts={alerts} weekly={weekly} audit={audit} />;
 }

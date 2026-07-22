@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import { AppShell } from "@/components/shell/app-shell";
+import { ForgeShell } from "@/components/admin/forge-shell";
 import { getRole } from "@/lib/auth";
 import { hasAdminCookie } from "@/lib/admin-gate";
 
@@ -11,5 +11,5 @@ export default async function AdminLayout({ children }: { children: React.ReactN
     const role = await getRole();
     if (role !== "admin") redirect("/");
   }
-  return <AppShell role="admin">{children}</AppShell>;
+  return <ForgeShell role="Administrador">{children}</ForgeShell>;
 }
