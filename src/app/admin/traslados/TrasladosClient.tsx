@@ -100,6 +100,10 @@ export function TrasladosClient({ rows, counts, drivers, filters }: {
           <h1 style={S.h1}>Traslados</h1>
           <p style={S.sub}>{total} en total · mostrando {rows.length}{pending ? " · actualizando…" : ""}</p>
         </div>
+        <a href={"/api/admin/export" + link(filters.estado).replace("/admin/traslados", "")}
+           style={{ ...S.btn, textDecoration: "none" }}>
+          Exportar CSV
+        </a>
       </div>
 
       {/* chips de estado */}

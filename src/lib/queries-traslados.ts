@@ -14,7 +14,7 @@ export type HistoryFilters = { estado?: string; q?: string; desde?: string; hast
 
 const ESTADOS = ["pendiente", "asignado", "confirmado", "en_curso", "completado", "cancelado"];
 
-export async function getServicesHistory(f: HistoryFilters): Promise<HistoryRow[]> {
+export async function getServicesHistory(f: HistoryFilters, limit = 200): Promise<HistoryRow[]> {
   if (!hasDb) return [];
   const drv = alias(users, "drv");
   const conds = [] as any[];
@@ -38,7 +38,7 @@ export async function getServicesHistory(f: HistoryFilters): Promise<HistoryRow[
     .leftJoin(drv, eq(services.driverId, drv.id))
     .where(conds.length ? and(...conds) : undefined)
     .orderBy(desc(sql`coalesce(${services.scheduledAt}, ${services.createdAt})`))
-    .limit(200);
+    .limit(Math.min(Math.max(limit, 1), 5000));
   return rows as HistoryRow[];
 }
 

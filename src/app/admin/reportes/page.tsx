@@ -26,6 +26,9 @@ export default async function ReportesPage() {
   return (
     <PageTransition>
       <PageHeader title="Reportes" />
+      <div className="px-margin-mobile md:px-margin-desktop max-w-[1440px] mx-auto mt-2">
+        <a href="/api/admin/export" className="inline-block text-sm border border-outline-variant rounded-xl px-4 py-2">Descargar CSV de traslados</a>
+      </div>
       <main className="px-margin-mobile md:px-margin-desktop py-lg max-w-[1440px] mx-auto space-y-xl">
         <FadeInOnScroll>
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-md">
