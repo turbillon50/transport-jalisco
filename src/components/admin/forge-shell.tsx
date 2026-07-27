@@ -29,6 +29,8 @@ const NAV: NavItem[] = [
 const GROUPS = ["OPERACIÓN", "NEGOCIO", "PERSONAS", "PLATAFORMA"];
 const MOBILE = ["/admin", "/admin/traslados", "/admin/drivers", "/admin/mapa", "/admin/settings"];
 
+const LEGACY = "[data-forge] .bg-surface-container-lowest,[data-forge] .bg-surface-container-low,[data-forge] .bg-surface-container,[data-forge] .bg-surface{background:var(--surface)!important}[data-forge] .bg-surface-container-high,[data-forge] .bg-surface-container-highest{background:var(--hover)!important}[data-forge] .border-outline-variant,[data-forge] .border-outline{border-color:var(--border)!important}[data-forge] .text-on-surface-variant{color:var(--text2)!important}[data-forge] .text-on-surface{color:var(--text)!important}[data-forge] .text-primary{color:var(--text)!important}[data-forge] .text-secondary,[data-forge] .text-tertiary{color:var(--text2)!important}[data-forge] .border-primary{border-color:var(--accent)!important}[data-forge] .bg-primary-fixed{background:var(--hover)!important;color:var(--text)!important}[data-forge] .bg-primary{background:var(--accent)!important;color:var(--btn-fg)!important}[data-forge] .text-on-primary{color:var(--btn-fg)!important}[data-forge] .font-bold,[data-forge] .font-semibold{font-weight:500!important}[data-forge] header.page-subheader{position:static;top:auto;height:auto;padding:22px 22px 0;background:transparent!important;border-bottom:0!important;backdrop-filter:none;-webkit-backdrop-filter:none}[data-forge] header.page-subheader h1{font-size:21px;font-weight:500!important;letter-spacing:-0.01em;color:var(--text)!important}[data-forge] main{color:var(--text)}";
+
 const CSS = `
 [data-forge]{--bg:#F9FAFC;--surface:#FFFFFF;--border:#E2E5ED;--text:#1F2937;--text2:#6B7280;--accent:#000000;--btn-fg:#FFFFFF;--hover:#F3F4F6;--shadow-el:0 8px 24px rgba(0,0,0,.12)}
 [data-forge][data-theme="dark"]{--bg:#0C0D13;--surface:#141518;--border:#2A2C33;--text:#E5E7EB;--text2:#9CA3AF;--accent:#FFFFFF;--btn-fg:#000000;--hover:#1C1E24;--shadow-el:0 8px 24px rgba(0,0,0,.5)}
@@ -135,6 +137,7 @@ export function ForgeShell({ children, title, subtitle, role = "admin" }:
   return (
     <div data-forge data-theme={theme} style={{ position: "fixed", inset: 0, display: "flex", zIndex: 40 }}>
       <style dangerouslySetInnerHTML={{ __html: CSS }} />
+      <style dangerouslySetInnerHTML={{ __html: LEGACY }} />
 
       <aside className="hidden md:flex" style={{ width: 236, flexShrink: 0, flexDirection: "column", background: "var(--surface)", borderRight: "1px solid var(--border)" }}>
         {Side}

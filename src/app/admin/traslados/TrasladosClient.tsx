@@ -40,17 +40,17 @@ const S = {
   page: { padding: "22px 22px 90px", maxWidth: 1180, margin: "0 auto" } as React.CSSProperties,
   h1: { fontSize: 21, fontWeight: 500, letterSpacing: "-0.01em", margin: 0 } as React.CSSProperties,
   sub: { fontSize: 13, opacity: 0.55, marginTop: 3 } as React.CSSProperties,
-  card: { border: "1px solid var(--fg-line, #e5e5e5)", borderRadius: 10, background: "var(--fg-card, transparent)" } as React.CSSProperties,
+  card: { border: "1px solid var(--border)", borderRadius: 10, background: "var(--surface)" } as React.CSSProperties,
   chip: (on: boolean): React.CSSProperties => ({
     display: "inline-flex", alignItems: "center", gap: 6, padding: "7px 12px", borderRadius: 10,
-    border: "1px solid var(--fg-line, #e5e5e5)", fontSize: 12.5, fontWeight: on ? 500 : 400,
+    border: "1px solid var(--border)", fontSize: 12.5, fontWeight: on ? 500 : 400,
     cursor: "pointer", textDecoration: "none", color: "inherit",
-    background: on ? "var(--fg-inv, #111)" : "transparent",
-    ...(on ? { color: "var(--fg-inv-text, #fff)", borderColor: "var(--fg-inv, #111)" } : {}),
+    background: on ? "var(--accent)" : "transparent",
+    ...(on ? { color: "var(--btn-fg)", borderColor: "var(--accent)" } : {}),
   }),
-  input: { padding: "8px 11px", borderRadius: 10, border: "1px solid var(--fg-line, #e5e5e5)", background: "transparent", fontSize: 13, color: "inherit", outline: "none" } as React.CSSProperties,
-  btn: { padding: "7px 12px", borderRadius: 10, border: "1px solid var(--fg-line, #e5e5e5)", background: "transparent", fontSize: 12.5, cursor: "pointer", color: "inherit" } as React.CSSProperties,
-  btnDark: { padding: "8px 14px", borderRadius: 10, border: "1px solid var(--fg-inv, #111)", background: "var(--fg-inv, #111)", color: "var(--fg-inv-text, #fff)", fontSize: 13, cursor: "pointer" } as React.CSSProperties,
+  input: { padding: "8px 11px", borderRadius: 10, border: "1px solid var(--border)", background: "transparent", fontSize: 13, color: "inherit", outline: "none" } as React.CSSProperties,
+  btn: { padding: "7px 12px", borderRadius: 10, border: "1px solid var(--border)", background: "transparent", fontSize: 12.5, cursor: "pointer", color: "inherit" } as React.CSSProperties,
+  btnDark: { padding: "8px 14px", borderRadius: 10, border: "1px solid var(--accent)", background: "var(--accent)", color: "var(--btn-fg)", fontSize: 13, cursor: "pointer" } as React.CSSProperties,
 };
 
 export function TrasladosClient({ rows, counts, drivers, filters }: {
@@ -145,7 +145,7 @@ export function TrasladosClient({ rows, counts, drivers, filters }: {
             <thead>
               <tr style={{ textAlign: "left", opacity: 0.55, fontWeight: 400 }}>
                 {["Fecha", "Ruta", "Empresa", "Chofer", "Precio", "Estado", ""].map((h) => (
-                  <th key={h} style={{ padding: "11px 14px", fontWeight: 500, fontSize: 11.5, letterSpacing: "0.04em", textTransform: "uppercase", borderBottom: "1px solid var(--fg-line, #e5e5e5)" }}>{h}</th>
+                  <th key={h} style={{ padding: "11px 14px", fontWeight: 500, fontSize: 11.5, letterSpacing: "0.04em", textTransform: "uppercase", borderBottom: "1px solid var(--border)" }}>{h}</th>
                 ))}
               </tr>
             </thead>
@@ -154,7 +154,7 @@ export function TrasladosClient({ rows, counts, drivers, filters }: {
                 <tr><td colSpan={7} style={{ padding: "38px 14px", textAlign: "center", opacity: 0.5 }}>Sin traslados con estos filtros</td></tr>
               )}
               {rows.map((r) => (
-                <tr key={r.id} style={{ borderBottom: "1px solid var(--fg-line, #eee)" }}>
+                <tr key={r.id} style={{ borderBottom: "1px solid var(--border)" }}>
                   <td style={{ padding: "12px 14px", whiteSpace: "nowrap" }}>{fmtDate(r.scheduledAt || r.createdAt)}</td>
                   <td style={{ padding: "12px 14px", maxWidth: 260 }}>
                     <div style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{r.origin}</div>
@@ -195,7 +195,7 @@ export function TrasladosClient({ rows, counts, drivers, filters }: {
       {modal && (
         <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.45)", zIndex: 90, display: "flex", alignItems: "center", justifyContent: "center", padding: 18 }}
              onClick={() => !busy && setModal(null)}>
-          <div style={{ ...S.card, background: "var(--fg-bg, #fff)", width: "100%", maxWidth: 400, padding: 20 }} onClick={(e) => e.stopPropagation()}>
+          <div style={{ ...S.card, background: "var(--surface)", width: "100%", maxWidth: 400, padding: 20 }} onClick={(e) => e.stopPropagation()}>
             {modal.kind === "cancel" ? (
               <>
                 <h2 style={{ fontSize: 16, fontWeight: 500, margin: "0 0 6px" }}>Cancelar traslado</h2>
